@@ -43,5 +43,10 @@ export class UserRepository {
         return result.deletedCount
       }
 
+    async deleteAll(): Promise<number> {
+        const result = await this.userModel.deleteMany({}); //{ acknowledged: true, deletedCount: 1 }
+        return result.deletedCount
+    }
+
     
 }
