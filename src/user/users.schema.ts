@@ -21,7 +21,7 @@ export class User {
   maxlength: [20, 'password is too long'],})
   password: string
 
-  @Prop({required: true, default: 'No email', matches: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'})
+  @Prop({required: true, default: 'No email', matches: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$'})
   email: string
 
   @Prop({required: true, default: new Date()})

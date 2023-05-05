@@ -17,12 +17,12 @@ export class UserRepository {
   }
 
   async deleteUserById(userId: string): Promise<number> {
-    const result = await this.userModel.deleteOne({ id: userId }); 
+    const result = await this.userModel.deleteOne({ id: userId });
     return result.deletedCount;
   }
 
   async deleteAll(): Promise<number> {
-    const result = await this.userModel.deleteMany({}); 
+    const result = await this.userModel.deleteMany({});
     return result.deletedCount;
   }
 }

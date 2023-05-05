@@ -37,21 +37,11 @@ export type UserViewType = {
 export type UserDataType = {
   _id: ObjectId;
   id: string;
-  accountData: UserAccountDataType;
-  emailConfirmation: ConformationType;
-  emailCodes: CodeDataType[];
-  passwordConfirmation: {
-    confirmationCode: string;
-    expirationDate: Date;
-  };
-  passwordCodes: {
-    code: string;
-    sentAt: Date;
-  }[];
-  tokens: {
-    accessTokens: TokenType[];
-    refreshTokens: TokenType[];
-  };
+  login: string;
+  password: string;
+  email: string;
+  createdAt: string;
+  __v: number;
 };
 
 //USER PAGING TYPE

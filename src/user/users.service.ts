@@ -24,8 +24,7 @@ export class UsersService {
       createdAt: new Date(),
     };
     const createdUser = await this.userRepository.createUser(userObject);
-    const { _id, password, __v, ...userWithoutPassword } =
-      createdUser.toObject();
+    const { _id, password, __v, ...userWithoutPassword } = createdUser.toObject();
     return userWithoutPassword;
   }
 

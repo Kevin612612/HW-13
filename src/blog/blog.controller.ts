@@ -21,10 +21,15 @@ export class BlogController {
     return await this.blogService.findAll(query);
   }
 
-  //   @Post()
-  //   async createBlog(@Body() dto: BlogDTO) {
-  //     return await this.blogService.createBlog(dto);
-  //   }
+  @Post()
+  async createBlog(@Body() dto: BlogDTO) {
+    return await this.blogService.createBlog(dto);
+  }
+
+  @Get('/:blogId')
+  async getBlogById(@Param() params: { blogId: string }) {
+    return await this.blogService.getBlogById(params.blogId);
+  }
 
   @Delete('/:blogId')
   async deleteBlog(@Param() params: { blogId: string }) {

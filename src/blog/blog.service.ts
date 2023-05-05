@@ -20,8 +20,10 @@ export class BlogService {
       searchNameTerm: query.searchNameTerm || '',
       pageSize: query.pageSize || 10,
     };
-    const order = pageParams.sortDirection === 'asc' ? 1 : -1;
-    const blogs = await this.blogRepository.findAll(pageParams.sortBy, pageParams.sortDirection);
+    const blogs = await this.blogRepository.findAll(
+      pageParams.sortBy,
+      pageParams.sortDirection,
+    );
     const quantityOfDocs = await this.blogRepository.countAllBlogs({});
 
     return {
@@ -29,28 +31,31 @@ export class BlogService {
       page: +pageParams.pageNumber,
       pageSize: +pageParams.pageSize,
       totalCount: quantityOfDocs,
-      items: blogs
-        .slice(
-          (+pageParams.pageNumber - 1) * +pageParams.pageSize,
-          +pageParams.pageNumber * +pageParams.pageSize,
-        ),
+      items: blogs.slice(
+        (+pageParams.pageNumber - 1) * +pageParams.pageSize,
+        +pageParams.pageNumber * +pageParams.pageSize,
+      ),
     };
   }
 
-  //   async createBlog(dto: BlogDTO): Promise<BlogViewType> {
-  //     const blogObject = {
-  //       _id: new ObjectId(),
-  //       id: '1010',
-  //       login: dto.login,
-  //       password: dto.password,
-  //       email: dto.email,
-  //       createdAt: new Date(),
-  //     };
-  //     const createdUser = await this.blogRepository.createBlog(blogObject);
-  //     const { _id, password, __v, ...blogWithoutPassword } =
-  //       createdUser.toObject();
-  //     return blogWithoutPassword;
-  //   }
+  async createBlog(dto: BlogDTO): Promise<BlogViewType> {
+    const blogObject = {
+      _id: new ObjectId(),
+      id: '1010',
+      name: dto.name,
+      description: dto.description,
+      websiteUrl: dto.websiteUrl,
+      createdAt: new Date(),
+      isMembership: true,
+    };    
+    const createdBlog = await this.blogRepository.createBlog(blogObject);    
+    const { _id, __v, ...blogWithout_id } = createdBlog.toObject()
+    return blogWithout_id;
+  }
+
+  async getBlogById(blogId: string): Promise<any> {
+    return await this.blogRepository.getBlogById(blogId)
+  }
 
   async deleteBlog(blogId: string): Promise<any> {
     const result = await this.blogRepository.deleteBlogById(blogId); // 0 || 1

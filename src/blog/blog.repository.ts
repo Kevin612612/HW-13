@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from './blog.schema';
 import { Model } from 'mongoose';
-import { BlogViewType } from 'src/types/blog';
+import { BlogDataType, BlogViewType } from 'src/types/blog';
 
 @Injectable()
 export class BlogRepository {
@@ -19,7 +19,11 @@ export class BlogRepository {
 
   async createBlog(blogObject: any): Promise<any> {
     const createdBlog = new this.blogModel(blogObject);
-    return createdBlog.save();
+    return await createdBlog.save();
+  }
+
+  async getBlogById(blogId: string): Promise<any> {
+    return this.blogModel.find({id: blogId}).select({_id: 0, __v: 0}).exec();
   }
 
   async deleteBlogById(blogId: string): Promise<number> {
