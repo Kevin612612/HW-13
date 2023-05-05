@@ -5,23 +5,6 @@ import { HydratedDocument } from "mongoose";
 
 export type UserDocument = HydratedDocument<User>;
 
-// @Schema()
-// export class UserAccountaData {
-//   @Prop({required: true, default: 'No name'})
-//   login: string
-
-//   @Prop({required: true, default: '1234'})
-//   password: string
-
-//   @Prop({required: true, default: 'No email'})
-//   email: string
-
-//   @Prop({required: true, default: new Date()})
-//   createdAt: string
-// }
-
-// export const UserAccountaDataSchema = SchemaFactory.createForClass(UserAccountaData);
-
 @Schema()
 export class User {
   @Prop({type: ObjectId, required: true, default: new ObjectId()})
@@ -43,7 +26,6 @@ export class User {
 
   @Prop({required: true, default: new Date()})
   createdAt: string
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
