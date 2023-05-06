@@ -1,21 +1,28 @@
-import { IsEnum, IsNumberString, IsString, Min } from "class-validator";
-enum SortDirectionEnum {'asc', 'desc'}
+import { IsEnum, IsOptional, IsString, Validate } from 'class-validator';
+import { CustomValidation } from 'src/validation/validation';
+enum SortDirectionEnum {
+  'asc',
+  'desc',
+}
 
 export class QueryDTO {
+  @IsOptional()
   @IsString()
   sortBy: string;
 
+  @IsOptional()
   @IsEnum(SortDirectionEnum)
   sortDirection: string;
 
-  @IsNumberString()
-  @Min(1)
+  @IsOptional()
+  @Validate(CustomValidation, { message: 'pageNumber is too short!' })
   pageNumber: string;
 
+  @IsOptional()
   @IsString()
   searchNameTerm: string;
 
-  @Min(1)
+  @IsOptional()
+  @Validate(CustomValidation, { message: 'pageNumber is too short!' })
   pageSize: string;
 }
-

@@ -23,7 +23,7 @@ export class BlogRepository {
     sortDirection: string,
   ): Promise<BlogViewType[]> {
     const order = sortDirection == 'asc' ? 1 : -1;
-    return this.blogModel
+    return await this.blogModel
       .find()
       .sort({ [sortBy]: order })
       .select({ _id: 0, __v: 0 })
@@ -40,7 +40,7 @@ export class BlogRepository {
   }
 
   async getBlogById(blogId: string): Promise<any> {
-    return this.blogModel
+    return await this.blogModel
       .find({ id: blogId })
       .select({ _id: 0, __v: 0 })
       .exec();

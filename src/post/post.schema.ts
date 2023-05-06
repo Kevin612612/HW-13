@@ -90,10 +90,10 @@ export class Post {
   @Prop({ required: true, default: new Date() })
   createdAt: string;
 
-  @Prop({ type: [ExtendedLikesInfoSchema], required: true })
+  @Prop({ type: ExtendedLikesInfoSchema, required: true })
   extendedLikesInfo: any;
 
-  @Prop({ type: UserAssesSchema })
+  @Prop({ type: [UserAssesSchema] })
   userAssess: any;
 }
 
