@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/user/users.repository';
 import { BlogRepository } from './blog.repository';
 import { BlogTypeSchema, BlogViewType } from 'src/types/blog';
 import { ObjectId } from 'mongodb';
@@ -39,9 +38,10 @@ export class BlogService {
   }
 
   async createBlog(dto: BlogDTO): Promise<BlogViewType> {
+    const blogId = await this.blogRepository.createBlogId()
     const blogObject = {
       _id: new ObjectId(),
-      id: '1010',
+      id: blogId,
       name: dto.name,
       description: dto.description,
       websiteUrl: dto.websiteUrl,
