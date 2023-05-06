@@ -26,6 +26,11 @@ export class BlogRepository {
     return this.blogModel.find({id: blogId}).select({_id: 0, __v: 0}).exec();
   }
 
+  async updateBlogById(blogId: string): Promise<number> {
+    const result =  await this.blogModel.updateOne({id: blogId})
+    return result.modifiedCount
+  }
+
   async deleteBlogById(blogId: string): Promise<number> {
     const result = await this.blogModel.deleteOne({ id: blogId });
     return result.deletedCount;

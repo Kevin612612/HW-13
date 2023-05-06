@@ -7,6 +7,7 @@ import {
   Delete,
   Param,
   Query,
+  Put,
 } from '@nestjs/common';
 import { BlogDTO } from 'src/dto/blog.dto';
 import { BlogService } from './blog.service';
@@ -29,6 +30,11 @@ export class BlogController {
   @Get('/:blogId')
   async getBlogById(@Param() params: { blogId: string }) {
     return await this.blogService.getBlogById(params.blogId);
+  }
+
+  @Put('/:blogId')
+  async updateBlogById(@Param() params: { blogId: string }) {
+    return await this.blogService.updateBlogById(params.blogId)
   }
 
   @Delete('/:blogId')

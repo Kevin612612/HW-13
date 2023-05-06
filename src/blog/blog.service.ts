@@ -47,18 +47,25 @@ export class BlogService {
       websiteUrl: dto.websiteUrl,
       createdAt: new Date(),
       isMembership: true,
-    };    
-    const createdBlog = await this.blogRepository.createBlog(blogObject);    
-    const { _id, __v, ...blogWithout_id } = createdBlog.toObject()
+    };
+    const createdBlog = await this.blogRepository.createBlog(blogObject);
+    const { _id, __v, ...blogWithout_id } = createdBlog.toObject();
     return blogWithout_id;
   }
 
   async getBlogById(blogId: string): Promise<any> {
-    return await this.blogRepository.getBlogById(blogId)
+    return await this.blogRepository.getBlogById(blogId);
+  }
+
+  async updateBlogById(blogId: string): Promise<any> {
+    const result = await this.blogRepository.updateBlogById(blogId);
+    return result
+      ? { status: 204, error: 'Blog was updated' }
+      : { status: 404, error: 'Blog not found' };
   }
 
   async deleteBlog(blogId: string): Promise<any> {
-    const result = await this.blogRepository.deleteBlogById(blogId); // 0 || 1
+    const result = await this.blogRepository.deleteBlogById(blogId);
     return result
       ? { status: 204, error: 'Blog was deleted' }
       : { status: 404, error: 'Blog not found' };
