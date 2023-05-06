@@ -12,13 +12,14 @@ import {
 import { BlogDTO } from 'src/dto/blog.dto';
 import { BlogService } from './blog.service';
 import { QueryDTO } from 'src/dto/query.dto';
+import { BlogTypeSchema } from 'src/types/blog';
 
 @Controller('blogs')
 export class BlogController {
   constructor(@Inject(BlogService) protected blogService: BlogService) {}
 
   @Get()
-  async getAllBlogs(@Query() query: QueryDTO) {
+  async getAllBlogs(@Query() query: QueryDTO): Promise<BlogTypeSchema> {
     return await this.blogService.findAll(query);
   }
 

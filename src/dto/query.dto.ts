@@ -1,4 +1,4 @@
-import { IsEnum, IsNumberString, IsString, Min, isString } from "class-validator";
+import { IsEnum, IsNumberString, IsString, Min } from "class-validator";
 enum SortDirectionEnum {'asc', 'desc'}
 
 export class QueryDTO {

@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDTO } from 'src/dto/user.dto';
+import { UserTypeSchema } from 'src/types/users';
 
 @Controller('users') 
 export class UsersController {
   constructor(@Inject(UsersService) protected userService: UsersService) {}
 
   @Get()
-  async getAll() {
+  async getAll(): Promise<UserTypeSchema> {
     return await this.userService.findAll();
   }
 

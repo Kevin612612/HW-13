@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 //BLOG VIEW TYPE
 export type BlogViewType = {
   id: string;
