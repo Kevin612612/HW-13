@@ -15,9 +15,10 @@ export class UsersService {
   }
 
   async createUser(dto: UserDTO): Promise<UserViewType> {
+    const userId = await this.userRepository.createUserId()
     const userObject = {
       _id: new ObjectId(),
-      id: '1010',
+      id: userId,
       login: dto.login,
       password: dto.password,
       email: dto.email,

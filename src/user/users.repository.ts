@@ -7,6 +7,16 @@ import { Model } from 'mongoose';
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
+  async createUserId() {
+    let userId = 1;
+    while (userId) {
+      let user = await this.userModel.findOne({ id: userId.toString() });
+      if (!user) {break}
+      userId++;
+    }
+    return userId.toString();
+  }
+
   async findAll(): Promise<User[]> {
     return await this.userModel.find().exec();
   }
