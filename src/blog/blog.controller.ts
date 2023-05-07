@@ -1,11 +1,13 @@
 import { Controller, Inject, Get, Post, Body, Delete, Param, Query, Put } from '@nestjs/common';
-import { BlogDTO } from 'src/dto/blog.dto';
+import { BlogDTO } from '../dto/blog.dto';
+import { BlogIdDTO } from '../dto/id.dto';
+import { PostDTO } from '../dto/post.dto';
+import { QueryDTO } from '../dto/query.dto';
+import { PostService } from '../post/post.service';
+import { BlogTypeSchema } from '../types/blog';
 import { BlogService } from './blog.service';
-import { QueryDTO } from 'src/dto/query.dto';
-import { BlogTypeSchema } from 'src/types/blog';
-import { PostService } from 'src/post/post.service';
-import { PostDTO } from 'src/dto/post.dto';
-import { BlogIdDTO } from 'src/dto/id.dto';
+
+
 
 @Controller('blogs')
 export class BlogController {

@@ -1,4 +1,5 @@
 {
     "workbench.colorTheme": "Webstorm IntelliJ Darcula Theme",
-    "workbench.editor.decorations.colors": true
+    "workbench.editor.decorations.colors": true,
+    "typescript.preferences.importModuleSpecifier": "relative"
 }

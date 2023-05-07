@@ -1,6 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
-import { BlogRepository } from 'src/blog/blog.repository';
+import { BlogRepository } from '../blog/blog.repository';
+
 
 @ValidatorConstraint({ name: 'customValidation', async: false })
 export class CustomValidation implements ValidatorConstraintInterface {

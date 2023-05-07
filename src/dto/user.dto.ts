@@ -1,4 +1,4 @@
-import { Length, Matches, MaxLength, MinLength } from 'class-validator';
+import { Length, Matches } from 'class-validator';
 
 export class UserDTO {
   @Length(3, 10)

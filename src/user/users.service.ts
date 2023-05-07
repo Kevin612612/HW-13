@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserDTO } from 'src/dto/user.dto';
 import { ObjectId } from 'mongodb';
-import { UserViewType } from 'src/types/users';
+import { UserDTO } from '../dto/user.dto';
+import { UserViewType } from '../types/users';
 import { UserRepository } from './users.repository';
+
 
 @Injectable()
 export class UsersService {

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from './blog.schema';
 import { Model } from 'mongoose';
-import { BlogViewType } from 'src/types/blog';
+import { Blog, BlogDocument } from './blog.schema';
+import { BlogViewType } from '../types/blog';
+
 
 @Injectable()
 export class BlogRepository {

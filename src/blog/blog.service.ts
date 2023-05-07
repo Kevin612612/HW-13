@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { BlogRepository } from './blog.repository';
-import { BlogTypeSchema, BlogViewType } from 'src/types/blog';
 import { ObjectId } from 'mongodb';
-import { BlogDTO } from 'src/dto/blog.dto';
-import { QueryDTO } from 'src/dto/query.dto';
+import { BlogDTO } from '../dto/blog.dto';
+import { QueryDTO } from '../dto/query.dto';
+import { BlogTypeSchema, BlogViewType } from '../types/blog';
+import { BlogRepository } from './blog.repository';
+
 
 @Injectable()
 export class BlogService {

@@ -3,20 +3,21 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
-import { UsersController } from './user/users.controller';
 import { AppService } from './app.service';
-import { UsersService } from './user/users.service';
-import { User, UserSchema } from './user/users.schema';
-import { UserRepository } from './user/users.repository';
 import { BlogController } from './blog/blog.controller';
 import { BlogRepository } from './blog/blog.repository';
-import { BlogService } from './blog/blog.service';
 import { Blog, BlogSchema } from './blog/blog.schema';
-import { PostRepository } from './post/post.repository';
-import { PostService } from './post/post.service';
+import { BlogService } from './blog/blog.service';
 import { PostController } from './post/post.controller';
+import { PostRepository } from './post/post.repository';
 import { Post, PostSchema } from './post/post.schema';
+import { PostService } from './post/post.service';
+import { UsersController } from './user/users.controller';
+import { UserRepository } from './user/users.repository';
+import { User, UserSchema } from './user/users.schema';
+import { UsersService } from './user/users.service';
 import { BlogExistsValidation } from './validation/validation';
+
 
 //root module
 @Module({

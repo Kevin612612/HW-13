@@ -1,8 +1,9 @@
 import { Controller, Inject, Get, Post, Body, Delete, Param, Query, Put } from '@nestjs/common';
-import { PostDTO } from 'src/dto/post.dto';
-import { QueryDTO } from 'src/dto/query.dto';
-import { PostsTypeSchema } from 'src/types/post';
+import { PostDTO } from '../dto/post.dto';
+import { QueryDTO } from '../dto/query.dto';
+import { PostsTypeSchema } from '../types/post';
 import { PostService } from './post.service';
+
 
 @Controller('posts')
 export class PostController {

@@ -7,9 +7,10 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
+import { UserDTO } from '../dto/user.dto';
+import { UserTypeSchema } from '../types/users';
 import { UsersService } from './users.service';
-import { UserTypeSchema } from 'src/types/users';
-import { UserDTO } from 'src/dto/user.dto';
+
 
 @Controller('users') 
 export class UsersController {

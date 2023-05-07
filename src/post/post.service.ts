@@ -1,10 +1,11 @@
-import { BlogRepository } from './../blog/blog.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { QueryDTO } from 'src/dto/query.dto';
-import { PostViewType, PostsTypeSchema } from 'src/types/post';
-import { PostDTO } from 'src/dto/post.dto';
+import { BlogRepository } from '../blog/blog.repository';
+import { PostDTO } from '../dto/post.dto';
+import { QueryDTO } from '../dto/query.dto';
+import { PostsTypeSchema, PostViewType } from '../types/post';
 import { PostRepository } from './post.repository';
+
 
 @Injectable()
 export class PostService {
