@@ -25,7 +25,7 @@ export class PostRepository {
     return await this.postModel
       .find(filter)
       .sort({ [sortBy]: order })
-      .select({ _id: 0, __v: 0, 'extendedLikesInfo._id': 0 })
+      .select({ _id: 0, __v: 0, 'extendedLikesInfo._id': 0, userAssess: 0 })
       .exec();
   }
 
@@ -39,7 +39,10 @@ export class PostRepository {
   }
 
   async getPostById(postId: string): Promise<any> {
-    return this.postModel.find({ id: postId }).select({ _id: 0, __v: 0, userAssess: 0 }).exec();
+    return this.postModel
+      .findOne({ id: postId })
+      .select({ _id: 0, __v: 0, userAssess: 0, 'extendedLikesInfo._id': 0 })
+      .exec();
   }
 
   async updatePostById(postId: string): Promise<number> {

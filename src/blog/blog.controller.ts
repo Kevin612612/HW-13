@@ -7,8 +7,6 @@ import { PostService } from '../post/post.service';
 import { BlogTypeSchema } from '../types/blog';
 import { BlogService } from './blog.service';
 
-
-
 @Controller('blogs')
 export class BlogController {
   constructor(
@@ -27,7 +25,7 @@ export class BlogController {
   }
 
   @Get('/:blogId/posts')
-  async getPostsByBlogId(@Param() params: { blogId: string }, @Query() query: QueryDTO) {
+  async getPostsByBlogId(@Param() params: BlogIdDTO, @Query() query: QueryDTO) {
     return await this.postService.findAll(params.blogId, query);
   }
 
