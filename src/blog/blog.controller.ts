@@ -46,32 +46,17 @@ export class BlogController {
   }
 
   @Get('/:blogId')
-  async getBlogById(@Param() params: BlogIdDTO, @Res() res: Response) {
-    const blog = await this.blogService.getBlogById(params.blogId);
-    if (!blog) {
-      res.sendStatus(404);
-      return 'blog not found';
-    }
+  async getBlogById(@Param() params: BlogIdDTO) {
     return await this.blogService.getBlogById(params.blogId);
   }
 
   @Put('/:blogId')
-  async updateBlogById(@Param() params: BlogIdDTO, @Res() res: Response) {
-    const blog = await this.blogService.getBlogById(params.blogId);
-    if (!blog) {
-      res.sendStatus(404);
-      return 'blog not found';
-    }
+  async updateBlogById(@Param() params: BlogIdDTO) {
     return await this.blogService.updateBlogById(params.blogId);
   }
 
   @Delete('/:blogId')
-  async deleteBlog(@Param() params: BlogIdDTO, @Res() res: Response) {
-    const blog = await this.blogService.getBlogById(params.blogId);
-    if (!blog) {
-      res.sendStatus(404);
-      return 'blog not found';
-    }
+  async deleteBlog(@Param() params: BlogIdDTO) {
     return await this.blogService.deleteBlog(params.blogId);
   }
 }
