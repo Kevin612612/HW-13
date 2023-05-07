@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from './post.schema';
 
-
 @Injectable()
 export class PostRepository {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
@@ -21,12 +20,12 @@ export class PostRepository {
   }
 
   async findAll(blogId: string, sortBy: string, sortDirection: string): Promise<any[]> {
-    const filter = blogId ? { blogId: blogId } : {}
+    const filter = blogId ? { blogId: blogId } : {};
     const order = sortDirection == 'asc' ? 1 : -1;
     return await this.postModel
       .find(filter)
       .sort({ [sortBy]: order })
-      .select({ _id: 0, __v: 0, 'extendedLikesInfo._id': 0})
+      .select({ _id: 0, __v: 0, 'extendedLikesInfo._id': 0 })
       .exec();
   }
 
@@ -40,7 +39,7 @@ export class PostRepository {
   }
 
   async getPostById(postId: string): Promise<any> {
-    return this.postModel.find({ id: postId }).select({ _id: 0, __v: 0 }).exec();
+    return this.postModel.find({ id: postId }).select({ _id: 0, __v: 0, userAssess: 0 }).exec();
   }
 
   async updatePostById(postId: string): Promise<number> {

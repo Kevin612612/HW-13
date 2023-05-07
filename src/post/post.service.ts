@@ -49,7 +49,7 @@ export class PostService {
       content: dto.content,
       blogId: blogId,
       blogName: blog.name,
-      createdAt: new Date(),
+      createdAt: (new Date()).toISOString(),
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,
@@ -59,7 +59,7 @@ export class PostService {
       userAssess: [],
     };
     const createdPost = await this.postRepository.createPost(postObject);
-    const { _id, ...postWithout_id } = postObject;
+    const { _id, userAssess, ...postWithout_id } = postObject;
     return postWithout_id;
   }
 

@@ -87,7 +87,7 @@ export class Post {
   })
   blogName: string;
 
-  @Prop({ required: true, default: new Date() })
+  @Prop({ required: true, default: (new Date()).toISOString() })
   createdAt: string;
 
   @Prop({ type: ExtendedLikesInfoSchema, required: true })

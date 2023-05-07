@@ -2,13 +2,13 @@ import { ObjectId } from 'mongodb';
 
 type CodeDataType = {
   code: string;
-  sentAt: Date;
+  sentAt: string;
 };
 
 type TokenType = {
   value: string;
-  createdAt: Date;
-  expiredAt: Date;
+  createdAt: string;
+  expiredAt: string;
 };
 
 export type UserAccountDataType = {

@@ -24,7 +24,7 @@ export class User {
   @Prop({required: true, default: 'No email', matches: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$'})
   email: string
 
-  @Prop({required: true, default: new Date()})
+  @Prop({required: true, default: (new Date()).toISOString()})
   createdAt: string
 }
 

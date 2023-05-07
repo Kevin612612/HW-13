@@ -33,7 +33,7 @@ export class Blog {
   })
   websiteUrl: string;
 
-  @Prop({ required: true, default: new Date() })
+  @Prop({ required: true, default: (new Date()).toISOString() })
   createdAt: string;
 
   @Prop({ required: true, default: false})

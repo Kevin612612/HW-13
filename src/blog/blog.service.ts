@@ -46,8 +46,8 @@ export class BlogService {
       name: dto.name,
       description: dto.description,
       websiteUrl: dto.websiteUrl,
-      createdAt: new Date(),
-      isMembership: true,
+      createdAt: (new Date()).toISOString(),
+      isMembership: false,
     };
     const createdBlog = await this.blogRepository.createBlog(blogObject);
     const { _id, __v, ...blogWithout_id } = createdBlog.toObject();

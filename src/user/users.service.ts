@@ -23,7 +23,7 @@ export class UsersService {
       login: dto.login,
       password: dto.password,
       email: dto.email,
-      createdAt: new Date(),
+      createdAt: (new Date()).toISOString(),
     };
     const createdUser = await this.userRepository.createUser(userObject);
     const { _id, password, __v, ...userWithoutPassword } = createdUser.toObject();
