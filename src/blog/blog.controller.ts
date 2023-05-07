@@ -5,6 +5,7 @@ import { QueryDTO } from 'src/dto/query.dto';
 import { BlogTypeSchema } from 'src/types/blog';
 import { PostService } from 'src/post/post.service';
 import { PostDTO } from 'src/dto/post.dto';
+import { BlogIdDTO } from 'src/dto/id.dto';
 
 @Controller('blogs')
 export class BlogController {
@@ -29,7 +30,7 @@ export class BlogController {
   }
 
   @Post('/:blogId/posts')
-  async createPostByBlogId(@Param() params: { blogId: string }, @Body() dto: PostDTO) {
+  async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO) {
     return await this.postService.createPost(params.blogId, dto);
   }
 

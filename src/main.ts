@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   //create app
@@ -9,9 +10,12 @@ async function bootstrap() {
   app.enableCors();
   //binding ValidationPipe at the application level
   app.useGlobalPipes(new ValidationPipe());
+  //container is used by class-validor library
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
   //start app
   await app.listen(process.env.PORT, () => {
     console.log(`app listening on port ${process.env.PORT}`);
   });
 }
 bootstrap();
+

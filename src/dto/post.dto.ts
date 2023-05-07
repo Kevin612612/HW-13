@@ -1,16 +1,13 @@
-import { IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsOptional, Length } from 'class-validator';
 
 export class PostDTO {
-  @MinLength(1)
-  @MaxLength(30)
+  @Length(1, 30)
   title: string;
 
-  @MinLength(1)
-  @MaxLength(100)
+  @Length(1, 100)
   shortDescription: string;
 
-  @MinLength(1)
-  @MaxLength(1000)
+  @Length(1, 1000)
   content: string;
 
   @IsOptional()

@@ -47,7 +47,7 @@ export class PostService {
       shortDescription: dto.shortDescription,
       content: dto.content,
       blogId: blogId,
-      blogName: blog[0].name,
+      blogName: blog.name,
       createdAt: new Date(),
       extendedLikesInfo: {
         likesCount: 0,

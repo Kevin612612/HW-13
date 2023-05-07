@@ -1,13 +1,11 @@
-import { Matches, MaxLength, MinLength } from 'class-validator';
+import { Length, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class UserDTO {
-  @MinLength(3)
-  @MaxLength(10)
+  @Length(3, 10)
   @Matches('^[a-zA-Z0-9_-]*$')
   login: string;
 
-  @MinLength(6)
-  @MaxLength(20)
+  @Length(6, 20)
   password: string;
 
   @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')

@@ -1,16 +1,13 @@
-import { Matches, MaxLength, MinLength } from "class-validator";
+import { Length, Matches } from "class-validator";
 
 export class BlogDTO {
-  @MinLength(1)
-  @MaxLength(15)
+  @Length(1, 15)
   name: string;
 
-  @MinLength(1)
-  @MaxLength(500)
+  @Length(1, 500)
   description: string;
   
-  @MinLength(1)
-  @MaxLength(100)
+  @Length(1, 100)
   @Matches('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$')
   websiteUrl: string;
 }

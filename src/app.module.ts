@@ -16,6 +16,7 @@ import { PostRepository } from './post/post.repository';
 import { PostService } from './post/post.service';
 import { PostController } from './post/post.controller';
 import { Post, PostSchema } from './post/post.schema';
+import { BlogExistsValidation } from './validation/validation';
 
 //root module
 @Module({
@@ -37,6 +38,7 @@ import { Post, PostSchema } from './post/post.schema';
     BlogRepository,
     PostService,
     PostRepository,
+    BlogExistsValidation,
   ],
 })
 export class AppModule {
