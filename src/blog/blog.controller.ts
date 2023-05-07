@@ -1,4 +1,4 @@
-import { Controller, Inject, Get, Post, Body, Delete, Param, Query, Put } from '@nestjs/common';
+import { Controller, Inject, Get, Post, Body, Delete, Param, Query, Put, Res } from '@nestjs/common';
 import { BlogDTO } from '../dto/blog.dto';
 import { BlogIdDTO } from '../dto/id.dto';
 import { PostDTO } from '../dto/post.dto';
@@ -6,6 +6,7 @@ import { QueryDTO } from '../dto/query.dto';
 import { PostService } from '../post/post.service';
 import { BlogTypeSchema } from '../types/blog';
 import { BlogService } from './blog.service';
+import { Response } from 'express';
 
 @Controller('blogs')
 export class BlogController {
@@ -25,27 +26,52 @@ export class BlogController {
   }
 
   @Get('/:blogId/posts')
-  async getPostsByBlogId(@Param() params: BlogIdDTO, @Query() query: QueryDTO) {
+  async getPostsByBlogId(@Param() params: BlogIdDTO, @Query() query: QueryDTO, @Res() res: Response) {
+    const blog = await this.blogService.getBlogById(params.blogId);
+    if (!blog) {
+      res.sendStatus(404);
+      return 'blog not found';
+    }
     return await this.postService.findAll(params.blogId, query);
   }
 
   @Post('/:blogId/posts')
-  async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO) {
+  async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO, @Res() res: Response) {
+    const blog = await this.blogService.getBlogById(params.blogId);
+    if (!blog) {
+      res.sendStatus(404);
+      return 'blog not found';
+    }
     return await this.postService.createPost(params.blogId, dto);
   }
 
   @Get('/:blogId')
-  async getBlogById(@Param() params: { blogId: string }) {
+  async getBlogById(@Param() params: BlogIdDTO, @Res() res: Response) {
+    const blog = await this.blogService.getBlogById(params.blogId);
+    if (!blog) {
+      res.sendStatus(404);
+      return 'blog not found';
+    }
     return await this.blogService.getBlogById(params.blogId);
   }
 
   @Put('/:blogId')
-  async updateBlogById(@Param() params: { blogId: string }) {
+  async updateBlogById(@Param() params: BlogIdDTO, @Res() res: Response) {
+    const blog = await this.blogService.getBlogById(params.blogId);
+    if (!blog) {
+      res.sendStatus(404);
+      return 'blog not found';
+    }
     return await this.blogService.updateBlogById(params.blogId);
   }
 
   @Delete('/:blogId')
-  async deleteBlog(@Param() params: { blogId: string }) {
+  async deleteBlog(@Param() params: BlogIdDTO, @Res() res: Response) {
+    const blog = await this.blogService.getBlogById(params.blogId);
+    if (!blog) {
+      res.sendStatus(404);
+      return 'blog not found';
+    }
     return await this.blogService.deleteBlog(params.blogId);
   }
 }
