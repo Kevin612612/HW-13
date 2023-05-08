@@ -55,7 +55,7 @@ export class BlogService {
     return blogWithout_id;
   }
 
-  async getBlogById(blogId: string): Promise<boolean> {
+  async getBlogById(blogId: string): Promise<any> {
     return await this.blogRepository.getBlogById(blogId);
   }
 

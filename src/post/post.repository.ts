@@ -42,7 +42,7 @@ export class PostRepository {
   }
 
   async getPostById(postId: string): Promise<any> {
-    return this.postModel
+    return await this.postModel
       .findOne({ id: postId })
       .select({ _id: 0, __v: 0, userAssess: 0, 'extendedLikesInfo._id': 0 })
       .exec();

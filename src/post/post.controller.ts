@@ -28,8 +28,13 @@ export class PostController {
   }
 
   @Get('/:postId')
-  async getPostById(@Param() params: PostIdDTO) {
-    return await this.postService.getPostById(params.postId);
+  async getPostById(@Param() params: PostIdDTO, @Res() res: Response) {
+    const post = await this.postService.getPostById(params.postId);
+    if (!post) {
+      res.sendStatus(404);
+    } else {
+      res.send(post);
+    }
   }
 
   @Put('/:postId')

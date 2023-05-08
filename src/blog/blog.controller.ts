@@ -44,8 +44,13 @@ export class BlogController {
   }
 
   @Get('/:blogId')
-  async getBlogById(@Param() params: BlogIdDTO) {
-    return await this.blogService.getBlogById(params.blogId);
+  async getBlogById(@Param() params: BlogIdDTO, @Res() res: Response) {
+    const blog = await this.blogService.getBlogById(params.blogId);
+    if (!blog) {
+      res.sendStatus(404);
+    } else {
+      res.send(blog);
+    }
   }
 
   @Put('/:blogId')
