@@ -23,6 +23,7 @@ export class BlogService {
     const blogs = await this.blogRepository.findAll(
       pageParams.sortBy,
       pageParams.sortDirection,
+      pageParams.searchNameTerm
     );
     const quantityOfDocs = await this.blogRepository.countAllBlogs({});
 

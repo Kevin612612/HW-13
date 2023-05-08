@@ -22,10 +22,12 @@ export class BlogRepository {
   async findAll(
     sortBy: string,
     sortDirection: string,
+    searchNameTerm: string
   ): Promise<BlogViewType[]> {
     const order = sortDirection == 'asc' ? 1 : -1;
+    const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {}
     return await this.blogModel
-      .find()
+      .find(filter)
       .sort({ [sortBy]: order })
       .select({ _id: 0, __v: 0 })
       .exec();
