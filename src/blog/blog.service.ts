@@ -55,20 +55,17 @@ export class BlogService {
     return blogWithout_id;
   }
 
-  async getBlogById(blogId: string): Promise<any> {
+  async getBlogById(blogId: string): Promise<boolean> {
     return await this.blogRepository.getBlogById(blogId);
   }
 
-  async updateBlogById(blogId: string): Promise<any> {
-    const result = await this.blogRepository.updateBlogById(blogId);
-    return result
-      ? { status: 204, error: 'Blog was updated' }
-      : { status: 404, error: 'Blog not found' };
+  async updateBlogById(blogId: string, blog: BlogDTO): Promise<number> {
+    return await this.blogRepository.updateBlogById(blogId, blog);
   }
 
   async deleteBlog(blogId: string): Promise<any> {
     const result = await this.blogRepository.deleteBlogById(blogId);
-    return result
+    return result 
       ? { status: 204, error: 'Blog was deleted' }
       : { status: 404, error: 'Blog not found' };
   }

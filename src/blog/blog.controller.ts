@@ -39,7 +39,7 @@ export class BlogController {
   async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO, @Res() res: Response) {
     const blog = await this.blogRepository.getBlogById(params.blogId);
     if (!blog) res.sendStatus(404);
-    const result =  await this.postService.createPost(params.blogId, dto);
+    const result = await this.postService.createPost(params.blogId, dto);
     res.send(result);
   }
 
@@ -49,8 +49,13 @@ export class BlogController {
   }
 
   @Put('/:blogId')
-  async updateBlogById(@Param() params: BlogIdDTO) {
-    return await this.blogService.updateBlogById(params.blogId);
+  async updateBlogById(@Param() params: BlogIdDTO, @Body() blog: BlogDTO, @Res() res: Response) {
+    const result = await this.blogService.updateBlogById(params.blogId, blog);
+    if (!result) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204);
+    }
   }
 
   @Delete('/:blogId')

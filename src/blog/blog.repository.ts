@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument } from './blog.schema';
 import { BlogViewType } from '../types/blog';
-
+import { BlogDTO } from '../dto/blog.dto';
 
 @Injectable()
 export class BlogRepository {
@@ -13,19 +13,17 @@ export class BlogRepository {
     let blogId = 1;
     while (blogId) {
       let blog = await this.blogModel.findOne({ id: blogId.toString() });
-      if (!blog) {break}
+      if (!blog) {
+        break;
+      }
       blogId++;
     }
     return blogId.toString();
   }
 
-  async findAll(
-    sortBy: string,
-    sortDirection: string,
-    searchNameTerm: string
-  ): Promise<BlogViewType[]> {
+  async findAll(sortBy: string, sortDirection: string, searchNameTerm: string): Promise<BlogViewType[]> {
     const order = sortDirection == 'asc' ? 1 : -1;
-    const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {}
+    const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
     return await this.blogModel
       .find(filter)
       .sort({ [sortBy]: order })
@@ -34,7 +32,7 @@ export class BlogRepository {
   }
 
   async countAllBlogs(searchNameTerm: string) {
-    const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {}
+    const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
     return await this.blogModel.countDocuments(filter);
   }
 
@@ -44,14 +42,21 @@ export class BlogRepository {
   }
 
   async getBlogById(blogId: string): Promise<any> {
-    return await this.blogModel
-      .findOne({ id: blogId })
-      .select({ _id: 0, __v: 0 })
-      .exec();
+    return await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).exec();
   }
 
-  async updateBlogById(blogId: string): Promise<any> {
-    return await this.blogModel.findOneAndUpdate({ id: blogId });;
+  async updateBlogById(blogId: string, blog: BlogDTO): Promise<any> {
+    const result = await this.blogModel.updateOne(
+      { id: blogId },
+      {
+        $set: {
+          name: blog.name,
+          description: blog.description,
+          websiteUrl: blog.websiteUrl,
+        },
+      },
+    );
+    return result.modifiedCount;
   }
 
   async deleteBlogById(blogId: string): Promise<number> {
