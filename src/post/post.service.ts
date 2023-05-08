@@ -66,13 +66,11 @@ export class PostService {
     return await this.postRepository.getPostById(postId);
   }
 
-  async updatePostById(postId: string): Promise<any> {
-    const result = await this.postRepository.updatePostById(postId);
-    return result ? { status: 204, error: 'Post was updated' } : { status: 404, error: 'Post not found' };
+  async updatePostById(postId: string, post: PostDTO): Promise<number> {
+    return await this.postRepository.updatePostById(postId, post);
   }
 
-  async deletePost(postId: string): Promise<any> {
-    const result = await this.postRepository.deletePostById(postId);
-    return result ? { status: 204, error: 'Post was deleted' } : { status: 404, error: 'Post not found' };
+  async deletePost(postId: string): Promise<number> {
+    return await this.postRepository.deletePostById(postId);
   }
 }

@@ -59,7 +59,12 @@ export class BlogController {
   }
 
   @Delete('/:blogId')
-  async deleteBlog(@Param() params: BlogIdDTO) {
-    return await this.blogService.deleteBlog(params.blogId);
+  async deleteBlog(@Param() params: BlogIdDTO, @Res() res: Response) {
+    const result = await this.blogService.deleteBlog(params.blogId);
+    if (!result) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204);
+    }
   }
 }

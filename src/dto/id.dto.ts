@@ -6,3 +6,8 @@ export class BlogIdDTO {
     // @Validate(BlogExistsValidation, { message: 'blog doesn\'t exist' })
     blogId: string;
   }
+
+  export class PostIdDTO {
+    @IsDefined()
+    postId: string;
+  }

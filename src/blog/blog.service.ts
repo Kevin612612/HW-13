@@ -63,10 +63,7 @@ export class BlogService {
     return await this.blogRepository.updateBlogById(blogId, blog);
   }
 
-  async deleteBlog(blogId: string): Promise<any> {
-    const result = await this.blogRepository.deleteBlogById(blogId);
-    return result 
-      ? { status: 204, error: 'Blog was deleted' }
-      : { status: 404, error: 'Blog not found' };
+  async deleteBlog(blogId: string): Promise<number> {
+    return await this.blogRepository.deleteBlogById(blogId);
   }
 }

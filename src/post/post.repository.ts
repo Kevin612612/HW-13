@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from './post.schema';
+import { PostDTO } from '../dto/post.dto';
+import { PostViewType } from '../types/post';
 
 @Injectable()
 export class PostRepository {
@@ -19,7 +21,7 @@ export class PostRepository {
     return postId.toString();
   }
 
-  async findAll(blogId: string, sortBy: string, sortDirection: string): Promise<any[]> {
+  async findAll(blogId: string, sortBy: string, sortDirection: string): Promise<PostViewType[]> {
     const filter = blogId ? { blogId: blogId } : {};
     const order = sortDirection == 'asc' ? 1 : -1;
     return await this.postModel
@@ -29,7 +31,8 @@ export class PostRepository {
       .exec();
   }
 
-  async countAllPosts(filter: any) {
+  async countAllPosts(searchNameTerm: any) {
+    const filter = searchNameTerm ? { title: { $regex: searchNameTerm, $options: 'i' } } : {};
     return await this.postModel.countDocuments(filter);
   }
 
@@ -45,8 +48,18 @@ export class PostRepository {
       .exec();
   }
 
-  async updatePostById(postId: string): Promise<number> {
-    const result = await this.postModel.updateOne({ id: postId });
+  async updatePostById(postId: string, post: PostDTO): Promise<number> {
+    const result = await this.postModel.updateOne(
+      { id: postId },
+      {
+        $set: {
+          content: post.content,
+          shortDescription: post.shortDescription,
+          title: post.title,
+          blogId: post.blogId,
+        },
+      },
+    );
     return result.modifiedCount;
   }
 
