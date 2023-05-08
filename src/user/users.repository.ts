@@ -19,9 +19,12 @@ export class UserRepository {
     return userId.toString();
   }
 
-  async findAll(sortBy: string, sortDirection: string, searchNameTerm: string): Promise<User[]> {
+  async findAll(filter: any,
+    sortBy: string,
+    sortDirection: string,
+  ): Promise<User[]> {
     const order = sortDirection == 'asc' ? 1 : -1;
-    const filter = searchNameTerm ? { login: { $regex: searchNameTerm, $options: 'i' } } : {};
+    
     return await this.userModel
       .find(filter)
       .sort({ [sortBy]: order })
@@ -29,8 +32,7 @@ export class UserRepository {
       .exec();
   }
 
-  async countAllUsers(searchNameTerm: string) {
-    const filter = searchNameTerm ? { login: { $regex: searchNameTerm, $options: 'i' } } : {};
+  async countAllUsers(filter: any) {
     return await this.userModel.countDocuments(filter);
   }
 

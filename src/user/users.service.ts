@@ -3,29 +3,55 @@ import { ObjectId } from 'mongodb';
 import { UserDTO } from '../dto/user.dto';
 import { UserTypeSchema, UserViewType } from '../types/users';
 import { UserRepository } from './users.repository';
-import { QueryDTO } from '../dto/query.dto';
-
+import { QueryUserDTO } from '../dto/query.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @Inject(UserRepository) protected userRepository: UserRepository,
-  ) {}
+  constructor(@Inject(UserRepository) protected userRepository: UserRepository) {}
 
-  async findAll(query: QueryDTO): Promise<UserTypeSchema> {
+  async findAll(query: QueryUserDTO): Promise<UserTypeSchema> {
     const pageParams = {
       sortBy: query.sortBy || 'createdAt',
       sortDirection: query.sortDirection || 'desc',
       pageNumber: query.pageNumber || 1,
-      searchNameTerm: query.searchNameTerm || '',
+      searchLoginTerm: query.searchLoginTerm || '',
+      searchEmailTerm: query.searchEmailTerm || '',
       pageSize: query.pageSize || 10,
     };
-    const users = await this.userRepository.findAll(
-      pageParams.sortBy,
-      pageParams.sortDirection,
-      pageParams.searchNameTerm
-    );
-    const quantityOfDocs = await this.userRepository.countAllUsers(pageParams.searchNameTerm);
+    const filter = pageParams.searchLoginTerm
+      ? pageParams.searchEmailTerm
+        ? {
+            $or: [
+              {
+                login: {
+                  $regex: pageParams.searchLoginTerm,
+                  $options: 'i',
+                },
+              },
+              {
+                email: {
+                  $regex: pageParams.searchEmailTerm,
+                  $options: 'i',
+                },
+              },
+            ],
+          }
+        : {
+            login: {
+              $regex: pageParams.searchLoginTerm,
+              $options: 'i',
+            },
+          }
+      : pageParams.searchEmailTerm
+      ? {
+          email: {
+            $regex: pageParams.searchEmailTerm,
+            $options: 'i',
+          },
+        }
+      : {};
+    const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
+    const quantityOfDocs = await this.userRepository.countAllUsers(filter);
 
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
@@ -40,24 +66,21 @@ export class UsersService {
   }
 
   async createUser(dto: UserDTO): Promise<UserViewType> {
-    const userId = await this.userRepository.createUserId()
+    const userId = await this.userRepository.createUserId();
     const userObject = {
       _id: new ObjectId(),
       id: userId,
       login: dto.login,
       password: dto.password,
       email: dto.email,
-      createdAt: (new Date()).toISOString(),
+      createdAt: new Date().toISOString(),
     };
     const createdUser = await this.userRepository.createUser(userObject);
-    const { _id, password, ...userWithoutPassword } = userObject
+    const { _id, password, ...userWithoutPassword } = userObject;
     return userWithoutPassword;
   }
 
-  async deleteUser(userId: string): Promise<any> {
-    const result = await this.userRepository.deleteUserById(userId); // 0 || 1
-    return result
-      ? { status: 204, error: 'User was deleted' }
-      : { status: 404, error: 'User not found' };
+  async deleteUserById(userId: string): Promise<any> {
+    return await this.userRepository.deleteUserById(userId);
   }
 }

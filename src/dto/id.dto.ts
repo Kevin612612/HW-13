@@ -11,3 +11,8 @@ export class BlogIdDTO {
     @IsDefined()
     postId: string;
   }
+
+  export class UserIdDTO {
+    @IsDefined()
+    userId: string;
+  }
