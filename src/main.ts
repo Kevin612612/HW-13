@@ -3,7 +3,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 
-
 async function bootstrap() {
   //create app
   const app = await NestFactory.create(AppModule);
@@ -19,4 +18,3 @@ async function bootstrap() {
   });
 }
 bootstrap();
-

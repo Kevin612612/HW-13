@@ -33,10 +33,10 @@ export class Blog {
   })
   websiteUrl: string;
 
-  @Prop({ required: true, default: (new Date()).toISOString() })
+  @Prop({ required: true, default: new Date().toISOString() })
   createdAt: string;
 
-  @Prop({ required: true, default: false})
+  @Prop({ required: true, default: false })
   isMembership: boolean;
 }
 

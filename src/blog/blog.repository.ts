@@ -12,7 +12,7 @@ export class BlogRepository {
   async createBlogId() {
     let blogId = 1;
     while (blogId) {
-      let blog = await this.blogModel.findOne({ id: blogId.toString() });
+      const blog = await this.blogModel.findOne({ id: blogId.toString() });
       if (!blog) {
         break;
       }

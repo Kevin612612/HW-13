@@ -10,7 +10,7 @@ export class UserRepository {
   async createUserId() {
     let userId = 1;
     while (userId) {
-      let user = await this.userModel.findOne({ id: userId.toString() });
+      const user = await this.userModel.findOne({ id: userId.toString() });
       if (!user) {
         break;
       }
@@ -19,12 +19,9 @@ export class UserRepository {
     return userId.toString();
   }
 
-  async findAll(filter: any,
-    sortBy: string,
-    sortDirection: string,
-  ): Promise<User[]> {
+  async findAll(filter: any, sortBy: string, sortDirection: string): Promise<User[]> {
     const order = sortDirection == 'asc' ? 1 : -1;
-    
+
     return await this.userModel
       .find(filter)
       .sort({ [sortBy]: order })

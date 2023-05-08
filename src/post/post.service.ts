@@ -6,7 +6,6 @@ import { QueryDTO } from '../dto/query.dto';
 import { PostsTypeSchema, PostViewType } from '../types/post';
 import { PostRepository } from './post.repository';
 
-
 @Injectable()
 export class PostService {
   constructor(
@@ -22,7 +21,12 @@ export class PostService {
       searchNameTerm: query.searchNameTerm || '',
       pageSize: query.pageSize || 10,
     };
-    const posts = await this.postRepository.findAll(blogId, pageParams.searchNameTerm, pageParams.sortBy, pageParams.sortDirection);
+    const posts = await this.postRepository.findAll(
+      blogId,
+      pageParams.searchNameTerm,
+      pageParams.sortBy,
+      pageParams.sortDirection,
+    );
     const quantityOfDocs = await this.postRepository.countAllPosts(blogId, pageParams.searchNameTerm);
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
@@ -38,7 +42,7 @@ export class PostService {
 
   async createPost(blogId: string, dto: PostDTO): Promise<PostViewType> {
     const postId = await this.postRepository.createPostId();
-    const idOfBlog = blogId ? blogId : dto.blogId
+    const idOfBlog = blogId ? blogId : dto.blogId;
     const blog = await this.blogRepository.getBlogById(idOfBlog);
     const postObject = {
       _id: new ObjectId(),
@@ -48,7 +52,7 @@ export class PostService {
       content: dto.content,
       blogId: blogId,
       blogName: blog.name,
-      createdAt: (new Date()).toISOString(),
+      createdAt: new Date().toISOString(),
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,

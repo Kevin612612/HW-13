@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
 import { BlogRepository } from '../blog/blog.repository';
 
-
 @ValidatorConstraint({ name: 'customValidation', async: false })
 export class CustomValidation implements ValidatorConstraintInterface {
   validate(value: number, args: ValidationArguments) {
@@ -21,8 +20,7 @@ export class BlogExistsValidation implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const blog = await this.blogRepository.getBlogById(value);
-    if (!blog) return false
+    if (!blog) return false;
     return true;
   }
-
 }

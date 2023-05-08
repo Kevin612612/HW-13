@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Inject,
-  Param,
-  Post,
-  Query,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Query, Res } from '@nestjs/common';
 import { UserDTO } from '../dto/user.dto';
 import { UserTypeSchema } from '../types/users';
 import { UsersService } from './users.service';
@@ -16,8 +6,7 @@ import { QueryUserDTO } from '../dto/query.dto';
 import { Response } from 'express';
 import { UserIdDTO } from '../dto/id.dto';
 
-
-@Controller('users') 
+@Controller('users')
 export class UsersController {
   constructor(@Inject(UsersService) protected userService: UsersService) {}
 

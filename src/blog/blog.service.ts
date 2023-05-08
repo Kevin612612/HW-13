@@ -5,12 +5,9 @@ import { QueryDTO } from '../dto/query.dto';
 import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogRepository } from './blog.repository';
 
-
 @Injectable()
 export class BlogService {
-  constructor(
-    @Inject(BlogRepository) protected blogRepository: BlogRepository,
-  ) {}
+  constructor(@Inject(BlogRepository) protected blogRepository: BlogRepository) {}
 
   async findAll(query: QueryDTO): Promise<BlogTypeSchema> {
     const pageParams = {
@@ -23,7 +20,7 @@ export class BlogService {
     const blogs = await this.blogRepository.findAll(
       pageParams.sortBy,
       pageParams.sortDirection,
-      pageParams.searchNameTerm
+      pageParams.searchNameTerm,
     );
     const quantityOfDocs = await this.blogRepository.countAllBlogs(pageParams.searchNameTerm);
 
@@ -40,14 +37,14 @@ export class BlogService {
   }
 
   async createBlog(dto: BlogDTO): Promise<BlogViewType> {
-    const blogId = await this.blogRepository.createBlogId()
+    const blogId = await this.blogRepository.createBlogId();
     const blogObject = {
       _id: new ObjectId(),
       id: blogId,
       name: dto.name,
       description: dto.description,
       websiteUrl: dto.websiteUrl,
-      createdAt: (new Date()).toISOString(),
+      createdAt: new Date().toISOString(),
       isMembership: false,
     };
     const createdBlog = await this.blogRepository.createBlog(blogObject);

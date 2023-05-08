@@ -18,7 +18,6 @@ import { User, UserSchema } from './user/users.schema';
 import { UsersService } from './user/users.service';
 import { BlogExistsValidation } from './validation/validation';
 
-
 //root module
 @Module({
   imports: [
@@ -45,4 +44,3 @@ import { BlogExistsValidation } from './validation/validation';
 export class AppModule {
   //empty class
 }
-

@@ -20,6 +20,5 @@ describe('AppController (e2e)', () => {
   it('/ (GET)', async () => {
     const response = await request(app.getHttpServer()).get('/blogs');
     console.log(response.body);
-    
   });
 });
