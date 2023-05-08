@@ -33,7 +33,8 @@ export class BlogRepository {
       .exec();
   }
 
-  async countAllBlogs(filter: any) {
+  async countAllBlogs(searchNameTerm: string) {
+    const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {}
     return await this.blogModel.countDocuments(filter);
   }
 
@@ -49,9 +50,8 @@ export class BlogRepository {
       .exec();
   }
 
-  async updateBlogById(blogId: string): Promise<number> {
-    const result = await this.blogModel.updateOne({ id: blogId });
-    return result.modifiedCount;
+  async updateBlogById(blogId: string): Promise<any> {
+    return await this.blogModel.findOneAndUpdate({ id: blogId });;
   }
 
   async deleteBlogById(blogId: string): Promise<number> {

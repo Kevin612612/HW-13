@@ -25,7 +25,7 @@ export class BlogService {
       pageParams.sortDirection,
       pageParams.searchNameTerm
     );
-    const quantityOfDocs = await this.blogRepository.countAllBlogs({});
+    const quantityOfDocs = await this.blogRepository.countAllBlogs(pageParams.searchNameTerm);
 
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
