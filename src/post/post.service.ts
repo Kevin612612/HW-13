@@ -22,8 +22,8 @@ export class PostService {
       searchNameTerm: query.searchNameTerm || '',
       pageSize: query.pageSize || 10,
     };
-    const posts = await this.postRepository.findAll(blogId, pageParams.sortBy, pageParams.sortDirection);
-    const quantityOfDocs = await this.postRepository.countAllPosts({ blogId: blogId });
+    const posts = await this.postRepository.findAll(blogId, pageParams.searchNameTerm, pageParams.sortBy, pageParams.sortDirection);
+    const quantityOfDocs = await this.postRepository.countAllPosts(blogId, pageParams.searchNameTerm);
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
       page: +pageParams.pageNumber,

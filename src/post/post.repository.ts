@@ -21,8 +21,15 @@ export class PostRepository {
     return postId.toString();
   }
 
-  async findAll(blogId: string, sortBy: string, sortDirection: string): Promise<PostViewType[]> {
-    const filter = blogId ? { blogId: blogId } : {};
+  async findAll(
+    blogId: string,
+    searchNameTerm: string,
+    sortBy: string,
+    sortDirection: string,
+  ): Promise<PostViewType[]> {
+    const filter = blogId ? searchNameTerm? { $and: [{ blogId: blogId }, { title: { $regex: searchNameTerm, $options: 'i' } }] } 
+        : { blogId: blogId }
+        : {};
     const order = sortDirection == 'asc' ? 1 : -1;
     return await this.postModel
       .find(filter)
@@ -31,8 +38,10 @@ export class PostRepository {
       .exec();
   }
 
-  async countAllPosts(searchNameTerm: any) {
-    const filter = searchNameTerm ? { title: { $regex: searchNameTerm, $options: 'i' } } : {};
+  async countAllPosts(blogId: string, searchNameTerm: any) {
+    const filter = blogId ? searchNameTerm? { $and: [{ blogId: blogId }, { title: { $regex: searchNameTerm, $options: 'i' } }] } 
+        : { blogId: blogId }
+        : {};
     return await this.postModel.countDocuments(filter);
   }
 
