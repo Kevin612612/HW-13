@@ -6,10 +6,12 @@ import {
   Inject,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UserDTO } from '../dto/user.dto';
 import { UserTypeSchema } from '../types/users';
 import { UsersService } from './users.service';
+import { QueryDTO } from '../dto/query.dto';
 
 
 @Controller('users') 
@@ -17,8 +19,8 @@ export class UsersController {
   constructor(@Inject(UsersService) protected userService: UsersService) {}
 
   @Get()
-  async getAll(): Promise<UserTypeSchema> {
-    return await this.userService.findAll();
+  async getAll(@Query() query: QueryDTO): Promise<UserTypeSchema> {
+    return await this.userService.findAll(query);
   }
 
   @Post()

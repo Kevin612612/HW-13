@@ -11,14 +11,27 @@ export class UserRepository {
     let userId = 1;
     while (userId) {
       let user = await this.userModel.findOne({ id: userId.toString() });
-      if (!user) {break}
+      if (!user) {
+        break;
+      }
       userId++;
     }
     return userId.toString();
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userModel.find().exec();
+  async findAll(sortBy: string, sortDirection: string, searchNameTerm: string): Promise<User[]> {
+    const order = sortDirection == 'asc' ? 1 : -1;
+    const filter = searchNameTerm ? { login: { $regex: searchNameTerm, $options: 'i' } } : {};
+    return await this.userModel
+      .find(filter)
+      .sort({ [sortBy]: order })
+      .select({ _id: 0, __v: 0, password: 0 })
+      .exec();
+  }
+
+  async countAllUsers(searchNameTerm: string) {
+    const filter = searchNameTerm ? { login: { $regex: searchNameTerm, $options: 'i' } } : {};
+    return await this.userModel.countDocuments(filter);
   }
 
   async createUser(userObject: any): Promise<any> {
