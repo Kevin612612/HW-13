@@ -24,7 +24,6 @@ export class PostService {
     };
     const posts = await this.postRepository.findAll(blogId, pageParams.sortBy, pageParams.sortDirection);
     const quantityOfDocs = await this.postRepository.countAllPosts({ blogId: blogId });
-
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
       page: +pageParams.pageNumber,

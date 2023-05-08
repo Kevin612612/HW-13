@@ -1,3 +1,4 @@
+import { BlogRepository } from 'src/blog/blog.repository';
 import { Controller, Inject, Get, Post, Body, Delete, Param, Query, Put, Res } from '@nestjs/common';
 import { BlogDTO } from '../dto/blog.dto';
 import { BlogIdDTO } from '../dto/id.dto';
@@ -12,6 +13,7 @@ import { Response } from 'express';
 export class BlogController {
   constructor(
     @Inject(BlogService) protected blogService: BlogService,
+    @Inject(BlogRepository) protected blogRepository: BlogRepository,
     @Inject(PostService) protected postService: PostService,
   ) {}
 
@@ -27,22 +29,18 @@ export class BlogController {
 
   @Get('/:blogId/posts')
   async getPostsByBlogId(@Param() params: BlogIdDTO, @Query() query: QueryDTO, @Res() res: Response) {
-    const blog = await this.blogService.getBlogById(params.blogId);
-    if (!blog) {
-      res.sendStatus(404);
-      return 'blog not found';
-    }
-    return await this.postService.findAll(params.blogId, query);
+    const blog = await this.blogRepository.getBlogById(params.blogId);
+    if (!blog) res.sendStatus(404);
+    const result = await this.postService.findAll(params.blogId, query);
+    res.send(result);
   }
 
   @Post('/:blogId/posts')
   async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO, @Res() res: Response) {
-    const blog = await this.blogService.getBlogById(params.blogId);
-    if (!blog) {
-      res.sendStatus(404);
-      return 'blog not found';
-    }
-    return await this.postService.createPost(params.blogId, dto);
+    const blog = await this.blogRepository.getBlogById(params.blogId);
+    if (!blog) res.sendStatus(404);
+    const result =  await this.postService.createPost(params.blogId, dto);
+    res.send(result);
   }
 
   @Get('/:blogId')
