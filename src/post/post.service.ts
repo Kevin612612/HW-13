@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { BlogRepository } from '../blog/blog.repository';
-import { PostDTO } from '../dto/post.dto';
+import { PostDTO } from '../post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { PostsTypeSchema, PostViewType } from '../types/post';
 import { PostRepository } from './post.repository';

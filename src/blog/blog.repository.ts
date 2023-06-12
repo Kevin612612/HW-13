@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument } from './blog.schema';
 import { BlogViewType } from '../types/blog';
-import { BlogDTO } from '../dto/blog.dto';
+import { BlogDTO } from './dto/blogInputDTO';
 
 @Injectable()
 export class BlogRepository {

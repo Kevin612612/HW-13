@@ -4,43 +4,26 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlogController } from './blog/blog.controller';
-import { BlogRepository } from './blog/blog.repository';
-import { Blog, BlogSchema } from './blog/blog.schema';
-import { BlogService } from './blog/blog.service';
-import { PostController } from './post/post.controller';
-import { PostRepository } from './post/post.repository';
-import { Post, PostSchema } from './post/post.schema';
-import { PostService } from './post/post.service';
-import { UsersController } from './user/users.controller';
-import { UserRepository } from './user/users.repository';
-import { User, UserSchema } from './user/users.schema';
-import { UsersService } from './user/users.service';
-import { BlogExistsValidation } from './validation/validation';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { BlogModule } from './blog/blog.module';
+import { PostModule } from './post/post.module';
+import { MailerModule, MailerService } from '@nestjs-modules/mailer';
+import { EmailModule } from './email/email.module';
 
 //root module
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MailerModule,
     MongooseModule.forRoot(process.env.MONGO_URL),
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-    ]),
+    AuthModule,
+    UserModule,
+    BlogModule,
+    PostModule,
+    EmailModule,
   ],
-  controllers: [AppController, UsersController, BlogController, PostController],
-  providers: [
-    AppService,
-    UsersService,
-    UserRepository,
-    BlogService,
-    BlogRepository,
-    PostService,
-    PostRepository,
-    BlogExistsValidation,
-  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule {
-  //empty class
-}
+export class AppModule {}

@@ -2,17 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './exception-filter/http-exception.filter';
+import { ValidationPipeOptions } from './validation/validationPipeOptions';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  //create app
-  const app = await NestFactory.create(AppModule);
-  //allows the application to be accessed from other domains
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
-  //binding ValidationPipe at the application level
-  app.useGlobalPipes(new ValidationPipe());
-  //container is used by class-validor library
+  app.useGlobalPipes(new ValidationPipe(ValidationPipeOptions));
+  app.useGlobalFilters(new HttpExceptionFilter());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  //start app
   await app.listen(process.env.PORT, () => {
     console.log(`app listening on port ${process.env.PORT}`);
   });

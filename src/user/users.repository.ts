@@ -2,6 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './users.schema';
+import { UserDataType } from '../types/users';
+import add from 'date-fns/add';
+
+//(1)    allUsers
+//(1.1)  countAllUsers
+//(2)    createUser
+//(3)    deleteUser
+//(3.1)  deleteAllUsers
+//(4)    findUserByLoginOrEmail
+//(5)    findUserByLogin
+//(6)    findUserByPasswordCode
+//(7)    returns user by code
+//(8)    update status
+//(9)    update code
+//(10)   update date when the code was sent
+//(11)   update salt and hash
+//(12)   add accessToken into db
+//(13)   add refreshToken into db
+//(14)   add code
+//(15)   set refreshToken expired
 
 @Injectable()
 export class UserRepository {
@@ -19,32 +39,175 @@ export class UserRepository {
     return userId.toString();
   }
 
+  //(1) method returns array of users with filter
   async findAll(filter: any, sortBy: string, sortDirection: string): Promise<User[]> {
     const order = sortDirection == 'asc' ? 1 : -1;
-
     return await this.userModel
       .find(filter)
       .sort({ [sortBy]: order })
-      .select({ _id: 0, __v: 0, password: 0 })
+      .select({ _id: 0, __v: 0 })
       .exec();
   }
-
+  //(1.1) method returns count of users with filter
   async countAllUsers(filter: any) {
     return await this.userModel.countDocuments(filter);
   }
 
-  async createUser(userObject: any): Promise<any> {
+  //(2) method creates user
+  async createUser(userObject: User): Promise<any> {
     const createdUser = new this.userModel(userObject);
     return await createdUser.save();
   }
 
+  //(3) method  deletes user by Id
   async deleteUserById(userId: string): Promise<number> {
     const result = await this.userModel.deleteOne({ id: userId });
     return result.deletedCount;
   }
 
+  //(3.1) method deletes all users
   async deleteAll(): Promise<number> {
     const result = await this.userModel.deleteMany({});
     return result.deletedCount;
+  }
+
+  //(4) method returns user by loginOrEmail
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<any> {
+    const result = await this.userModel.findOne({
+      $or: [{ login: { $regex: loginOrEmail } }, { email: { $regex: loginOrEmail } }],
+    });
+    return result ? result : undefined;
+  }
+
+  //(5) find user by login
+  async findUserByLogin(login: string): Promise<any> {
+    const result = await this.userModel.findOne({ 'accountData.login': { $regex: login } }, { maxTimeMS: 30000 });
+    return result ? result : undefined;
+  }
+
+  //(6) find user by passwordCode
+  async findUserByPasswordCode(code: string): Promise<any> {
+    const result = await this.userModel.findOne(
+      { 'passwordConfirmation.confirmationCode': code },
+      { maxTimeMS: 30000 },
+    );
+    return result ? result : undefined;
+  }
+
+  //(7) method returns user by code
+  async findUserByCode(code: string): Promise<any> {
+    const result = await this.userModel.findOne({ emailCodes: { $elemMatch: { code: code } } }, { maxTimeMS: 30000 });
+    return result ? result : undefined;
+  }
+
+  //(8) method update status
+  async updateStatus(user: UserDataType): Promise<boolean> {
+    const result = await this.userModel.updateOne({ id: user.id }, { $set: { 'emailConfirmation.isConfirmed': true } });
+    return result.matchedCount === 1;
+  }
+
+  //(9) method update code and PUSH every new code into array
+  async updateCode(user: UserDataType, code: string): Promise<boolean> {
+    const result = await this.userModel.updateOne(
+      { 'accountData.login': user.accountData.login },
+      { $set: { 'emailConfirmation.confirmationCode': code } },
+    );
+    const result1 = await this.userModel.updateOne(
+      { id: user.id },
+      { $push: { emailCodes: { code: code, sentAt: new Date().toISOString() } } },
+    );
+    return result.matchedCount === 1;
+  }
+
+  //(10) method update the date when the FIRST CODE was sent
+  async updateDate(userId: string, code: string): Promise<boolean> {
+    const result = await this.userModel.updateOne(
+      { id: userId },
+      { $set: { emailCodes: [{ code: code, sentAt: new Date().toISOString() }] } },
+    );
+    return result.matchedCount === 1;
+  }
+
+  //(11) update salt and hash
+  async updateSaltAndHash(userId: string, newPasswordSalt: string, newPasswordHash: string): Promise<boolean> {
+    const result = await this.userModel.updateOne(
+      { id: userId },
+      {
+        'accountData.passwordSalt': newPasswordSalt,
+        'accountData.passwordHash': newPasswordHash,
+      },
+    );
+    return true;
+  }
+
+  //(12) method add accessToken into db
+  async addAccessToken(user: UserDataType, token: string, liveTime: number): Promise<boolean> {
+    const result = await this.userModel.findOneAndUpdate(
+      { id: user.id },
+      {
+        $push: {
+          'tokens.accessTokens': {
+            value: token,
+            createdAt: new Date().toISOString(),
+            expiredAt: add(new Date(), { seconds: liveTime }).toISOString(),
+          },
+        },
+      },
+    );
+    return true;
+  }
+
+  //(13) method add refreshToken into db
+  async addRefreshToken(user: UserDataType, token: string, liveTime: number): Promise<boolean> {
+    const result = await this.userModel.findOneAndUpdate(
+      { id: user.id },
+      {
+        $push: {
+          'tokens.refreshTokens': {
+            value: token,
+            createdAt: new Date().toISOString(),
+            expiredAt: add(new Date(), { seconds: liveTime }).toISOString(),
+          },
+        },
+      },
+    );
+    return true;
+  }
+
+  //(14) add code into user
+  async addCode(user: UserDataType | undefined, recoveryCode: string): Promise<boolean> {
+    const result1 = await this.userModel.findOneAndUpdate(
+      { id: user.id },
+      {
+        $push: {
+          passwordCodes: {
+            code: recoveryCode,
+            sentAt: new Date().toISOString(),
+          },
+        },
+      },
+    );
+    const result2 = await this.userModel.findOneAndUpdate(
+      { id: user.id },
+      {
+        'passwordConfirmation.confirmationCode': recoveryCode,
+        'passwordConfirmation.expirationDate': add(new Date(), {
+          hours: 10,
+          minutes: 3,
+        }).toISOString(),
+      },
+    );
+    return true;
+  }
+
+  //(15) method set refreshToken expired
+  async setRefreshTokenExpired(user: UserDataType): Promise<boolean> {
+    const result = await this.userModel.findOneAndUpdate(
+      { id: user.id },
+      {
+        'tokens.refreshTokens': [],
+      },
+    );
+    return true;
   }
 }

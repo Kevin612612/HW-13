@@ -16,14 +16,16 @@ export type UserAccountDataType = {
   email: string;
   passwordSalt;
   passwordHash;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export type ConformationType = {
   confirmationCode: string;
-  expirationDate: Date;
+  expirationDate: string;
   isConfirmed: boolean;
 };
+
+//################################################################################################################
 
 //USER VIEW TYPE
 export type UserViewType = {
@@ -36,11 +38,16 @@ export type UserViewType = {
 //USER DATA TYPE
 export type UserDataType = {
   _id: ObjectId;
-  id: string;
-  login: string;
-  password: string;
-  email: string;
-  createdAt: string;
+  id: string,
+  accountData: UserAccountDataType,
+  emailConfirmation: ConformationType,
+  emailCodes: CodeDataType[],
+  passwordConfirmation: ConformationType,
+  passwordCodes: CodeDataType[],
+  tokens: {
+      accessTokens: TokenType[],
+      refreshTokens: TokenType[]
+  }
   __v: number;
 };
 
@@ -50,5 +57,5 @@ export type UserTypeSchema = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: userViewModel[];
+  items: UserViewType[];
 };
