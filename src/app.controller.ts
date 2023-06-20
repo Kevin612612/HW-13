@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpCode, Inject } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Inject } from '@nestjs/common';
 import { AppService } from './app.service';
 import { BlogRepository } from './blog/blog.repository';
 import { PostRepository } from './post/post.repository';
@@ -19,7 +19,7 @@ export class AppController {
   }
 
   @Delete('testing/all-data')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async alldata() {
     await this.userRepository.deleteAll();
     await this.blogRepository.deleteAll();

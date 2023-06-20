@@ -2,8 +2,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from './email.service';
-import { UsersService } from '../user/users.service';
-import { UserRepository } from '../user/users.repository';
 import { UserModule } from '../user/user.module';
 
 @Global()

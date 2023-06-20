@@ -11,7 +11,7 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe(ValidationPipeOptions));
   app.useGlobalFilters(new HttpExceptionFilter());
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  useContainer(app.select(AppModule), { fallbackOnErrors: true }); //It allows class-validator to use NestJS dependency injection container
   await app.listen(process.env.PORT, () => {
     console.log(`app listening on port ${process.env.PORT}`);
   });

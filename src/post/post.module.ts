@@ -5,12 +5,16 @@ import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { PostRepository } from './post.repository';
 import { BlogRepository } from '../blog/blog.repository';
+import { PostExistsValidation } from '../validation/validation';
 import { Blog, BlogSchema } from '../blog/blog.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }, { name: Post.name, schema: PostSchema }])],
+  imports: [MongooseModule.forFeature([
+    { name: Blog.name, schema: BlogSchema },
+    { name: Post.name, schema: PostSchema },
+  ])],
   controllers: [PostController],
-  providers: [PostService, PostRepository, BlogRepository],
+  providers: [PostService, PostRepository, PostExistsValidation, BlogRepository],
   exports: [PostRepository],
 })
 export class PostModule {}

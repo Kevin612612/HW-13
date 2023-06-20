@@ -11,6 +11,7 @@ import add from 'date-fns/add';
 //(3)    deleteUser
 //(3.1)  deleteAllUsers
 //(4)    findUserByLoginOrEmail
+//(4.1)  findUserById
 //(5)    findUserByLogin
 //(6)    findUserByPasswordCode
 //(7)    returns user by code
@@ -60,9 +61,9 @@ export class UserRepository {
   }
 
   //(3) method  deletes user by Id
-  async deleteUserById(userId: string): Promise<number> {
+  async deleteUserById(userId: string): Promise<boolean> {
     const result = await this.userModel.deleteOne({ id: userId });
-    return result.deletedCount;
+    return true;
   }
 
   //(3.1) method deletes all users
@@ -76,6 +77,12 @@ export class UserRepository {
     const result = await this.userModel.findOne({
       $or: [{ login: { $regex: loginOrEmail } }, { email: { $regex: loginOrEmail } }],
     });
+    return result ? result : undefined;
+  }
+
+  //(4.1) method returns user by Id
+  async findUserById(userId: string): Promise<any> {
+    const result = await this.userModel.findOne({ id: userId });
     return result ? result : undefined;
   }
 

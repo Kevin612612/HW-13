@@ -5,11 +5,12 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserSchema } from './users.schema';
 import { UserRepository } from './users.repository';
+import { UserExistsValidation } from '../validation/validation';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
   controllers: [UsersController],
-  providers: [UsersService, UserRepository],
+  providers: [UsersService, UserRepository, UserExistsValidation],
   exports: [UsersService, UserRepository],
 })
 export class UserModule {}

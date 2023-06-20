@@ -1,6 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Inject, Injectable } from '@nestjs/common';
-import { UsersService } from '../user/users.service';
 import { v4 as uuidv4 } from 'uuid';
 import { UserRepository } from '../user/users.repository';
 

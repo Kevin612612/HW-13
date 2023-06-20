@@ -16,6 +16,7 @@ import {
   HttpStatus,
   BadRequestException,
   HttpException,
+  Req,
 } from '@nestjs/common';
 import { BlogIdDTO } from '../dto/id.dto';
 import { PostDTO } from '../post/dto/postInputDTO';
@@ -47,18 +48,16 @@ export class BlogController {
   }
 
   @Get('/:blogId/posts')
-  async getPostsByBlogId(@Param() params: BlogIdDTO, @Query() query: QueryDTO, @Res() res: Response) {
-    const blog = await this.blogRepository.getBlogById(params.blogId);
-    if (!blog) res.sendStatus(HttpStatus.NOT_FOUND);
-    const result = await this.postService.findAll(params.blogId, query);
+  async getPostsByBlogId(@Param() params: BlogIdDTO, @Query() query: QueryDTO, @Req() req, @Res() res: Response) {
+    const userId = req.user.id || null;
+    const result = await this.postService.findAll(query, userId, params.blogId);
     res.send(result);
   }
 
   @Post('/:blogId/posts')
   async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO, @Res() res: Response) {
-    const blog = await this.blogRepository.getBlogById(params.blogId);
-    if (!blog) res.sendStatus(HttpStatus.NOT_FOUND);
-    const result = await this.postService.createPost(params.blogId, dto);
+    dto.blogId = params.blogId;
+    const result = await this.postService.createPost(dto);
     res.send(result);
   }
 

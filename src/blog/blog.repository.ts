@@ -42,7 +42,8 @@ export class BlogRepository {
   }
 
   async getBlogById(blogId: string): Promise<any> {
-    return await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).exec();
+    const result = await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).exec();
+    return result;
   }
 
   async updateBlogById(blogId: string, blog: BlogDTO): Promise<number> {

@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
 import { BlogRepository } from '../blog/blog.repository';
+import { UserRepository } from '../user/users.repository';
+import { PostRepository } from '../post/post.repository';
 
 @ValidatorConstraint({ name: 'customValidation', async: false })
 export class CustomValidation implements ValidatorConstraintInterface {
@@ -16,11 +18,44 @@ export class CustomValidation implements ValidatorConstraintInterface {
 @ValidatorConstraint({ name: 'BlogExists', async: true })
 @Injectable()
 export class BlogExistsValidation implements ValidatorConstraintInterface {
-  constructor(private blogRepository: BlogRepository) {}
+  constructor(@Inject(BlogRepository) private blogRepository: BlogRepository) {}
 
   async validate(value: string) {
     const blog = await this.blogRepository.getBlogById(value);
-    if (!blog) return false;
-    return true;
+    return !!blog;
+  }
+
+  defaultMessage() {
+    return `Blog doesn't exist`;
+  }
+}
+
+@ValidatorConstraint({ name: 'PostExists', async: true })
+@Injectable()
+export class PostExistsValidation implements ValidatorConstraintInterface {
+  constructor(@Inject(PostRepository) private postRepository: PostRepository) {}
+
+  async validate(value: string) {
+    const post = await this.postRepository.findPostById(value);
+    return !!post;
+  }
+
+  defaultMessage() {
+    return `Post doesn't exist`;
+  }
+}
+
+@ValidatorConstraint({ name: 'UserExists', async: true })
+@Injectable()
+export class UserExistsValidation implements ValidatorConstraintInterface {
+  constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
+
+  async validate(value: string) {
+    const user = await this.userRepository.findUserById(value);
+    return !!user;
+  }
+
+  defaultMessage() {
+    return `User doesn't exist`;
   }
 }

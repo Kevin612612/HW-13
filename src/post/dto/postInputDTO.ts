@@ -1,4 +1,5 @@
-import { IsOptional, Length } from 'class-validator';
+import { IsOptional, Length, Validate } from 'class-validator';
+import { BlogExistsValidation } from '../../validation/validation';
 
 export class PostDTO {
   @Length(1, 30)
@@ -11,5 +12,6 @@ export class PostDTO {
   content: string;
 
   @IsOptional()
+  @Validate(BlogExistsValidation)
   blogId: string;
 }

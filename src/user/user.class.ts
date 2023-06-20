@@ -21,7 +21,7 @@ export class User {
   };
 
   constructor(
-    @Inject(UserRepository) protected userRepository: UserRepository,
+    @Inject(UserRepository) private userRepository: UserRepository,
     @Inject(JwtService) private jwtService: JwtService,
     public id: string = 'no id',
     public login: string = 'no login',

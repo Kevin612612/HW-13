@@ -1,3 +1,4 @@
+import { ExtendedLikesInfo } from './../post/post.schema';
 import { ObjectId } from 'mongodb';
 
 export type NewestLikesType = {
@@ -17,6 +18,15 @@ export type UserAssessType = {
   assess: keyof typeof Assess;
 };
 
+export type ExtendedLikesInfo = {
+  likesCount: number;
+  dislikesCount: number;
+  myStatus: string;
+  newestLikes: NewestLikesType[];
+};
+
+//################################################################################################################
+
 //POST VIEW TYPE
 export type PostViewType = {
   id: string;
@@ -26,15 +36,10 @@ export type PostViewType = {
   blogId: string;
   blogName: string;
   createdAt: string;
-  extendedLikesInfo: {
-    likesCount: number;
-    dislikesCount: number;
-    myStatus: string;
-    newestLikes: NewestLikesType[];
-  };
+  extendedLikesInfo: ExtendedLikesInfo;
 };
 
-//BLOG DATA TYPE
+//POST DATA TYPE
 export type PostDataType = {
   _id: ObjectId;
   id: string;
@@ -43,14 +48,10 @@ export type PostDataType = {
   content: string;
   blogId: string;
   blogName: string;
-  createdAt: Date;
-  extendedLikesInfo: {
-    likesCount: number;
-    dislikesCount: number;
-    myStatus: string;
-    newestLikes: NewestLikesType[];
-  };
+  createdAt: string;
+  extendedLikesInfo: ExtendedLikesInfo;
   userAssess: UserAssessType[];
+  __v: number;
 };
 
 //POST PAGING TYPE

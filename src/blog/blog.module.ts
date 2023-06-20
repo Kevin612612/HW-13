@@ -8,7 +8,7 @@ import { BlogExistsValidation } from '../validation/validation';
 import { PostService } from '../post/post.service';
 import { PostRepository } from '../post/post.repository';
 import { Post, PostSchema } from '../post/post.schema';
-import { LoggerMiddleware } from '../middleware/loggerMiddleware';
+import { LoggerMiddleware } from '../middleware/logger.middleware';
 
 @Module({
   imports: [

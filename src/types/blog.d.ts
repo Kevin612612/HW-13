@@ -1,5 +1,7 @@
 import { ObjectId } from 'mongodb';
 
+//################################################################################################################
+
 //BLOG VIEW TYPE
 export type BlogViewType = {
   id: string;
@@ -19,6 +21,7 @@ export type BlogDataType = {
   websiteUrl: string;
   createdAt: string;
   isMembership: boolean;
+  __v: number;
 };
 
 //BLOG PAGING TYPE

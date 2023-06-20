@@ -1,17 +1,19 @@
 import { IsDefined, IsNumber, Validate } from 'class-validator';
-import { BlogExistsValidation } from '../validation/validation';
+import { BlogExistsValidation, PostExistsValidation, UserExistsValidation } from '../validation/validation';
 
 export class BlogIdDTO {
-  @Validate(BlogExistsValidation, { message: 'blog doesn\'t exist according to search' })
+  @Validate(BlogExistsValidation)
   blogId: string;
 }
 
 export class PostIdDTO {
   @IsDefined()
+  @Validate(PostExistsValidation)
   postId: string;
 }
 
 export class UserIdDTO {
   @IsDefined()
+  @Validate(UserExistsValidation)
   userId: string;
 }

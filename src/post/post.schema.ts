@@ -32,7 +32,6 @@ export class ExtendedLikesInfo {
   @Prop({ type: [NewestLikesSchema] })
   newestLikes: any[];
 }
-
 export const ExtendedLikesInfoSchema = SchemaFactory.createForClass(ExtendedLikesInfo);
 
 @Schema()
@@ -43,7 +42,6 @@ export class UserAsses {
   @Prop()
   assess: string;
 }
-
 export const UserAssesSchema = SchemaFactory.createForClass(UserAsses);
 
 @Schema()

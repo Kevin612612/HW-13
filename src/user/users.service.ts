@@ -121,15 +121,20 @@ export class UsersService {
   }
 
   //(3) method deletes user by ID
-  async deleteUserById(userId: string): Promise<any> {
-    return await this.userRepository.deleteUserById(userId);
+  async deleteUserById(userId: string): Promise<boolean> {
+    const result = await this.userRepository.deleteUserById(userId);
+    return true;
   }
 
   //(4) confirm code
   async confirmCodeFromEmail(code: string): Promise<boolean | number> {
     const user = await this.userRepository.findUserByCode(code);
     //check if user exists and email is not confirmed and code is not expired
-    if (user && user.emailConfirmation.isConfirmed != true && new Date(user.emailConfirmation.expirationDate) > new Date() ) {
+    if (
+      user &&
+      user.emailConfirmation.isConfirmed != true &&
+      new Date(user.emailConfirmation.expirationDate) > new Date()
+    ) {
       const changeStatus = await this.userRepository.updateStatus(user);
       return 204;
     }
@@ -146,7 +151,7 @@ export class UsersService {
 
   //(6) method registers user
   async newRegisteredUser(login: string, email: string, password: string): Promise<UserViewType | number | any> {
-    const newUser = await this.createUser({login, password, email})
+    const newUser = await this.createUser({ login, password, email });
 
     //send email from our account to this user's email
     try {
