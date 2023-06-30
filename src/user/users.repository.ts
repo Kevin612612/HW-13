@@ -150,16 +150,16 @@ export class UserRepository {
     return true;
   }
 
-  //(12) method add accessToken into db
-  async addAccessToken(user: UserDataType, token: string, liveTime: number): Promise<boolean> {
+  //(12) method add accessToken into userModel
+  async addAccessToken(userId: string, token: string, liveTimeInSeconds: number): Promise<boolean> {
     const result = await this.userModel.findOneAndUpdate(
-      { id: user.id },
+      { id: userId },
       {
         $push: {
           'tokens.accessTokens': {
             value: token,
             createdAt: new Date().toISOString(),
-            expiredAt: add(new Date(), { seconds: liveTime }).toISOString(),
+            expiredAt: new Date(new Date().getTime() + liveTimeInSeconds * 1000).toISOString(),
           },
         },
       },
@@ -168,15 +168,15 @@ export class UserRepository {
   }
 
   //(13) method add refreshToken into db
-  async addRefreshToken(user: UserDataType, token: string, liveTime: number): Promise<boolean> {
+  async addRefreshToken(userId, token: string, liveTime: number): Promise<boolean> {
     const result = await this.userModel.findOneAndUpdate(
-      { id: user.id },
+      { id: userId },
       {
         $push: {
           'tokens.refreshTokens': {
             value: token,
             createdAt: new Date().toISOString(),
-            expiredAt: add(new Date(), { seconds: liveTime }).toISOString(),
+            expiredAt: new Date(new Date().getTime() + liveTime * 1000).toISOString(),
           },
         },
       },

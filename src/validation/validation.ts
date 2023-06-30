@@ -60,6 +60,21 @@ export class UserExistsValidation implements ValidatorConstraintInterface {
   }
 }
 
+@ValidatorConstraint({ name: 'UserExistsByLoginOrEmail', async: true })
+@Injectable()
+export class UserExistsByLoginOrEmail implements ValidatorConstraintInterface {
+  constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
+
+  async validate(value: string) {
+    const user = await this.userRepository.findUserByLoginOrEmail(value);
+    return !!user;
+  }
+
+  defaultMessage() {
+    return `User with such login or email doesn't exist`;
+  }
+}
+
 @ValidatorConstraint({ name: 'UserExistsByLogin', async: true })
 @Injectable()
 export class UserExistsByLogin implements ValidatorConstraintInterface {

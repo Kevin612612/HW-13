@@ -1,19 +1,22 @@
+import { ObjectId } from 'mongodb';
 
 //RefreshTokens
-export type refreshTokensDataModel = {
+export type RefreshTokensDataModel = {
+    _id: ObjectId,
     value: string,
     userId: string,
     deviceId: string,
     deviceName: string,
     IP: string,
-    createdAt: Date,
-    expiredAt: Date
+    createdAt: string,
+    expiredAt: string,
+    __v: number,
 }
 
 export type  RefreshTokensTypeSchema = Array<{
     ip: string,
     title: string,
-    lastActiveDate: Date,
+    lastActiveDate: string,
     deviceId: string,
 }>
 
@@ -21,5 +24,5 @@ export type  RefreshTokensDataTypeSchema = Array<{
     IP: string,
     deviceName: string,
     deviceId: string,
-    createdAt: Date,
+    createdAt: string,
 }>

@@ -3,6 +3,10 @@ import { UsersService } from '../user/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcrypt';
+import { UserRepository } from '../user/users.repository';
+import { jwtConstants } from './constants';
+import { AccessTokenService } from '../tokens/accesstoken.service';
+import { RefreshTokenService } from '../tokens/refreshtoken.service';
 
 //(1) login
 //(2) sendRecoveryCode
@@ -12,19 +16,23 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   constructor(
     @Inject(UsersService) private usersService: UsersService,
+    @Inject(UserRepository) private userRepository: UserRepository,
     @Inject(JwtService) private jwtService: JwtService,
     @Inject(EmailService) private emailService: EmailService,
+    @Inject(AccessTokenService) private accessTokenService: AccessTokenService,
+    @Inject(RefreshTokenService) private refreshTokenService: RefreshTokenService,
   ) {}
 
   //(1)
-  async login(dto) {
+  async login(dto, deviceId, deviceName, IP) {
     const user = await this.usersService.findUserByLoginOrEmail(dto.loginOrEmail);
     const passwordHash = await bcrypt.hash(dto.password, user.accountData.passwordSalt);
     if (passwordHash !== user.accountData.passwordHash) {
       throw new UnauthorizedException();
     } else {
-      const payload = { loginOrEmail: user.accountData.login, sub: user.id, expiresAt: Math.floor(Date.now() / 1000) + (60 * 60) };
-      return { access_token: await this.jwtService.signAsync(payload) };
+      const accessTokenObject = await this.accessTokenService.generateAccessJWT(user);
+      const refreshTokenObject = await this.refreshTokenService.generateRefreshJWT(user, deviceId, deviceName, IP);
+      return { accessToken: accessTokenObject, refreshToken: refreshTokenObject };
     }
   }
 

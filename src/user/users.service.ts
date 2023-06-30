@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserDTO } from '../user/dto/userInputDTO';
-import { UserTypeSchema, UserViewType } from '../types/users';
+import { UserDataType, UserTypeSchema, UserViewType } from '../types/users';
 import { UserRepository } from './users.repository';
 import { QueryUserDTO } from '../dto/query.dto';
 import { User } from './user.class';
@@ -26,7 +26,7 @@ export class UsersService {
     @Inject(EmailService) private emailService: EmailService,
   ) {}
 
-  async findUserByLoginOrEmail(loginOrEmail: string): Promise<any> {
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserDataType | undefined> {
     return await this.userRepository.findUserByLoginOrEmail(loginOrEmail);
   }
 

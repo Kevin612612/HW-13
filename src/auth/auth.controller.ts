@@ -5,8 +5,14 @@ import { AuthGuard } from './auth.guard';
 import { passwordRecoveryDTO } from './dto/passwordRecovery.dto';
 import { UserDTO } from '../user/dto/userInputDTO';
 import { UsersService } from '../user/users.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { EmailService } from '../email/email.service';
+
+import requestIp from 'request-ip';
+import DeviceDetector from 'node-device-detector';
+
+import UAParser from 'ua-parser-js';
+import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
 
 @Controller('auth')
 export class AuthController {
@@ -14,12 +20,27 @@ export class AuthController {
     @Inject(AuthService) private authService: AuthService,
     @Inject(UsersService) private usersService: UsersService,
     @Inject(EmailService) private emailService: EmailService,
+    @Inject(RefreshTokensRepository) private refreshTokensRepository: RefreshTokensRepository,
   ) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async signIn(@Body() dto: LoginDTO) {
-    return await this.authService.login(dto);
+  async login(@Body() dto: LoginDTO, @Req() req: Request, @Res() res: Response) {
+    //collect data from request
+    const IP = req.socket.remoteAddress || 'noIp';
+    const userAgent = req.headers['user-agent'];
+    const deviceName = 'device';
+    const deviceId = await this.refreshTokensRepository.createDeviceId();
+    //create tokens
+    const tokens = await this.authService.login(dto, deviceId, deviceName, IP);
+    //send them
+    res
+      .cookie('refreshToken', tokens.refreshToken.value, {
+        httpOnly: true,
+        secure: true,
+      })
+      .status(200)
+      .json(tokens.accessToken);
   }
 
   @Post('password-recovery')

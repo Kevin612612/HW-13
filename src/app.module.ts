@@ -11,6 +11,7 @@ import { PostModule } from './post/post.module';
 import { EmailModule } from './email/email.module';
 import { CommentsModule } from './comments/comments.module';
 import { JwtMiddleware } from './middleware/jwt.middleware';
+import { TokenModule } from './tokens/tokens.module';
 
 //root module
 @Module({
@@ -23,6 +24,7 @@ import { JwtMiddleware } from './middleware/jwt.middleware';
     PostModule,
     EmailModule,
     CommentsModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,7 +10,11 @@ import { UserSchema } from '../user/users.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/email.service';
-import { UserExistsByLogin, UserExistsByEmail } from '../validation/validation';
+import { UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail } from '../validation/validation';
+import { AccessTokenService } from '../tokens/accesstoken.service';
+import { RefreshTokenService } from '../tokens/refreshtoken.service';
+import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
+import { RefreshTokenSchema } from '../tokens/refreshtoken.schema';
 
 @Module({
   imports: [
@@ -19,12 +23,13 @@ import { UserExistsByLogin, UserExistsByEmail } from '../validation/validation';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '300s' },
+      signOptions: { expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME },
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'RefreshToken', schema: RefreshTokenSchema }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersService, UserRepository, EmailService, UserExistsByLogin, UserExistsByEmail],
+  providers: [AuthService, UsersService, AccessTokenService, RefreshTokenService, UserRepository, RefreshTokensRepository, EmailService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail],
   exports: [AuthService],
 })
 export class AuthModule {}
