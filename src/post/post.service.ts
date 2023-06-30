@@ -1,20 +1,72 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import { BlogRepository } from '../blog/blog.repository';
 import { PostRepository } from './post.repository';
 import { PostDTO } from '../post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { PostsTypeSchema, PostViewType } from '../types/post';
 import { Post } from './post.class';
+import { Comment } from '../comments/comment.class';
 import mongoose from 'mongoose';
 import { UserDataType } from '../types/users';
+import { CommentRepository } from '../comments/comment.repository';
+
+//(3) createComment
+//(4) findAll
+//(5) createPost
+//(6) findPostById
+//(7) updatePostById
+//(8) deletePost
+//(9) changeLikeStatus
 
 @Injectable()
 export class PostService {
   constructor(
     @Inject(PostRepository) protected postRepository: PostRepository,
     @Inject(BlogRepository) protected blogRepository: BlogRepository,
+    @Inject(CommentRepository) protected commentRepository: CommentRepository,
   ) {}
+
+  //(3) this method creates new comment
+  async newPostedCommentByPostId(
+    postId: string,
+    content: string,
+    userId: string,
+    userLogin: string,
+  ): Promise<any | number | string[]> {
+    const foundPost = await this.postRepository.findPostById(postId);
+    if (!foundPost) return 404;
+    //create new comment
+    let newComment = new Comment(this.commentRepository); //empty comment
+    newComment = await newComment.addAsyncParams(content, userId, userLogin, postId); // fill user with async params
+    // put this new comment into db
+    try {
+      const result = await this.commentRepository.newPostedComment(newComment);
+    } catch (err: any) {
+      const validationErrors = [];
+      if (err instanceof mongoose.Error.ValidationError) {
+        for (const path in err.errors) {
+          const error = err.errors[path].message;
+          validationErrors.push(error);
+        }
+      }
+      return validationErrors;
+    }
+
+    return {
+      id: newComment.id,
+      content: newComment.content,
+      commentatorInfo: {
+        userId: newComment.commentatorInfo.userId,
+        userLogin: newComment.commentatorInfo.userLogin,
+      },
+      createdAt: newComment.createdAt,
+      likesInfo: {
+        dislikesCount: newComment.likesInfo.dislikesCount,
+        likesCount: newComment.likesInfo.likesCount,
+        myStatus: newComment.likesInfo.myStatus,
+      },
+    };
+  }
 
   //(4) this method return all posts || all posts by blogId || all posts by name || all posts by blogId and name
   async findAll(query: QueryDTO, userId: string, blogId?: string): Promise<PostsTypeSchema> {
@@ -187,64 +239,63 @@ export class PostService {
     }
   }
 
-  //(7) method deletes post by postId
+  //(8) method deletes post by postId
   async deletePost(postId: string): Promise<number> {
     return await this.postRepository.deletePostById(postId);
   }
 
-  //(8) method changes like status
+  //(9) method changes like status
   async changeLikeStatus(postId: string, likeStatus: string, user: UserDataType): Promise<number> {
     //find post
-    const post = await this.postRepository.findPostByIdDbType(postId)
-    if (!post) return 404
+    const post = await this.postRepository.findPostByIdDbType(postId);
+    if (!post) return 404;
     //change myStatus / myStatus = current assess
-    const result = await this.postRepository.changeLikeStatus(postId, likeStatus)
+    const result = await this.postRepository.changeLikeStatus(postId, likeStatus);
     //check whether this user left assess to this post
-    const userAssess = post.userAssess.find(obj => obj.userIdLike === user.id)
+    const userAssess = post.userAssess.find(obj => obj.userIdLike === user.id);
     //if this user didn't leave like/dislike -> add like/dislike/none to post
     if (!userAssess) {
-        if (likeStatus == 'Like') {
-            const result1 = await this.postRepository.addLike(post, user)
-        }
-        if (likeStatus == 'Dislike') {
-            const result2 = await this.postRepository.addDislike(post, user.id)
-        }
-        if (likeStatus == 'None') {
-            const result3 = await this.postRepository.setNone(post)
-        }
+      if (likeStatus == 'Like') {
+        const result1 = await this.postRepository.addLike(post, user);
+      }
+      if (likeStatus == 'Dislike') {
+        const result2 = await this.postRepository.addDislike(post, user.id);
+      }
+      if (likeStatus == 'None') {
+        const result3 = await this.postRepository.setNone(post);
+      }
     } else {
-        //assess of this user
-        const assess = userAssess.assess 
-        if (assess == 'Like' && likeStatus == 'Like') {
-            //nothing
-        }
-        if (assess == 'Like' && likeStatus == 'Dislike') {
-            //minus like and delete user from array then add addDislike()
-            const result1 = await this.postRepository.deleteLike(post, user.id)
-            const result2 = await this.postRepository.addDislike(post, user.id)
-            //set my status None
-            const result3 = await this.postRepository.setNone(post)
-        }
-        if (assess == 'Like' && likeStatus == 'None') {
-            //minus like and delete user from array
-            const result1 = await this.postRepository.deleteLike(post, user.id)
-        }
-        if (assess == 'Dislike' && likeStatus == 'Like') {
-            //minus dislike and delete user from array then add addLike()
-            const result1 = await this.postRepository.deleteDislike(post, user.id)
-            const result2 = await this.postRepository.addLike(post, user)
-            //set my status None
-            const result3 = await this.postRepository.setNone(post)
-        }
-        if (assess == 'Dislike' && likeStatus == 'Dislike') {
-            //nothing
-        }
-        if (assess == 'Dislike' && likeStatus == 'None') {
-            //minus dislike and delete user from array
-            const result1 = await this.postRepository.deleteDislike(post, user.id)
-        }
+      //assess of this user
+      const assess = userAssess.assess;
+      if (assess == 'Like' && likeStatus == 'Like') {
+        //nothing
+      }
+      if (assess == 'Like' && likeStatus == 'Dislike') {
+        //minus like and delete user from array then add addDislike()
+        const result1 = await this.postRepository.deleteLike(post, user.id);
+        const result2 = await this.postRepository.addDislike(post, user.id);
+        //set my status None
+        const result3 = await this.postRepository.setNone(post);
+      }
+      if (assess == 'Like' && likeStatus == 'None') {
+        //minus like and delete user from array
+        const result1 = await this.postRepository.deleteLike(post, user.id);
+      }
+      if (assess == 'Dislike' && likeStatus == 'Like') {
+        //minus dislike and delete user from array then add addLike()
+        const result1 = await this.postRepository.deleteDislike(post, user.id);
+        const result2 = await this.postRepository.addLike(post, user);
+        //set my status None
+        const result3 = await this.postRepository.setNone(post);
+      }
+      if (assess == 'Dislike' && likeStatus == 'Dislike') {
+        //nothing
+      }
+      if (assess == 'Dislike' && likeStatus == 'None') {
+        //minus dislike and delete user from array
+        const result1 = await this.postRepository.deleteDislike(post, user.id);
+      }
     }
-    return 204
+    return 204;
+  }
 }
-}
-

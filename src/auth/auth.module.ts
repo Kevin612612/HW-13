@@ -10,6 +10,7 @@ import { UserSchema } from '../user/users.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/email.service';
+import { UserExistsByLogin, UserExistsByEmail } from '../validation/validation';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { EmailService } from '../email/email.service';
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersService, UserRepository, EmailService],
+  providers: [AuthService, UsersService, UserRepository, EmailService, UserExistsByLogin, UserExistsByEmail],
   exports: [AuthService],
 })
 export class AuthModule {}

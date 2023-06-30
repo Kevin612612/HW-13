@@ -8,13 +8,15 @@ import mongoose from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from '../email/email.service';
+import { Exception } from 'handlebars';
+import { log } from 'console';
 
-//(1) allUsers
-//(2) newPostedUser
-//(3) deleteUser
-//(4) confirm code
-//(5) update password
-//(6) method registers user
+//(1) findAll
+//(2) createUser
+//(3) deleteUserById
+//(4) confirmCodeFromEmail
+//(5) updatePassword
+//(6) newRegisteredUser
 
 @Injectable()
 export class UsersService {
@@ -94,7 +96,7 @@ export class UsersService {
   }
 
   //(2) method creates user
-  async createUser(dto: UserDTO): Promise<UserViewType | any> {
+  async createUser(dto: UserDTO): Promise<UserViewType | string[]> {
     //create new user
     let newUser = new User(this.userRepository, this.jwtService); //empty user
     newUser = await newUser.addAsyncParams(dto); // fill user with async params
@@ -102,16 +104,17 @@ export class UsersService {
     try {
       const result = await this.userRepository.createUser(newUser);
       return {
-        id: newUser.id,
-        login: newUser.accountData.login,
-        email: newUser.accountData.email,
-        createdAt: newUser.accountData.createdAt,
+        id: result.id,
+        login: result.accountData.login,
+        email: result.accountData.email,
+        createdAt: result.accountData.createdAt,
       };
     } catch (err: any) {
+      // throw new Exception()
       const validationErrors = [];
       if (err instanceof mongoose.Error.ValidationError) {
         for (const path in err.errors) {
-          //accountData.login, accountData.email - path
+          //path: accountData.login, accountData.email
           const error = err.errors[path].message;
           validationErrors.push(error);
         }
@@ -122,23 +125,21 @@ export class UsersService {
 
   //(3) method deletes user by ID
   async deleteUserById(userId: string): Promise<boolean> {
-    const result = await this.userRepository.deleteUserById(userId);
-    return true;
+    return await this.userRepository.deleteUserById(userId);
   }
 
   //(4) confirm code
-  async confirmCodeFromEmail(code: string): Promise<boolean | number> {
+  async confirmCodeFromEmail(code: string): Promise<boolean> {
     const user = await this.userRepository.findUserByCode(code);
     //check if user exists and email is not confirmed and code is not expired
     if (
       user &&
-      user.emailConfirmation.isConfirmed != true &&
+      user.emailConfirmation.isConfirmed !== true &&
       new Date(user.emailConfirmation.expirationDate) > new Date()
     ) {
-      const changeStatus = await this.userRepository.updateStatus(user);
-      return 204;
+      return await this.userRepository.updateStatus(user);
     }
-    return 400;
+    return false;
   }
 
   //(5) update password
@@ -150,21 +151,24 @@ export class UsersService {
   }
 
   //(6) method registers user
-  async newRegisteredUser(login: string, email: string, password: string): Promise<UserViewType | number | any> {
-    const newUser = await this.createUser({ login, password, email });
+  async newRegisteredUser(dto: UserDTO): Promise<UserViewType | number> {
+    //create new user
+    let newUser = new User(this.userRepository, this.jwtService); //empty user
+    newUser = await newUser.addAsyncParams(dto); // fill user with async params
+    const createdUser = await this.userRepository.createUser(newUser);
 
     //send email from our account to this user's email
     try {
       const sendEmail = await this.emailService.sendEmailConfirmationMessage(
-        newUser.id,
-        newUser.accountData.email,
-        newUser.emailConfirmation.confirmationCode,
+        createdUser.id,
+        createdUser.accountData.email,
+        createdUser.emailConfirmation.confirmationCode,
       );
       return {
-        id: `user with id ${newUser.id} and email ${email} has received a letter with code`,
-        login: newUser.accountData.login,
-        email: newUser.accountData.email,
-        createdAt: newUser.accountData.createdAt,
+        id: `user with id ${newUser.id} and email ${createdUser.accountData.email} has received a letter with code`,
+        login: createdUser.accountData.login,
+        email: createdUser.accountData.email,
+        createdAt: createdUser.accountData.createdAt,
       };
     } catch (error) {
       return 400; //email hasn't been sent

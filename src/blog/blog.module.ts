@@ -9,16 +9,20 @@ import { PostService } from '../post/post.service';
 import { PostRepository } from '../post/post.repository';
 import { Post, PostSchema } from '../post/post.schema';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
+import { CommentRepository } from '../comments/comment.repository';
+import { Comment, CommentSchema } from '../comments/comment.schema';
+
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
+      { name: Comment.name, schema: CommentSchema },
     ]),
   ],
   controllers: [BlogController],
-  providers: [BlogService, BlogRepository, BlogExistsValidation, PostService, PostRepository],
+  providers: [BlogService, BlogRepository, BlogExistsValidation, PostService, PostRepository, CommentRepository],
   exports: [BlogRepository],
 })
 export class BlogModule {

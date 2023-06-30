@@ -109,6 +109,10 @@ export class User {
 
   @Prop({type: AllTokenSchema})
   tokens: any;
+
+  // Use versionKey option to create __v field
+  @Prop({ versionKey: true })
+  __v: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -8,11 +8,12 @@ import add from 'date-fns/add';
 //(1)    allUsers
 //(1.1)  countAllUsers
 //(2)    createUser
-//(3)    deleteUser
+//(3)    deleteUserById
 //(3.1)  deleteAllUsers
 //(4)    findUserByLoginOrEmail
 //(4.1)  findUserById
 //(5)    findUserByLogin
+//(5.1)  findUserByEmail
 //(6)    findUserByPasswordCode
 //(7)    returns user by code
 //(8)    update status
@@ -41,21 +42,21 @@ export class UserRepository {
   }
 
   //(1) method returns array of users with filter
-  async findAll(filter: any, sortBy: string, sortDirection: string): Promise<User[]> {
+  async findAll(filter: any, sortBy: string, sortDirection: string): Promise<UserDataType[]> {
     const order = sortDirection == 'asc' ? 1 : -1;
     return await this.userModel
       .find(filter)
       .sort({ [sortBy]: order })
-      .select({ _id: 0, __v: 0 })
       .exec();
   }
+
   //(1.1) method returns count of users with filter
   async countAllUsers(filter: any) {
     return await this.userModel.countDocuments(filter);
   }
 
   //(2) method creates user
-  async createUser(userObject: User): Promise<any> {
+  async createUser(userObject: User): Promise<UserDataType> {
     const createdUser = new this.userModel(userObject);
     return await createdUser.save();
   }
@@ -63,7 +64,7 @@ export class UserRepository {
   //(3) method  deletes user by Id
   async deleteUserById(userId: string): Promise<boolean> {
     const result = await this.userModel.deleteOne({ id: userId });
-    return true;
+    return result.acknowledged;
   }
 
   //(3.1) method deletes all users
@@ -73,23 +74,26 @@ export class UserRepository {
   }
 
   //(4) method returns user by loginOrEmail
-  async findUserByLoginOrEmail(loginOrEmail: string): Promise<any> {
-    const result = await this.userModel.findOne({
-      $or: [{ login: { $regex: loginOrEmail } }, { email: { $regex: loginOrEmail } }],
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserDataType | undefined> {
+    return await this.userModel.findOne({
+      $or: [{ 'accountData.login': { $regex: loginOrEmail } }, { 'accountData.email': { $regex: loginOrEmail } }],
     });
-    return result ? result : undefined;
   }
 
   //(4.1) method returns user by Id
-  async findUserById(userId: string): Promise<any> {
-    const result = await this.userModel.findOne({ id: userId });
-    return result ? result : undefined;
+  async findUserById(userId: string): Promise<UserDataType | undefined> {
+    return await this.userModel.findOne({ id: userId });
+     
   }
 
   //(5) find user by login
-  async findUserByLogin(login: string): Promise<any> {
-    const result = await this.userModel.findOne({ 'accountData.login': { $regex: login } }, { maxTimeMS: 30000 });
-    return result ? result : undefined;
+  async findUserByLogin(login: string): Promise<UserDataType | undefined> {
+    return await this.userModel.findOne({ 'accountData.login': { $regex: login } }, { maxTimeMS: 30000 });
+  }
+
+  //(5.1) find user by email
+  async findUserByEmail(email: string): Promise<UserDataType | undefined> {
+    return await this.userModel.findOne({ 'accountData.email': { $regex: email } }, { maxTimeMS: 30000 });
   }
 
   //(6) find user by passwordCode
@@ -102,9 +106,8 @@ export class UserRepository {
   }
 
   //(7) method returns user by code
-  async findUserByCode(code: string): Promise<any> {
-    const result = await this.userModel.findOne({ emailCodes: { $elemMatch: { code: code } } }, { maxTimeMS: 30000 });
-    return result ? result : undefined;
+  async findUserByCode(code: string): Promise<UserDataType | undefined> {
+    return await this.userModel.findOne({ emailCodes: { $elemMatch: { code: code } } });
   }
 
   //(8) method update status

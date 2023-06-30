@@ -19,6 +19,7 @@ export class User {
     accessTokens: TokenType[];
     refreshTokens: TokenType[];
   };
+  public __v: number;
 
   constructor(
     @Inject(UserRepository) private userRepository: UserRepository,
@@ -64,12 +65,13 @@ export class User {
       accessTokens: [],
       refreshTokens: [],
     };
+    this.__v = 0;
   }
 
   public async addAsyncParams(dto: UserDTO) {
     const userId = await this.userRepository.createUserId();
-    const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(dto.password, 10);
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(dto.password, salt);
     return new User(this.userRepository, this.jwtService, userId, dto.login, dto.email, salt, hash);
   }
 

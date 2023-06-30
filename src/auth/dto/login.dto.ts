@@ -1,6 +1,6 @@
 import { Length } from 'class-validator';
 
-export class SignInDTO {
+export class LoginDTO {
   @Length(1, 10)
   loginOrEmail: string;
 

@@ -1,6 +1,18 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UserDTO } from '../user/dto/userInputDTO';
-import { UserTypeSchema } from '../types/users';
+import { UserTypeSchema, UserViewType } from '../types/users';
 import { UsersService } from './users.service';
 import { QueryUserDTO } from '../dto/query.dto';
 import { UserIdDTO } from '../dto/id.dto';
@@ -13,20 +25,17 @@ export class UsersController {
 
   @Get()
   async getAll(@Query() query: QueryUserDTO): Promise<UserTypeSchema> {
-    const result =  await this.userService.findAll(query);
-    return result;
+    return await this.userService.findAll(query);
   }
 
   @Post()
-  async createUser(@Body() dto: UserDTO) {
-    const result =  await this.userService.createUser(dto);
-    return result;
+  async createUser(@Body() dto: UserDTO): Promise<UserViewType | string[]> {
+    return await this.userService.createUser(dto);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:userId')
-  async deleteUserById(@Param() params: UserIdDTO) {
-    const result = await this.userService.deleteUserById(params.userId);
-    return result;
+  async deleteUserById(@Param() params: UserIdDTO): Promise<any> {
+    return await this.userService.deleteUserById(params.userId);
   }
 }

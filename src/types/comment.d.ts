@@ -34,17 +34,24 @@ export type CommentViewType = {
 };
 
 //COMMENT DATA TYPE
+// export type CommentDataType = {
+//   _id: ObjectId;
+//   commentatorInfo: CommentatorInfoType;
+//   id: string;
+//   content: string;
+//   postId: string;
+//   createdAt: string;
+//   likesInfo: LikesInfoType;
+//   userAssess: UserAssessType[];
+//   __v: number;
+// };
+
 export type CommentDataType = {
   _id: ObjectId;
-  commentatorInfo: CommentatorInfoType;
-  id: string;
-  content: string;
   postId: string;
-  createdAt: string;
-  likesInfo: LikesInfoType;
   userAssess: UserAssessType[];
   __v: number;
-};
+} & CommentViewType;
 
 //COMMENT PAGING TYPE
 export type CommentsTypeSchema = {
