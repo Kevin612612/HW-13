@@ -17,9 +17,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
           field: 'blogId',
         });
         break;
+        
       case HttpStatus.UNAUTHORIZED:
         response.status(status).json({ message: 'Unauthorized' });
         break;
+
       //PIPE VALIDATION: INPUT DATA ARE NOT SATISFIED TO VALIDATION IN DTO SCHEMA
       case HttpStatus.BAD_REQUEST:
         const errorResponse = { errors: [] };
@@ -29,7 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         });
         response.status(status).json(errorResponse);
         break;
-        
+
       default:
         const result = {
           statusCode: status,

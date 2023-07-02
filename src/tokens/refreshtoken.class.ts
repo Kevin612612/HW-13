@@ -20,7 +20,18 @@ export class RefreshTokensPayloadType {
   }
 }
 
+//AccessTokensPayload
+export class AccessTokensPayloadType {
+  loginOrEmail: string;
+  sub: string;
+  expiresIn: string;
 
+  constructor(loginOrEmail: string, sub: string, expiresIn: string) {
+    this.loginOrEmail = loginOrEmail;
+    this.sub = sub;
+    this.expiresIn = expiresIn;
+  }
+}
 
 export class RefreshToken {
   public _id: ObjectId;

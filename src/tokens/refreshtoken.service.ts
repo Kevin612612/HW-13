@@ -11,6 +11,7 @@ import { RefreshToken, RefreshTokensPayloadType } from './refreshtoken.class';
 //(2) getPayloadFromRefreshToken
 //(3) isPayloadValid
 //(4) isTokenExpired
+//(5) makeRefreshTokenExpired
 
 @Injectable()
 export class RefreshTokenService {
@@ -42,19 +43,20 @@ export class RefreshTokenService {
   }
 
   //(2) retrieve payload from refreshtoken
-  async getPayloadFromRefreshToken(refreshToken: string): Promise<any> {
+  async getPayloadFromRefreshToken(refreshToken: string): Promise<RefreshTokensPayloadType> {
     return await this.jwtService.verifyAsync(refreshToken);
   }
 
   //(3) check type of payload
   async isPayloadValid(payload: any): Promise<boolean> {
-    return payload.hasOwnProperty('userId') && 
-     payload.hasOwnProperty('login') && 
-     payload.hasOwnProperty('email') && 
-     payload.hasOwnProperty('deviceId') && 
-     payload.hasOwnProperty('expiresIn') && 
-     payload.hasOwnProperty('iat') 
-
+    return (
+      payload.hasOwnProperty('userId') &&
+      payload.hasOwnProperty('login') &&
+      payload.hasOwnProperty('email') &&
+      payload.hasOwnProperty('deviceId') &&
+      payload.hasOwnProperty('expiresIn') &&
+      payload.hasOwnProperty('iat')
+    );
   }
 
   //(4) check token expiration
@@ -65,6 +67,12 @@ export class RefreshTokenService {
       return currentTime >= expirationTime;
     }
     return true; // If the token payload doesn't have expiresIn, consider it as expired
+  }
+
+  //(5) make refreshToken Invalid
+  async makeRefreshTokenExpired(token: string): Promise<boolean> {
+    const result = await this.blackListRepository.addToken(token);
+    return true;
   }
 
   //(1) this method transform all found data and returns them to router

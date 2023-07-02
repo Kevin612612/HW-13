@@ -1,4 +1,4 @@
-import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { BlackListRepository } from '../black list/blacklist.repository';
@@ -14,12 +14,12 @@ export class CheckRefreshTokenMiddleware implements NestMiddleware {
     const refreshToken: string = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      throw new Error('Refresh token not found');
+      throw new BadRequestException(['Refresh token not found']);
     }
 
     const isInBlackList = await this.blackListRepository.findToken(refreshToken);
     if (isInBlackList) {
-      throw new Error('Refresh token is already invalid');
+      throw new BadRequestException(['Refresh token s already invalid']);
     }
 
     try {
@@ -27,17 +27,15 @@ export class CheckRefreshTokenMiddleware implements NestMiddleware {
 
       const isValid = await this.refreshTokenService.isPayloadValid(payload);      
       if (!isValid) {
-        throw new Error('Invalid payload');
+        throw new BadRequestException(['Invalid payload']);
       }
       const expired = await this.refreshTokenService.isTokenExpired(payload);
       if (expired) {
-        throw new Error('Token has expired');
+        throw new BadRequestException(['Token has expired']);
       }
       next();
-    } catch (error) {
-      console.log(error);
-      
-      throw new Error('Invalid refresh token.');
+    } catch (error) {      
+      throw new BadRequestException(['Invalid refresh token']);
     }
   }
 }

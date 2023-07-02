@@ -20,8 +20,8 @@ async function bootstrap() {
   //It allows class-validator to use NestJS dependency injection container
   await app.listen(process.env.PORT, () => {console.log(`app listening on port ${process.env.PORT}`)});
   // Execute the database request
-  await blackListService.deleteAllData();
-  await blackListService.createBlackList();  
-  await blackListService.addToken('it\'s list of expired refresh Tokens');  
+  // await blackListService.deleteAllData();
+  // await blackListService.createBlackList();  
+  // await blackListService.addToken('it\'s list of expired refresh Tokens');
 }
 bootstrap();

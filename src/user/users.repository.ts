@@ -97,7 +97,7 @@ export class UserRepository {
   }
 
   //(6) find user by passwordCode
-  async findUserByPasswordCode(code: string): Promise<any> {
+  async findUserByPasswordCode(code: string): Promise<UserDataType | undefined> {
     const result = await this.userModel.findOne(
       { 'passwordConfirmation.confirmationCode': code },
       { maxTimeMS: 30000 },

@@ -1,4 +1,16 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, Inject, UseGuards, Get, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  UseGuards,
+  Get,
+  Req,
+  Res,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { AuthGuard } from './auth.guard';
@@ -13,6 +25,7 @@ import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { UserRepository } from '../user/users.repository';
 import { BlackListService } from '../black list/blacklist.service';
 import { AccessTokenService } from '../tokens/accesstoken.service';
+import { NewPasswordDTO } from './dto/newPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +39,23 @@ export class AuthController {
     @Inject(RefreshTokensRepository) private refreshTokensRepository: RefreshTokensRepository,
     @Inject(UserRepository) private userRepository: UserRepository,
   ) {}
+
+  @Post('password-recovery')
+  async passwordRecovery(@Body() dto: passwordRecoveryDTO) {
+    return await this.authService.sendRecoveryCode(dto.email);
+  }
+
+  @Post('new-password')
+  async newPassword(@Body() dto: NewPasswordDTO) {
+    const user = await this.userRepository.findUserByPasswordCode(dto.recoveryCode);
+    //BLL
+    if (user) {
+      const result = await this.usersService.updatePassword(user.id, dto.newPassword);
+      return result;
+    } else {
+      throw new BadRequestException(['the inputModel has incorrect value or RecoveryCode is incorrect or expired']);
+    }
+  }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -47,17 +77,16 @@ export class AuthController {
       .json(tokens.accessToken);
   }
 
-
   @Post('refresh-token')
   //CheckRefreshTokenMiddleware
   async newPairOfTokens(@Req() req: Request, @Res() res: Response) {
     //INPUT
-    const refreshToken = req.cookies.refreshToken;    
+    const refreshToken = req.cookies.refreshToken;
     const IP = req.socket.remoteAddress || 'noIp';
     const userAgent = req.headers['user-agent'];
     const deviceName = 'device';
     const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken); //once middleware is passed
-    const user = await this.userRepository.findUserById(payload.userId); 
+    const user = await this.userRepository.findUserById(payload.userId);
     const deviceId = payload.deviceId;
     // BLL
     // since validation is passed, so we can add refreshToken in black list
@@ -71,20 +100,15 @@ export class AuthController {
       const refreshTokenObject = await this.refreshTokenService.generateRefreshJWT(user, deviceId, deviceName, IP);
       //send response with tokens
       res
-      .cookie('refreshToken', refreshTokenObject.value, {
-        httpOnly: true,
-        secure: false,
-      })
-      .status(200)
-      .json(accessTokenObject);
+        .cookie('refreshToken', refreshTokenObject.value, {
+          httpOnly: true,
+          secure: false,
+        })
+        .status(200)
+        .json(accessTokenObject);
     } else {
       res.sendStatus(401);
     }
-  }
-
-  @Post('password-recovery')
-  async passwordRecovery(@Body() dto: passwordRecoveryDTO) {
-    return await this.authService.sendRecoveryCode(dto.email);
   }
 
   @UseGuards(AuthGuard)
@@ -117,5 +141,34 @@ export class AuthController {
     } else {
       res.sendStatus(HttpStatus.NO_CONTENT);
     }
+  }
+
+  @Post('logout')
+  async logout(@Req() req: Request, @Res() res: Response) {
+    //INPUT
+    const refreshToken = req.cookies.refreshToken;
+    const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken);
+    //BLL
+    //make refreshToken Expired/Invalid
+    const result = await this.refreshTokenService.makeRefreshTokenExpired(refreshToken);
+    //...and delete from DB
+    const deleteRefreshToken = await this.refreshTokensRepository.deleteOne(payload.userId, payload.deviceId);
+    //RETURN
+    //clear the refreshToken from the cookies
+    res.clearCookie('refreshToken').status(204).send("you're quit");
+  }
+
+  // @UseGuards(AuthGuard)
+  @Get('me')
+  async getInfo(@Req() req: Request, @Res() res: Response) {
+    //INPUT
+    const refreshToken = req.cookies.refreshToken;
+    const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken);
+    const user = await this.userRepository.findUserById(payload.userId);
+    res.status(200).json({
+      email: user.accountData.email,
+      login: user.accountData.login,
+      userId: user.id,
+    });
   }
 }
