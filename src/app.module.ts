@@ -12,6 +12,8 @@ import { EmailModule } from './email/email.module';
 import { CommentsModule } from './comments/comments.module';
 import { JwtMiddleware } from './middleware/jwt.middleware';
 import { TokenModule } from './tokens/tokens.module';
+import { BlackListModule } from './black list/blacklist.module';
+import { CheckRefreshTokenMiddleware } from './middleware/checkrefreshtoken.middleware';
 
 //root module
 @Module({
@@ -25,15 +27,14 @@ import { TokenModule } from './tokens/tokens.module';
     EmailModule,
     CommentsModule,
     TokenModule,
+    BlackListModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(JwtMiddleware)
-      .exclude({ path: 'auth/login', method: RequestMethod.POST }) // Exclude the login route if needed
-      .forRoutes('*');
+    consumer.apply(JwtMiddleware).forRoutes('*');
+    consumer.apply(CheckRefreshTokenMiddleware).forRoutes('auth/refresh-token'); 
   }
 }

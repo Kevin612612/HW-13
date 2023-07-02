@@ -1,4 +1,3 @@
-import { BlogRepository } from 'src/blog/blog.repository';
 import {
   Controller,
   Inject,
@@ -27,6 +26,7 @@ import { BlogService } from './blog.service';
 import { Response } from 'express';
 import { AuthGuard } from '../guards/auth.guard';
 import { BlogDTO } from './dto/blogInputDTO';
+import { BlogRepository } from './blog.repository';
 
 // @UseGuards(AuthGuard)
 @Controller('blogs')

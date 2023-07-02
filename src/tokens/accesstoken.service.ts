@@ -1,13 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshTokensRepository } from './refreshtoken.repository';
 import { UserRepository } from '../user/users.repository';
-import { RefreshTokensDataModel } from '../types/refreshtoken';
 import { jwtConstants } from '../auth/constants';
-import { RefreshToken } from './refreshtoken.class';
 import { UserDataType } from '../types/users';
 
-//(1) create refreshtoken
+//(1) create accesstoken
 
 @Injectable()
 export class AccessTokenService {
@@ -19,6 +16,7 @@ export class AccessTokenService {
     const payload = {
       loginOrEmail: user.accountData.login,
       sub: user.id,
+      expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME
     };
     const accessToken = await this.jwtService.signAsync(payload);
     //put it into db

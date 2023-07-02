@@ -82,7 +82,7 @@ export class UserRepository {
 
   //(4.1) method returns user by Id
   async findUserById(userId: string): Promise<UserDataType | undefined> {
-    return await this.userModel.findOne({ id: userId });
+    return await this.userModel.findOne({ id: userId }).exec();
      
   }
 

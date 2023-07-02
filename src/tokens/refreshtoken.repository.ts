@@ -27,6 +27,12 @@ export class RefreshTokensRepository {
     return deviceId.toString();
   }
 
+  //(0) delete all data
+  async deleteAll(): Promise<boolean> {
+    const result = await this.refreshTokenModel.deleteMany({});
+    return result.acknowledged;
+  }
+
   //(1) method returns structured Array
   async allActiveDevices(userId: string): Promise<RefreshTokensDataTypeSchema> {
     return await this.refreshTokenModel

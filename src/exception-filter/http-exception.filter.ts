@@ -29,6 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         });
         response.status(status).json(errorResponse);
         break;
+        
       default:
         const result = {
           statusCode: status,

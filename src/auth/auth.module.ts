@@ -1,3 +1,4 @@
+import { BlackListModule } from './../black list/blacklist.module';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
@@ -15,21 +16,25 @@ import { AccessTokenService } from '../tokens/accesstoken.service';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
 import { RefreshTokenSchema } from '../tokens/refreshtoken.schema';
+import { BlackListService } from '../black list/blacklist.service';
+import { TokenModule } from '../tokens/tokens.module';
 
 @Module({
   imports: [
     UserModule,
+    BlackListModule,
     EmailModule,
+    TokenModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME },
+      // signOptions: { expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME },
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'RefreshToken', schema: RefreshTokenSchema }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersService, AccessTokenService, RefreshTokenService, UserRepository, RefreshTokensRepository, EmailService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail],
+  providers: [AuthService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail],
   exports: [AuthService],
 })
 export class AuthModule {}
