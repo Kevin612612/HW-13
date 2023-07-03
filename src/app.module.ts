@@ -12,9 +12,9 @@ import { EmailModule } from './email/email.module';
 import { CommentsModule } from './comments/comments.module';
 import { TokenModule } from './tokens/tokens.module';
 import { BlackListModule } from './black list/blacklist.module';
-import { CheckRefreshTokenMiddleware } from './middleware/checkrefreshtoken.middleware';
 import { CheckRequestNumberMiddleware } from './middleware/checkRequestNumber.middleware';
 import { PutRequestIntoCacheMiddleware } from './middleware/putRequestIntoCache.middleware';
+import { AuthGuardBearer } from './guards/authBearer.guard';
 
 //root module
 @Module({
@@ -36,13 +36,11 @@ import { PutRequestIntoCacheMiddleware } from './middleware/putRequestIntoCache.
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    // consumer.apply(JwtMiddleware).forRoutes('*');
     consumer
       .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
       .exclude(
         { path: 'users', method: RequestMethod.GET }, // Exclude GET /users route
       )
       .forRoutes('*');
-    consumer.apply(CheckRefreshTokenMiddleware).forRoutes('auth/refresh-token', 'auth/logout', 'auth/me');
   }
 }

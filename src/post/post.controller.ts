@@ -1,11 +1,10 @@
-import { Controller, Inject, Get, Post, Body, Delete, Param, Query, Put, Res, Req } from '@nestjs/common';
+import { Controller, Inject, Get, Post, Body, Delete, Param, Query, Put, Req, UseGuards } from '@nestjs/common';
 import { PostDTO } from '../post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { PostsTypeSchema } from '../types/post';
 import { PostService } from './post.service';
 import { PostIdDTO } from '../dto/id.dto';
-import { Response } from 'express';
-import { BlogRepository } from '../blog/blog.repository';
+import { AuthGuardBearer } from '../guards/authBearer.guard';
 
 @Controller('posts')
 export class PostController {
@@ -18,6 +17,7 @@ export class PostController {
     return await this.postService.findAll(query, userId);
   }
 
+  @UseGuards(AuthGuardBearer)
   @Post()
   async createPost(@Body() dto: PostDTO) {
     return await this.postService.createPost(dto);
@@ -30,6 +30,7 @@ export class PostController {
     return post;
   }
 
+  @UseGuards(AuthGuardBearer)
   @Put('/:postId')
   async updatePostById(@Param() params: PostIdDTO, @Body() dto: PostDTO) {
     return await this.postService.updatePostById(params.postId, dto);

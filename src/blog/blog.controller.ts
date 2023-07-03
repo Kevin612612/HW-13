@@ -24,11 +24,10 @@ import { PostService } from '../post/post.service';
 import { BlogTypeSchema } from '../types/blog';
 import { BlogService } from './blog.service';
 import { Response } from 'express';
-import { AuthGuard } from '../guards/auth.guard';
 import { BlogDTO } from './dto/blogInputDTO';
 import { BlogRepository } from './blog.repository';
+import { AuthGuardBasic } from '../guards/authBasic.guard';
 
-// @UseGuards(AuthGuard)
 @Controller('blogs')
 export class BlogController {
   constructor(
@@ -42,6 +41,7 @@ export class BlogController {
     return await this.blogService.findAll(query);
   }
 
+  @UseGuards(AuthGuardBasic)
   @Post()
   async createBlog(@Body() dto: BlogDTO) {
     return await this.blogService.createBlog(dto);
@@ -54,6 +54,7 @@ export class BlogController {
     res.send(result);
   }
 
+  @UseGuards(AuthGuardBasic)
   @Post('/:blogId/posts')
   async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO, @Res() res: Response) {
     dto.blogId = params.blogId;
@@ -71,6 +72,7 @@ export class BlogController {
     }
   }
 
+  @UseGuards(AuthGuardBasic)
   @Put('/:blogId')
   async updateBlogById(@Param() params: BlogIdDTO, @Body() blog: BlogDTO, @Res() res: Response) {
     const result = await this.blogService.updateBlogById(params.blogId, blog);
@@ -81,6 +83,7 @@ export class BlogController {
     }
   }
 
+  @UseGuards(AuthGuardBasic)
   @Delete('/:blogId')
   async deleteBlog(@Param() params: BlogIdDTO) {
     return await this.blogService.deleteBlog(params.blogId);

@@ -16,9 +16,9 @@ import { UserTypeSchema, UserViewType } from '../types/users';
 import { UsersService } from './users.service';
 import { QueryUserDTO } from '../dto/query.dto';
 import { UserIdDTO } from '../dto/id.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuardBasic } from '../guards/authBasic.guard';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuardBasic)
 @Controller('users')
 export class UsersController {
   constructor(@Inject(UsersService) protected userService: UsersService) {}

@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
-import { AuthGuard } from './auth.guard';
 import { passwordRecoveryDTO } from './dto/passwordRecovery.dto';
 import { UserDTO } from '../user/dto/userInputDTO';
 import { UsersService } from '../user/users.service';
@@ -26,6 +25,7 @@ import { UserRepository } from '../user/users.repository';
 import { BlackListService } from '../black list/blacklist.service';
 import { AccessTokenService } from '../tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
+import { AuthGuardBearer } from '../guards/authBearer.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -77,8 +77,8 @@ export class AuthController {
       .json(tokens.accessToken);
   }
 
+  @UseGuards(AuthGuardBearer)
   @Post('refresh-token')
-  //CheckRefreshTokenMiddleware
   async newPairOfTokens(@Req() req: Request, @Res() res: Response) {
     //INPUT
     const refreshToken = req.cookies.refreshToken;
@@ -111,7 +111,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuardBearer)
   @Get('profile')
   getProfile(@Req() req) {
     return req.user;
@@ -143,6 +143,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuardBearer)
   @Post('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     //INPUT
@@ -158,7 +159,7 @@ export class AuthController {
     res.clearCookie('refreshToken').status(204).send("you're quit");
   }
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuardBearer)
   @Get('me')
   async getInfo(@Req() req: Request, @Res() res: Response) {
     //INPUT

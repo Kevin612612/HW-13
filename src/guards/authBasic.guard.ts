@@ -4,15 +4,15 @@ import { Request } from 'express';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthGuardBasic implements CanActivate {
   constructor(@Inject(JwtService) protected jwtService: JwtService) {}
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  //Basic Authorization
+  canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
-    console.log(request.headers.authorization);
-
-    // return validateRequest(request);
-    throw new UnauthorizedException();
-    return false;
+    if (request.headers.authorization !== 'Basic YWRtaW46cXdlcnR5') {
+      throw new UnauthorizedException();
+    }
+    return true;
   }
 }

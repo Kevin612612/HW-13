@@ -1,4 +1,5 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
+import { AuthGuardBearer } from '../guards/authBearer.guard';
 
 @Controller('comments')
 export class CommentController {
@@ -7,11 +8,13 @@ export class CommentController {
 //     @Inject(BlogRepository) protected blogRepository: BlogRepository,
 //   ) {}
 
+//   @UseGuards(AuthGuardBearer)
 //   @Get()
 //   async getAllPosts(@Query() query: QueryDTO): Promise<PostsTypeSchema> {
 //     return await this.postService.findAll(null, query);
 //   }
 
+//   @UseGuards(AuthGuardBearer)
 //   @Post()
 //   async createPost(@Body() dto: PostDTO, @Res() res: Response) {
 //     const blog = await this.blogRepository.getBlogById(dto.blogId);
@@ -20,6 +23,7 @@ export class CommentController {
 //     res.send(result);
 //   }
 
+//   @UseGuards(AuthGuardBearer)
 //   @Get('/:postId')
 //   async getPostById(@Param() params: PostIdDTO, @Res() res: Response) {
 //     const post = await this.postService.getPostById(params.postId);
@@ -30,6 +34,7 @@ export class CommentController {
 //     }
 //   }
 
+//   @UseGuards(AuthGuardBearer)
 //   @Put('/:postId')
 //   async updatePostById(@Param() params: PostIdDTO, @Body() post: PostDTO, @Res() res: Response) {
 //     const result = await this.postService.updatePostById(params.postId, post);
@@ -40,6 +45,7 @@ export class CommentController {
 //     }
 //   }
 
+//   @UseGuards(AuthGuardBearer)
 //   @Delete('/:postId')
 //   async deletePost(@Param() params: PostIdDTO, @Res() res: Response) {
 //     const result = await this.postService.deletePost(params.postId);
