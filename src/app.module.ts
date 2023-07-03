@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -37,7 +37,12 @@ import { PutRequestIntoCacheMiddleware } from './middleware/putRequestIntoCache.
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(JwtMiddleware).forRoutes('*');
-    consumer.apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware).forRoutes('*');
+    consumer
+      .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
+      .exclude(
+        { path: 'users', method: RequestMethod.GET }, // Exclude GET /users route
+      )
+      .forRoutes('*');
     consumer.apply(CheckRefreshTokenMiddleware).forRoutes('auth/refresh-token', 'auth/logout', 'auth/me');
   }
 }

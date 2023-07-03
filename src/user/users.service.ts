@@ -8,8 +8,6 @@ import mongoose from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from '../email/email.service';
-import { Exception } from 'handlebars';
-import { log } from 'console';
 
 //(1) findAll
 //(2) createUser

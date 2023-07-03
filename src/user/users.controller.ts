@@ -18,7 +18,7 @@ import { QueryUserDTO } from '../dto/query.dto';
 import { UserIdDTO } from '../dto/id.dto';
 import { AuthGuard } from '../auth/auth.guard';
 
-//@UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(@Inject(UsersService) protected userService: UsersService) {}
