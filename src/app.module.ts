@@ -35,12 +35,12 @@ import { AuthGuardBearer } from './guards/authBearer.guard';
   providers: [AppService],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
-      .exclude(
-        { path: 'users', method: RequestMethod.GET }, // Exclude GET /users route
-      )
-      .forRoutes('*');
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer
+  //     .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
+  //     .exclude(
+  //       { path: 'users', method: RequestMethod.GET }, // Exclude GET /users route
+  //     )
+  //     .forRoutes('*');
+  // }
 }
