@@ -43,7 +43,7 @@ export class UserRepository {
 
   //(1) method returns array of users with filter
   async findAll(filter: any, sortBy: string, sortDirection: string): Promise<UserDataType[]> {
-    const order = sortDirection == 'asc' ? -1 : 1;
+    const order = sortDirection == 'desc' ? -1 : 1;    
     return await this.userModel
       .find(filter)
       .sort({ [sortBy]: order })

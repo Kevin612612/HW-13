@@ -71,7 +71,7 @@ export class UsersService {
         }
       : {};
     const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
-    const usersViewtype: UserViewType[] = users.map(obj => {
+    let usersViewtype: UserViewType[] = users.map(obj => {
       return {
         id: obj.id,
         login: obj.accountData.login,
@@ -79,6 +79,14 @@ export class UsersService {
         createdAt: obj.accountData.createdAt,
       };
     });
+    if (pageParams.sortBy == 'createdAt') {
+      usersViewtype = usersViewtype.sort((a, b) => {
+        const order = pageParams.sortDirection == 'desc' ? -1 : 1;    
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return (dateA.getTime() - dateB.getTime())*order;
+      });
+    }
     const quantityOfDocs = await this.userRepository.countAllUsers(filter);
 
     return {
@@ -130,11 +138,7 @@ export class UsersService {
   async confirmCodeFromEmail(code: string): Promise<boolean> {
     const user = await this.userRepository.findUserByCode(code);
     //check if user exists and email is not confirmed and code is not expired
-    if (
-      user &&
-      user.emailConfirmation.isConfirmed !== true &&
-      new Date(user.emailConfirmation.expirationDate) > new Date()
-    ) {
+    if (user && user.emailConfirmation.isConfirmed !== true && new Date(user.emailConfirmation.expirationDate) > new Date()) {
       return await this.userRepository.updateStatus(user);
     }
     return false;
