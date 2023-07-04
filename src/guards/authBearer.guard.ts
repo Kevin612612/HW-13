@@ -18,19 +18,14 @@ export class AuthGuardBearer implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<any> {
     const request: Request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
-    console.log(authHeader);
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      console.log(token);
 
       try {
         //check if token expired
         const payload = await this.refreshTokenService.getPayloadFromRefreshToken(token);
-        console.log(payload);
-
         const tokenExpired = await this.refreshTokenService.isTokenExpired(payload);
-        console.log(tokenExpired);
 
         if (tokenExpired) {
           throw new UnauthorizedException();

@@ -44,11 +44,12 @@ export class UserRepository {
   //(1) method returns array of users with filter
   async findAll(filter: any, sortBy: string, sortDirection: string): Promise<UserDataType[]> {
     const order = sortDirection == 'desc' ? -1 : 1;
-    
-    return await this.userModel
+
+    const items = await this.userModel
       .find(filter)
       .sort({ [sortBy]: order })
       .exec();
+    return items;
   }
 
   //(1.1) method returns count of users with filter
@@ -84,7 +85,6 @@ export class UserRepository {
   //(4.1) method returns user by Id
   async findUserById(userId: string): Promise<UserDataType | undefined> {
     return await this.userModel.findOne({ id: userId }).exec();
-     
   }
 
   //(5) find user by login
@@ -99,10 +99,7 @@ export class UserRepository {
 
   //(6) find user by passwordCode
   async findUserByPasswordCode(code: string): Promise<UserDataType | undefined> {
-    const result = await this.userModel.findOne(
-      { 'passwordConfirmation.confirmationCode': code },
-      { maxTimeMS: 30000 },
-    );
+    const result = await this.userModel.findOne({ 'passwordConfirmation.confirmationCode': code }, { maxTimeMS: 30000 });
     return result ? result : undefined;
   }
 

@@ -12,10 +12,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     switch (status) {
       case HttpStatus.NOT_FOUND:
-        response.status(status).json({
-          message: "blog doesn't exist",
-          field: 'blogId',
+        const errorResponseNotFound = { errorsMessages: [] };
+        const responseBodyNotFound: any = exception.getResponse();
+        responseBodyNotFound.message.forEach(mes => {
+          errorResponseNotFound.errorsMessages.push(mes);
         });
+        response.status(status).json(errorResponseNotFound);
         break;
         
       case HttpStatus.UNAUTHORIZED:
@@ -24,10 +26,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       //PIPE VALIDATION: INPUT DATA ARE NOT SATISFIED TO VALIDATION IN DTO SCHEMA
       case HttpStatus.BAD_REQUEST:
-        const errorResponse = { errors: [] };
+        const errorResponse = { errorsMessages: [] };
         const responseBody: any = exception.getResponse();
         responseBody.message.forEach(mes => {
-          errorResponse.errors.push(mes);
+          errorResponse.errorsMessages.push(mes);
         });
         response.status(status).json(errorResponse);
         break;

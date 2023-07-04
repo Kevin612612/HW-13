@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
 import { BlogRepository } from '../blog/blog.repository';
 import { UserRepository } from '../user/users.repository';
@@ -22,8 +22,10 @@ export class BlogExistsValidation implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const blog = await this.blogRepository.getBlogById(value);
-    return !!blog;
-  }
+    if (!blog) {
+      throw new NotFoundException(["Blog doesn't exist"]);
+    }
+    return true;  }
 
   defaultMessage() {
     return `Blog doesn't exist`;
@@ -37,7 +39,10 @@ export class PostExistsValidation implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const post = await this.postRepository.findPostById(value);
-    return !!post;
+    if (!post) {
+      throw new NotFoundException(["Post doesn't exist"]);
+    }
+    return true;
   }
 
   defaultMessage() {
@@ -52,7 +57,10 @@ export class UserExistsValidation implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserById(value);
-    return !!user;
+    if (!user) {
+      throw new NotFoundException(["User doesn't exist"]);
+    }
+    return true;
   }
 
   defaultMessage() {
@@ -67,7 +75,10 @@ export class UserExistsByLoginOrEmail implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserByLoginOrEmail(value);
-    return !!user;
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return true;
   }
 
   defaultMessage() {
@@ -82,7 +93,10 @@ export class UserExistsByLogin implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserByLogin(value);
-    return !user;
+    if (user) {
+      throw new BadRequestException(["User with such login already exists"]);
+    }
+    return true;
   }
 
   defaultMessage() {
@@ -97,7 +111,10 @@ export class UserExistsByEmail implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserByEmail(value);
-    return !user;
+    if (user) {
+      throw new BadRequestException(["User with such email already exists"]);
+    }
+    return true;
   }
 
   defaultMessage() {

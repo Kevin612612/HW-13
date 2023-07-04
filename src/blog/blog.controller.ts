@@ -10,11 +10,7 @@ import {
   Put,
   Res,
   UseGuards,
-  HttpCode,
-  NotFoundException,
   HttpStatus,
-  BadRequestException,
-  HttpException,
   Req,
 } from '@nestjs/common';
 import { BlogIdDTO } from '../dto/id.dto';

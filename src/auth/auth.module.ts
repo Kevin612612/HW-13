@@ -5,18 +5,11 @@ import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { jwtConstants } from './constants';
-import { UsersService } from '../user/users.service';
-import { UserRepository } from '../user/users.repository';
 import { UserSchema } from '../user/users.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EmailModule } from '../email/email.module';
-import { EmailService } from '../email/email.service';
 import { UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail } from '../validation/validation';
-import { AccessTokenService } from '../tokens/accesstoken.service';
-import { RefreshTokenService } from '../tokens/refreshtoken.service';
-import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
 import { RefreshTokenSchema } from '../tokens/refreshtoken.schema';
-import { BlackListService } from '../black list/blacklist.service';
 import { TokenModule } from '../tokens/tokens.module';
 
 @Module({

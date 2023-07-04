@@ -90,16 +90,17 @@ export class UsersService {
         const dateB = new Date(b.createdAt);
         return (dateA.getTime() - dateB.getTime()) * order;
       });
-    } else {
-      usersViewtype = usersViewtype.sort((a, b) => {
-        const q = a[pageParams.sortBy] || '';
-        const e = b[pageParams.sortBy] || '';
-        return q.localeCompare(e, undefined, { sensitivity: 'case' });
-      });
-      if (pageParams.sortDirection == 'desc') {
-        usersViewtype = usersViewtype.reverse();
-      }
     }
+    // } else {
+    //   usersViewtype = usersViewtype.sort((a, b) => {
+    //     const q = a[pageParams.sortBy] || '';
+    //     const e = b[pageParams.sortBy] || '';
+    //     return (q.localeCompare(e, 'en-US', { caseFirst: 'upper' }));
+    //   });
+    //   if (pageParams.sortDirection == 'desc') {
+    //     usersViewtype = usersViewtype.reverse();
+    //   }
+    // }
 
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
