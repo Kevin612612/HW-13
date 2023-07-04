@@ -25,7 +25,8 @@ export class BlogExistsValidation implements ValidatorConstraintInterface {
     if (!blog) {
       throw new NotFoundException(["Blog doesn't exist"]);
     }
-    return true;  }
+    return true;
+  }
 
   defaultMessage() {
     return `Blog doesn't exist`;
@@ -94,7 +95,7 @@ export class UserExistsByLogin implements ValidatorConstraintInterface {
   async validate(value: string) {
     const user = await this.userRepository.findUserByLogin(value);
     if (user) {
-      throw new BadRequestException(["User with such login already exists"]);
+      throw new BadRequestException([{ message: 'User with such login already exists', field: 'login' }]);
     }
     return true;
   }
@@ -112,7 +113,7 @@ export class UserExistsByEmail implements ValidatorConstraintInterface {
   async validate(value: string) {
     const user = await this.userRepository.findUserByEmail(value);
     if (user) {
-      throw new BadRequestException(["User with such email already exists"]);
+      throw new BadRequestException([{ message: 'User with such email already exists', field: 'email' }]);
     }
     return true;
   }

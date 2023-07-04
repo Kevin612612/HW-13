@@ -28,6 +28,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       case HttpStatus.BAD_REQUEST:
         const errorResponse = { errorsMessages: [] };
         const responseBody: any = exception.getResponse();
+        console.log(responseBody);
+        
         responseBody.message.forEach(mes => {
           errorResponse.errorsMessages.push(mes);
         });
