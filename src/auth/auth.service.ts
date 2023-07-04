@@ -26,7 +26,6 @@ export class AuthService {
   //(1)
   async login(dto, deviceId, deviceName, IP) {
     const user = await this.usersService.findUserByLoginOrEmail(dto.loginOrEmail);
-    console.log(user);
     
     const passwordHash = await bcrypt.hash(dto.password, user.accountData.passwordSalt);
     if (passwordHash !== user.accountData.passwordHash) {

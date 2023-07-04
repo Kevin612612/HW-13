@@ -74,7 +74,7 @@ export class AuthController {
         secure: false,
       })
       .status(200)
-      .json(tokens.accessToken);
+      .json(tokens.accessToken.access_token);
   }
 
   @UseGuards(AuthGuardBearer)
