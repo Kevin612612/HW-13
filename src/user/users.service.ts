@@ -92,8 +92,8 @@ export class UsersService {
       });
     } else {
       usersViewtype = usersViewtype.sort((a, b) => {
-        const q = a[pageParams.sortBy];
-        const e = b[pageParams.sortBy];
+        const q = a[pageParams.sortBy] || '';
+        const e = b[pageParams.sortBy] || '';
         return q.login.localeCompare(e.login, undefined, { sensitivity: 'case' });
       });
       if (pageParams.sortDirection == 'desc') {
