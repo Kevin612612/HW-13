@@ -38,18 +38,19 @@ export class UsersService {
       searchEmailTerm: query.searchEmailTerm || '',
       pageSize: query.pageSize || 10,
     };
+
     const filter = pageParams.searchLoginTerm
       ? pageParams.searchEmailTerm
         ? {
             $or: [
               {
-                login: {
+                'accountData.login': {
                   $regex: pageParams.searchLoginTerm,
                   $options: 'i',
                 },
               },
               {
-                email: {
+                'accountData.email': {
                   $regex: pageParams.searchEmailTerm,
                   $options: 'i',
                 },
@@ -57,20 +58,22 @@ export class UsersService {
             ],
           }
         : {
-            login: {
+            'accountData.login': {
               $regex: pageParams.searchLoginTerm,
               $options: 'i',
             },
           }
       : pageParams.searchEmailTerm
       ? {
-          email: {
+          'accountData.email': {
             $regex: pageParams.searchEmailTerm,
             $options: 'i',
           },
         }
       : {};
     const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
+    const quantityOfDocs = await this.userRepository.countAllUsers(filter);
+    //transform view to view type
     let usersViewtype: UserViewType[] = users.map(obj => {
       return {
         id: obj.id,
@@ -79,15 +82,19 @@ export class UsersService {
         createdAt: obj.accountData.createdAt,
       };
     });
+    //sorting
+    const order = pageParams.sortDirection == 'desc' ? -1 : 1;
     if (pageParams.sortBy == 'createdAt') {
       usersViewtype = usersViewtype.sort((a, b) => {
-        const order = pageParams.sortDirection == 'desc' ? -1 : 1;    
         const dateA = new Date(a.createdAt);
         const dateB = new Date(b.createdAt);
-        return (dateA.getTime() - dateB.getTime())*order;
+        return (dateA.getTime() - dateB.getTime()) * order;
+      });
+    } else {
+      usersViewtype = usersViewtype.sort((a, b) => {
+        return a[pageParams.sortBy].localeCompare(b[pageParams.sortBy]) * order;
       });
     }
-    const quantityOfDocs = await this.userRepository.countAllUsers(filter);
 
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
