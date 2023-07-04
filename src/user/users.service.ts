@@ -96,9 +96,9 @@ export class UsersService {
         const e = b[pageParams.sortBy];
         return e - q;
       });
-    }
-    if (pageParams.sortDirection == 'desc') {
-      usersViewtype = usersViewtype.reverse();
+      if (pageParams.sortDirection == 'desc') {
+        usersViewtype = usersViewtype.reverse();
+      }
     }
 
     return {
