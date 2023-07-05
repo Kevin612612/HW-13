@@ -38,7 +38,7 @@ export class EmailService {
     const result = await this.userRepository.updateDate(userId, code); //update the date when the FIRST CODE was sent
     const message = `<h1>Thank for your registration</h1>
       <p>To finish registration please follow the link below:
-          <a href='https://hw-7-sigma.vercel.app/auth/registration-confirmation?code=${code}'>complete registration</a>
+          <a href='https://hw-13.vercel.app/auth/registration-confirmation?code=${code}'>complete registration</a>
       </p>`;
     return await this.mailerService
       .sendMail({
@@ -69,7 +69,7 @@ export class EmailService {
       const updatecode = await this.userRepository.updateCode(user, newCode);
       const message = `<h1>Thank for your registration</h1>
                 <p>To finish registration please follow the link below one more time:
-                <a href='https://hw-7-sigma.vercel.app/auth/registration-confirmation?code=${newCode}'>complete registration</a>
+                <a href='https://hw-13.vercel.app/auth/registration-confirmation?code=${newCode}'>complete registration</a>
                 </p>`;
       //send email with new code
       const sendEmail = await this.mailerService

@@ -27,6 +27,16 @@ import { AccessTokenService } from '../tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 
+// passwordRecovery
+// newPassword
+// login
+// newPairOfTokens
+// registrationConfirmation
+// registration
+// resendRegistrationCode
+// logout
+// getInfo
+
 @Controller('auth')
 export class AuthController {
   constructor(
