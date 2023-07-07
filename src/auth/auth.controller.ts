@@ -78,9 +78,7 @@ export class AuthController {
     const deviceName = 'device';
     const deviceId = await this.refreshTokensRepository.createDeviceId();
     //create tokens
-    const tokens = await this.authService.login(dto, deviceId, deviceName, IP);
-    console.log(tokens.accessToken.access_token.toString());
-    
+    const tokens = await this.authService.login(dto, deviceId, deviceName, IP);    
     //send them    
     res
       .cookie('refreshToken', tokens.refreshToken.value, {
@@ -88,8 +86,7 @@ export class AuthController {
         secure: false,
       })
       .status(200)
-      // .send(tokens.accessToken.access_token.toString());
-      .send('.');
+      .send(tokens.accessToken);
   }
 
   @UseGuards(AuthGuardBearer)

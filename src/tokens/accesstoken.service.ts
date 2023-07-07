@@ -26,7 +26,7 @@ export class AccessTokenService {
     //put it into db
     const addAccessToken = await this.userRepository.addAccessToken(user.id, accessToken, liveTimeInSeconds);
 
-    return { access_token: accessToken };
+    return { accessToken: accessToken };
   }
 
   //(2) retrieve payload from accessToken
