@@ -89,17 +89,17 @@ export class UserRepository {
 
   //(5) find user by login
   async findUserByLogin(login: string): Promise<UserDataType | undefined> {
-    return await this.userModel.findOne({ 'accountData.login': { $regex: login } }, { maxTimeMS: 30000 });
+    return await this.userModel.findOne({ 'accountData.login': { $regex: login } });
   }
 
   //(5.1) find user by email
   async findUserByEmail(email: string): Promise<UserDataType | undefined> {
-    return await this.userModel.findOne({ 'accountData.email': { $regex: email } }, { maxTimeMS: 30000 });
+    return await this.userModel.findOne({ 'accountData.email': { $regex: email } });
   }
 
   //(6) find user by passwordCode
   async findUserByPasswordCode(code: string): Promise<UserDataType | undefined> {
-    return await this.userModel.findOne({ 'passwordConfirmation.confirmationCode': code }, { maxTimeMS: 30000 });
+    return await this.userModel.findOne({ 'passwordConfirmation.confirmationCode': code });
   }
 
   //(7) method returns user by code

@@ -27,6 +27,8 @@ import { AccessTokenService } from '../tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
+import { EmailAlreadyConfirmed } from '../validation/validation';
+import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
 
 // passwordRecovery
 // newPassword
@@ -145,7 +147,7 @@ export class AuthController {
   }
 
   @Post('registration-email-resending')
-  async resendRegistrationCode(@Body() dto, @Res() res: Response) {
+  async resendRegistrationCode(@Body() dto: EmailResendDTO, @Res() res: Response) {
     const result = await this.emailService.sendEmailConfirmationMessageAgain(dto.email);
     if (!result) {
       res.sendStatus(HttpStatus.NOT_FOUND);

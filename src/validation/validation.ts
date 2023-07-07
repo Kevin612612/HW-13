@@ -58,7 +58,7 @@ export class UserExistsValidation implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserById(value);
-    
+
     if (!user) {
       throw new NotFoundException(["User doesn't exist"]);
     }
@@ -134,10 +134,34 @@ export class CodeAlreadyConfirmed implements ValidatorConstraintInterface {
     if (user.emailConfirmation.isConfirmed === true) {
       throw new BadRequestException([{ message: 'User already confirmed', field: 'code' }]);
     }
+    if (!user) {
+      throw new BadRequestException([{ message: "User doesn't exist ", field: 'code' }]);
+    }
     return true;
   }
 
   defaultMessage() {
-    return `User already confirmed`;
+    return `User already confirmed or doesn't exist`;
+  }
+}
+
+@ValidatorConstraint({ name: 'EmailAlreadyConfirmed', async: true })
+@Injectable()
+export class EmailAlreadyConfirmed implements ValidatorConstraintInterface {
+  constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
+
+  async validate(value: string) {
+    const user = await this.userRepository.findUserByEmail(value);
+    if (user.emailConfirmation.isConfirmed === true) {
+      throw new BadRequestException([{ message: 'User already confirmed', field: 'email' }]);
+    }
+    if (!user) {
+      throw new BadRequestException([{ message: "User doesn't exist ", field: 'email' }]);
+    }
+    return true;
+  }
+
+  defaultMessage() {
+    return `User already confirmed or doesn't exist`;
   }
 }

@@ -8,7 +8,7 @@ import { jwtConstants } from './constants';
 import { UserSchema } from '../user/users.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EmailModule } from '../email/email.module';
-import { UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail } from '../validation/validation';
+import { UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed } from '../validation/validation';
 import { RefreshTokenSchema } from '../tokens/refreshtoken.schema';
 import { TokenModule } from '../tokens/tokens.module';
 
@@ -27,7 +27,7 @@ import { TokenModule } from '../tokens/tokens.module';
     MongooseModule.forFeature([{ name: 'RefreshToken', schema: RefreshTokenSchema }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail],
+  providers: [AuthService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed],
   exports: [AuthService],
 })
 export class AuthModule {}
