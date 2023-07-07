@@ -39,6 +39,19 @@ export class UsersService {
       pageSize: query.pageSize || 10,
     };
 
+    if (!query.sortBy) {
+      pageParams.sortBy = 'accountData.createdAt';
+    } else {
+      pageParams.sortBy = 'accountData.' + query.sortBy;
+    }
+
+    if (query.sortBy === 'id') {
+      pageParams.sortBy = 'id';
+    }
+
+    console.log(pageParams);
+    
+
     const filter = pageParams.searchLoginTerm
       ? pageParams.searchEmailTerm
         ? {
@@ -71,6 +84,7 @@ export class UsersService {
           },
         }
       : {};
+
     const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
     const quantityOfDocs = await this.userRepository.countAllUsers(filter);
     //transform view to view type
