@@ -10,15 +10,19 @@ import { UserModule } from '../user/user.module';
     MailerModule.forRootAsync({
       useFactory: async (config: ConfigService) => ({
         transport: {
-          host: config.get('MAIL_HOST'),
+          // host: config.get('MAIL_HOST'),
+          host: 'smtp.gmail.com',
           secure: false,
           auth: {
-            user: config.get('SMTP_USERNAME'),
-            pass: config.get('SMTP_PASSWORD'),
+            // user: config.get('SMTP_USERNAME'),
+            user: 'kevin6121991@gmail.com',
+            // pass: config.get('SMTP_PASSWORD'),
+            pass: 'tmzgxltijltxyikc',
           },
         },
         defaults: {
-          from: `"Nice App" <${config.get('SMTP_USERNAME')}>`,
+          // from: `"Nice App" <${config.get('SMTP_USERNAME')}>`,
+          from: `"Nice App" <kevin6121991@gmail.com>`,
         },
         // template: {
         //   dir: join(__dirname, 'templates'),
