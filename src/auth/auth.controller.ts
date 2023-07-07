@@ -27,7 +27,6 @@ import { AccessTokenService } from '../tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
-import { EmailAlreadyConfirmed } from '../validation/validation';
 import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
 
 // passwordRecovery
@@ -80,14 +79,14 @@ export class AuthController {
     const deviceId = await this.refreshTokensRepository.createDeviceId();
     //create tokens
     const tokens = await this.authService.login(dto, deviceId, deviceName, IP);
-    //send them
+    //send them    
     res
       .cookie('refreshToken', tokens.refreshToken.value, {
         httpOnly: true,
         secure: false,
       })
       .status(200)
-      .json(tokens.accessToken.access_token.toString());
+      .send(tokens.accessToken.access_token.toString());
   }
 
   @UseGuards(AuthGuardBearer)
