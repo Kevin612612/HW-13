@@ -58,7 +58,6 @@ export class UserExistsValidation implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserById(value);
-    console.log(user);
     
     if (!user) {
       throw new NotFoundException(["User doesn't exist"]);
