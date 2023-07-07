@@ -153,6 +153,8 @@ export class EmailAlreadyConfirmed implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserByEmail(value);
+    console.log(user);
+    
 
     if (!user) {
       throw new BadRequestException([{ message: "User doesn't exist ", field: 'email' }]);
