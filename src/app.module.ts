@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -12,14 +12,11 @@ import { EmailModule } from './email/email.module';
 import { CommentsModule } from './comments/comments.module';
 import { TokenModule } from './tokens/tokens.module';
 import { BlackListModule } from './black list/blacklist.module';
-import { CheckRequestNumberMiddleware } from './middleware/checkRequestNumber.middleware';
-import { PutRequestIntoCacheMiddleware } from './middleware/putRequestIntoCache.middleware';
-import { AuthGuardBearer } from './guards/authBearer.guard';
 
 //root module
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env'] }),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.MONGO_URL),
     AuthModule,
     UserModule,

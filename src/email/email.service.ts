@@ -44,7 +44,7 @@ export class EmailService {
       .sendMail({
         to: email, // List of receivers email address
         from: 'kevin6121991@gmail.com', // Senders email address
-        subject: 'Confirmation Code', // Subject line
+        subject: 'confirm registration', // Subject line
         text: 'Hello', // plaintext body
         html: message, // HTML body content
       })
@@ -62,7 +62,7 @@ export class EmailService {
     if (
       user &&
       user.emailConfirmation.isConfirmed === false && //is not confirmed yet
-      new Date() > new Date(new Date(user.emailCodes[user.emailCodes.length - 1].sentAt).getTime() + 1000) //moment the last code has been sent + a minute
+      new Date() > new Date(new Date(user.emailCodes[user.emailCodes.length - 1].sentAt).getTime() + 60000) //moment the last code has been sent + a minute
     ) {
       //build new code
       const newCode = uuidv4();
@@ -76,7 +76,7 @@ export class EmailService {
         .sendMail({
           to: email, // List of receivers email address
           from: 'kevin6121991@gmail.com', // Senders email address
-          subject: 'new Confirmation Code', // Subject line
+          subject: 'confirm registration', // Subject line
           text: 'Hello', // plaintext body
           html: message, // HTML body content
         })
