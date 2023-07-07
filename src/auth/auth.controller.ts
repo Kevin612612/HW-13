@@ -129,7 +129,7 @@ export class AuthController {
   }
 
   @Post('registration-confirmation')
-  async registrationConfirmation(@Body() dto: CodeConfirmationDTO, @Res() res: Response) {
+  async registrationConfirmation(@Body() dto: CodeConfirmationDTO, @Res() res: Response) {    
     const result = await this.usersService.confirmCodeFromEmail(dto.code);
     if (!result) {
       res.sendStatus(HttpStatus.NOT_FOUND);

@@ -15,10 +15,10 @@ import add from 'date-fns/add';
 //(5)    findUserByLogin
 //(5.1)  findUserByEmail
 //(6)    findUserByPasswordCode
-//(7)    returns user by code
-//(8)    update status
-//(9)    update code
-//(10)   update date when the code was sent
+//(7)    findUserByCode
+//(8)    updateStatus
+//(9)    updateCode
+//(10)   updateDate when the code was sent
 //(11)   update salt and hash
 //(12)   add accessToken into db
 //(13)   add refreshToken into db
@@ -99,13 +99,12 @@ export class UserRepository {
 
   //(6) find user by passwordCode
   async findUserByPasswordCode(code: string): Promise<UserDataType | undefined> {
-    const result = await this.userModel.findOne({ 'passwordConfirmation.confirmationCode': code }, { maxTimeMS: 30000 });
-    return result ? result : undefined;
+    return await this.userModel.findOne({ 'passwordConfirmation.confirmationCode': code }, { maxTimeMS: 30000 });
   }
 
   //(7) method returns user by code
   async findUserByCode(code: string): Promise<UserDataType | undefined> {
-    return await this.userModel.findOne({ emailCodes: { $elemMatch: { code: code } } });
+    return await this.userModel.findOne({ emailCodes: { $elemMatch: { code: { $regex: code } } } });
   }
 
   //(8) method update status
