@@ -150,7 +150,7 @@ export class UsersService {
   //(4) confirm code
   async confirmCodeFromEmail(code: string): Promise<boolean> {
     const user = await this.userRepository.findUserByCode(code);
-    //check if user exists and email is not confirmed and code is not expired
+    //check if user exists and email is not confirmed yet and code is not expired
     if (user && user.emailConfirmation.isConfirmed !== true && new Date(user.emailConfirmation.expirationDate) > new Date()) {
       return await this.userRepository.updateStatus(user);
     }

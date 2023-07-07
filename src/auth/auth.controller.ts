@@ -26,6 +26,7 @@ import { BlackListService } from '../black list/blacklist.service';
 import { AccessTokenService } from '../tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
+import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
 
 // passwordRecovery
 // newPassword
@@ -128,7 +129,7 @@ export class AuthController {
   }
 
   @Post('registration-confirmation')
-  async registrationConfirmation(@Body() dto, @Res() res: Response) {
+  async registrationConfirmation(@Body() dto: CodeConfirmationDTO, @Res() res: Response) {
     const result = await this.usersService.confirmCodeFromEmail(dto.code);
     if (!result) {
       res.sendStatus(HttpStatus.NOT_FOUND);

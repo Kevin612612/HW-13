@@ -123,3 +123,21 @@ export class UserExistsByEmail implements ValidatorConstraintInterface {
     return `User with such email already exists`;
   }
 }
+
+@ValidatorConstraint({ name: 'CodeAlreadyConfirmed', async: true })
+@Injectable()
+export class CodeAlreadyConfirmed implements ValidatorConstraintInterface {
+  constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
+
+  async validate(value: string) {
+    const user = await this.userRepository.findUserByCode(value);
+    if (user.emailConfirmation.isConfirmed === true) {
+      throw new BadRequestException([{ message: 'User already confirmed', field: 'code' }]);
+    }
+    return true;
+  }
+
+  defaultMessage() {
+    return `User already confirmed`;
+  }
+}
