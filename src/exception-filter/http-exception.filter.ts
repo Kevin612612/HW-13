@@ -27,9 +27,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       //PIPE VALIDATION: INPUT DATA ARE NOT SATISFIED TO VALIDATION IN DTO SCHEMA
       case HttpStatus.BAD_REQUEST:
         const errorResponse = { errorsMessages: [] };
-        const responseBody: any = exception.getResponse();
-        console.log(responseBody);
-        
+        const responseBody: any = exception.getResponse();        
         responseBody.message.forEach(mes => {
           errorResponse.errorsMessages.push(mes);
         });

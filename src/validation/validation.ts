@@ -131,12 +131,13 @@ export class CodeAlreadyConfirmed implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserByCode(value);
-    if (user.emailConfirmation.isConfirmed === true) {
-      throw new BadRequestException([{ message: 'User already confirmed', field: 'code' }]);
-    }
     if (!user) {
       throw new BadRequestException([{ message: "User doesn't exist ", field: 'code' }]);
     }
+    if (user.emailConfirmation.isConfirmed === true) {
+      throw new BadRequestException([{ message: 'User already confirmed', field: 'code' }]);
+    }
+
     return true;
   }
 
@@ -152,11 +153,12 @@ export class EmailAlreadyConfirmed implements ValidatorConstraintInterface {
 
   async validate(value: string) {
     const user = await this.userRepository.findUserByEmail(value);
-    if (user.emailConfirmation.isConfirmed === true) {
-      throw new BadRequestException([{ message: 'User already confirmed', field: 'email' }]);
-    }
+
     if (!user) {
       throw new BadRequestException([{ message: "User doesn't exist ", field: 'email' }]);
+    }
+    if (user.emailConfirmation.isConfirmed === true) {
+      throw new BadRequestException([{ message: 'User already confirmed', field: 'email' }]);
     }
     return true;
   }
