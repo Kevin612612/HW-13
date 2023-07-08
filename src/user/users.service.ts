@@ -49,9 +49,6 @@ export class UsersService {
       pageParams.sortBy = 'id';
     }
 
-    console.log(pageParams);
-    
-
     const filter = pageParams.searchLoginTerm
       ? pageParams.searchEmailTerm
         ? {
@@ -105,16 +102,6 @@ export class UsersService {
         return (dateA.getTime() - dateB.getTime()) * order;
       });
     }
-    // } else {
-    //   usersViewtype = usersViewtype.sort((a, b) => {
-    //     const q = a[pageParams.sortBy] || '';
-    //     const e = b[pageParams.sortBy] || '';
-    //     return (q.localeCompare(e, 'en-US', { caseFirst: 'upper' }));
-    //   });
-    //   if (pageParams.sortDirection == 'desc') {
-    //     usersViewtype = usersViewtype.reverse();
-    //   }
-    // }
 
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),

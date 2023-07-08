@@ -58,15 +58,6 @@ export class EmailService {
 
   async sendEmailConfirmationMessageAgain(email: string): Promise<boolean> {
     const user = await this.userRepository.findUserByLoginOrEmail(email); //find user by email
-    console.log(
-        new Date() > new Date(new Date(user.emailCodes[user.emailCodes.length - 1].sentAt).getTime() + 100)
-    );
-    console.log(
-        user.emailConfirmation.isConfirmed === false //is not confirmed yet
-    );
-    console.log(
-      user
-    );
     //if user exists and code is not confirmed and duration between now and moment the code's been created more minute
     if (
       user &&

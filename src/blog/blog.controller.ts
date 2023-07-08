@@ -17,7 +17,7 @@ import { BlogIdDTO } from '../dto/id.dto';
 import { PostDTO } from '../post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { PostService } from '../post/post.service';
-import { BlogTypeSchema } from '../types/blog';
+import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogService } from './blog.service';
 import { Response } from 'express';
 import { BlogDTO } from './dto/blogInputDTO';
@@ -39,7 +39,7 @@ export class BlogController {
 
   @UseGuards(AuthGuardBasic)
   @Post()
-  async createBlog(@Body() dto: BlogDTO) {
+  async createBlog(@Body() dto: BlogDTO): Promise<BlogViewType | string[]> {
     return await this.blogService.createBlog(dto);
   }
 

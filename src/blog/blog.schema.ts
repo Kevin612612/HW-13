@@ -38,6 +38,9 @@ export class Blog {
 
   @Prop({ required: true, default: false })
   isMembership: boolean;
+
+  @Prop({ versionKey: true })
+  __v: number;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

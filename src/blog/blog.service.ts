@@ -4,6 +4,9 @@ import { BlogDTO } from './dto/blogInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogRepository } from './blog.repository';
+import { Blog } from './blog.class';
+import mongoose from 'mongoose';
+import { resourceLimits } from 'worker_threads';
 
 @Injectable()
 export class BlogService {
@@ -17,11 +20,7 @@ export class BlogService {
       searchNameTerm: query.searchNameTerm || '',
       pageSize: query.pageSize || 10,
     };
-    const blogs = await this.blogRepository.findAll(
-      pageParams.sortBy,
-      pageParams.sortDirection,
-      pageParams.searchNameTerm,
-    );
+    const blogs = await this.blogRepository.findAll(pageParams.sortBy, pageParams.sortDirection, pageParams.searchNameTerm);
     const quantityOfDocs = await this.blogRepository.countAllBlogs(pageParams.searchNameTerm);
 
     return {
@@ -29,27 +28,36 @@ export class BlogService {
       page: +pageParams.pageNumber,
       pageSize: +pageParams.pageSize,
       totalCount: quantityOfDocs,
-      items: blogs.slice(
-        (+pageParams.pageNumber - 1) * +pageParams.pageSize,
-        +pageParams.pageNumber * +pageParams.pageSize,
-      ),
+      items: blogs.slice((+pageParams.pageNumber - 1) * +pageParams.pageSize, +pageParams.pageNumber * +pageParams.pageSize),
     };
   }
 
-  async createBlog(dto: BlogDTO): Promise<BlogViewType> {
+  async createBlog(dto: BlogDTO): Promise<BlogViewType | string[]> {
     const blogId = await this.blogRepository.createBlogId();
-    const blogObject = {
-      _id: new ObjectId(),
-      id: blogId,
-      name: dto.name,
-      description: dto.description,
-      websiteUrl: dto.websiteUrl,
-      createdAt: new Date().toISOString(),
-      isMembership: false,
-    };
-    const createdBlog = await this.blogRepository.createBlog(blogObject);
-    const { _id, __v, ...blogWithout_id } = createdBlog.toObject();
-    return blogWithout_id;
+    let newBlog = new Blog(this.blogRepository); //empty blog
+    newBlog = await newBlog.addAsyncParams(dto);
+    // put this new blog into db
+    try {
+      const result = await this.blogRepository.createBlog(newBlog);
+      return {
+        id: result.id,
+        name: result.name,
+        description: result.description,
+        websiteUrl: result.websiteUrl,
+        createdAt: result.createdAt,
+        isMembership: result.isMembership,
+      };
+    } catch (err: any) {
+      // throw new Exception()
+      const validationErrors = [];
+      if (err instanceof mongoose.Error.ValidationError) {
+        for (const path in err.errors) {
+          const error = err.errors[path].message;
+          validationErrors.push(error);
+        }
+      }
+      return validationErrors;
+    }
   }
 
   async getBlogById(blogId: string): Promise<any> {
