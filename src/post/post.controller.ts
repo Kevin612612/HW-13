@@ -5,6 +5,7 @@ import { PostsTypeSchema } from '../types/post';
 import { PostService } from './post.service';
 import { PostIdDTO } from '../dto/id.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
+import { AuthGuardBasic } from '../guards/authBasic.guard';
 
 @Controller('posts')
 export class PostController {
@@ -17,7 +18,7 @@ export class PostController {
     return await this.postService.findAll(query, userId);
   }
 
-  @UseGuards(AuthGuardBearer)
+  @UseGuards(AuthGuardBasic)
   @Post()
   async createPost(@Body() dto: PostDTO) {
     return await this.postService.createPost(dto);

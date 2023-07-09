@@ -1,14 +1,10 @@
-import { IsAlpha, IsAlphanumeric, IsEmpty, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class BlogDTO {
   @IsString()
   @Matches(/^(?!\s*$).+/)
   @Length(1, 15)
   @IsNotEmpty()
-  // @IsAlphanumeric()
-  // @IsAlpha()
-  // @IsNotEmpty()
-  @Length(0, 15)
   name: string;
 
   @Length(0, 500)

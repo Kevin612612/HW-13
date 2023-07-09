@@ -3,7 +3,7 @@ import { BlogRepository } from '../blog/blog.repository';
 import { PostRepository } from './post.repository';
 import { PostDTO } from '../post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
-import { PostsTypeSchema, PostViewType } from '../types/post';
+import { PostLightViewType, PostsTypeSchema, PostViewType } from '../types/post';
 import { Post } from './post.class';
 import { Comment } from '../comments/comment.class';
 import mongoose from 'mongoose';
@@ -154,14 +154,18 @@ export class PostService {
   }
 
   //(5) method creates post with specific blogId
-  async createPost(dto: PostDTO): Promise<PostViewType | undefined | null | number | string[]> {
+  async createPost(dto: PostDTO): Promise<PostLightViewType | string[]> {
     let newPost = new Post(this.postRepository, this.blogRepository); //empty post
     newPost = await newPost.addAsyncParams(dto); // fill post with async params
     // put this new post into db
     try {
       const createdPost = await this.postRepository.createPost(newPost);
-      //find this created post
-      return await this.postRepository.findPostById(newPost.id);
+      return {
+        title: createdPost.title,
+        shortDescription: createdPost.shortDescription,
+        content: createdPost.content,
+        blogId: createdPost.blogId,
+      };
     } catch (err: any) {
       const validationErrors = [];
       if (err instanceof mongoose.Error.ValidationError) {
@@ -194,7 +198,7 @@ export class PostService {
       }
     }
 
-    //return viewModel converted from dataModel
+    //return viewModel converted from dataModel into view with 3 last assess
     return {
       id: post.id,
       title: post.title,

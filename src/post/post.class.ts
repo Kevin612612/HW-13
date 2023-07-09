@@ -20,6 +20,7 @@ export class Post {
     public content: string = '',
     public blogId: string = '',
     public blogName: string = '',
+    public __v: number = 0,
   ) {
     this._id = new ObjectId();
     id;
@@ -36,6 +37,7 @@ export class Post {
       newestLikes: [],
     };
     this.userAssess = [];
+    this.__v = 0;
   }
 
   public async addAsyncParams(dto: PostDTO) {

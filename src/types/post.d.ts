@@ -28,6 +28,14 @@ export type ExtendedLikesInfo = {
 //################################################################################################################
 
 //POST VIEW TYPE
+export type PostLightViewType = {
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+};
+
+//POST VIEW TYPE
 export type PostViewType = {
   id: string;
   title: string;

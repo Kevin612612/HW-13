@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post>;
 
-@Schema()
+@Schema({ _id : false })
 export class NewestLikes {
   @Prop()
   userId: string;
@@ -18,7 +18,7 @@ export class NewestLikes {
 
 export const NewestLikesSchema = SchemaFactory.createForClass(NewestLikes);
 
-@Schema()
+@Schema({ _id : false })
 export class ExtendedLikesInfo {
   @Prop()
   likesCount: number;
@@ -93,6 +93,9 @@ export class Post {
 
   @Prop({ type: [UserAssesSchema] })
   userAssess: any;
+
+  @Prop({ versionKey: true })
+  __v: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

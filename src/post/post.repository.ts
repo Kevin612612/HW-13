@@ -72,7 +72,7 @@ export class PostRepository {
   }
 
   //(3) method creates new post
-  async createPost(postObject: any): Promise<any> {
+  async createPost(postObject: any): Promise<PostDataType | undefined> {
     const createdPost = new this.postModel(postObject);
     return await createdPost.save();
   }
@@ -84,7 +84,7 @@ export class PostRepository {
   }
 
   //(4.1) method returns post by ID as Data Model
-  async findPostByIdDbType(postId: string): Promise<any> {
+  async findPostByIdDbType(postId: string): Promise<PostDataType | undefined> {
     const result = await this.postModel.findOne({ id: postId }).exec();
     return result;
   }
