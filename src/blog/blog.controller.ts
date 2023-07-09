@@ -12,7 +12,6 @@ import {
   UseGuards,
   HttpStatus,
   Req,
-  HttpCode,
 } from '@nestjs/common';
 import { BlogIdDTO } from '../dto/id.dto';
 import { PostDTO } from '../post/dto/postInputDTO';
@@ -80,7 +79,6 @@ export class BlogController {
     }
   }
 
-  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuardBasic)
   @Delete('/:blogId')
   async deleteBlog(@Param() params: BlogIdDTO) {
