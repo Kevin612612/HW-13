@@ -3,7 +3,7 @@ import { BlogRepository } from '../blog/blog.repository';
 import { PostRepository } from './post.repository';
 import { PostDTO } from '../post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
-import { PostLightViewType, PostsTypeSchema, PostViewType } from '../types/post';
+import { PostDataType, PostsTypeSchema, PostViewType } from '../types/post';
 import { Post } from './post.class';
 import { Comment } from '../comments/comment.class';
 import mongoose from 'mongoose';
@@ -154,17 +154,21 @@ export class PostService {
   }
 
   //(5) method creates post with specific blogId
-  async createPost(dto: PostDTO): Promise<PostLightViewType | string[]> {
+  async createPost(dto: PostDTO): Promise<PostViewType | string[]> {
     let newPost = new Post(this.postRepository, this.blogRepository); //empty post
     newPost = await newPost.addAsyncParams(dto); // fill post with async params
     // put this new post into db
     try {
       const createdPost = await this.postRepository.createPost(newPost);
       return {
+        id: createdPost.id,
         title: createdPost.title,
         shortDescription: createdPost.shortDescription,
         content: createdPost.content,
         blogId: createdPost.blogId,
+        blogName: createdPost.blogName,
+        createdAt: createdPost.createdAt,
+        extendedLikesInfo: createdPost.extendedLikesInfo,
       };
     } catch (err: any) {
       const validationErrors = [];

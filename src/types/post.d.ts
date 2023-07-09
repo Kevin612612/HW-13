@@ -18,7 +18,7 @@ export type UserAssessType = {
   assess: keyof typeof Assess;
 };
 
-export type ExtendedLikesInfo = {
+export type ExtendedLikesInfoType = {
   likesCount: number;
   dislikesCount: number;
   myStatus: string;
@@ -28,12 +28,12 @@ export type ExtendedLikesInfo = {
 //################################################################################################################
 
 //POST VIEW TYPE
-export type PostLightViewType = {
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-};
+// export type PostLightViewType = {
+//   title: string;
+//   shortDescription: string;
+//   content: string;
+//   blogId: string;
+// };
 
 //POST VIEW TYPE
 export type PostViewType = {
@@ -44,7 +44,7 @@ export type PostViewType = {
   blogId: string;
   blogName: string;
   createdAt: string;
-  extendedLikesInfo: ExtendedLikesInfo;
+  extendedLikesInfo: ExtendedLikesInfoType;
 };
 
 //POST DATA TYPE
@@ -57,7 +57,7 @@ export type PostDataType = {
   blogId: string;
   blogName: string;
   createdAt: string;
-  extendedLikesInfo: ExtendedLikesInfo;
+  extendedLikesInfo: ExtendedLikesInfoType;
   userAssess: UserAssessType[];
   __v: number;
 };

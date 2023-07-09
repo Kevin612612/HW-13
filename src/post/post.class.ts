@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { ExtendedLikesInfo, UserAssessType } from '../types/post';
+import { ExtendedLikesInfoType, UserAssessType } from '../types/post';
 import { PostRepository } from './post.repository';
 import { Inject } from '@nestjs/common';
 import { PostDTO } from './dto/postInputDTO';
@@ -8,7 +8,7 @@ import { BlogRepository } from '../blog/blog.repository';
 export class Post {
   public _id: ObjectId;
   public createdAt: string;
-  public extendedLikesInfo: ExtendedLikesInfo;
+  public extendedLikesInfo: ExtendedLikesInfoType;
   public userAssess: UserAssessType[];
 
   constructor(
