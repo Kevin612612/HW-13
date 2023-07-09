@@ -21,7 +21,7 @@ import { TokenModule } from '../tokens/tokens.module';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      // signOptions: { expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME },
+      signOptions: { expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME },
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'RefreshToken', schema: RefreshTokenSchema }]),
