@@ -3,8 +3,8 @@ import { IsAlpha, IsAlphanumeric, IsEmpty, IsNotEmpty, Length, Matches } from 'c
 export class BlogDTO {
   // @Matches(/^[a-zA-Z0-9_-]*$/)
   // @IsAlphanumeric()
-  @IsAlpha()
-  @IsNotEmpty()
+  // @IsAlpha()
+  // @IsNotEmpty()
   @Length(0, 15)
   name: string;
 
