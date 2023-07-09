@@ -2,6 +2,7 @@ import { Length, Matches } from 'class-validator';
 
 export class BlogDTO {
   @Length(0, 15)
+  @Matches('^[a-zA-Z0-9_-]*$')
   name: string;
 
   @Length(0, 500)
