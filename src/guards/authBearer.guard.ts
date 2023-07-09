@@ -41,7 +41,7 @@ export class AuthGuardBearer implements CanActivate {
       }
     }
 
-    // No Bearer token, check for the refresh token
+    // No Bearer token, so check for the refresh token
     const refreshToken: string = request.cookies.refreshToken;
     if (!refreshToken) {
       throw new BadRequestException(['Refresh token not found']);

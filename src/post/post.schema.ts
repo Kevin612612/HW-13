@@ -34,7 +34,7 @@ export class ExtendedLikesInfo {
 }
 export const ExtendedLikesInfoSchema = SchemaFactory.createForClass(ExtendedLikesInfo);
 
-@Schema()
+@Schema({ _id : false })
 export class UserAsses {
   @Prop()
   userIdLike: string;

@@ -1,9 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BlogRepository } from '../blog/blog.repository';
 import { PostRepository } from './post.repository';
 import { PostDTO } from '../post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
-import { PostDataType, PostsTypeSchema, PostViewType } from '../types/post';
+import { PostsTypeSchema, PostViewType } from '../types/post';
 import { Post } from './post.class';
 import { Comment } from '../comments/comment.class';
 import mongoose from 'mongoose';
@@ -253,10 +253,10 @@ export class PostService {
   }
 
   //(9) method changes like status
-  async changeLikeStatus(postId: string, likeStatus: string, user: UserDataType): Promise<number> {
+  async changeLikeStatus(postId: string, likeStatus: string, user: UserDataType): Promise<boolean> {
     //find post
     const post = await this.postRepository.findPostByIdDbType(postId);
-    if (!post) return 404;
+    if (!post) throw new NotFoundException(["Post with such Id doesn't exist"]);
     //change myStatus / myStatus = current assess
     const result = await this.postRepository.changeLikeStatus(postId, likeStatus);
     //check whether this user left assess to this post
@@ -304,6 +304,6 @@ export class PostService {
         const result1 = await this.postRepository.deleteDislike(post, user.id);
       }
     }
-    return 204;
+    return true;
   }
 }
