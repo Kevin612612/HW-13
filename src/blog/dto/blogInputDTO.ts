@@ -1,7 +1,7 @@
 import { IsAlphanumeric, IsEmpty, IsNotEmpty, Length, Matches } from 'class-validator';
 
 export class BlogDTO {
-  @Matches(/^[a-zA-Z0-9_-]*$/)
+  // @Matches(/^[a-zA-Z0-9_-]*$/)
   // @IsAlphanumeric()
   @IsNotEmpty()
   @Length(0, 15)
