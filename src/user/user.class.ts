@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import * as bcrypt from 'bcrypt';
 import { CodeDataType, UserAccountDataType, ConformationType, TokenType } from '../types/users';
-import { UserRepository } from './users.repository';
+import { UserRepository } from './user.repository';
 import { Inject } from '@nestjs/common';
 import {v4 as uuidv4} from 'uuid'
 import { UserDTO } from './dto/userInputDTO';

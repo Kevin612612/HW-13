@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokensRepository } from './refreshtoken.repository';
-import { UserRepository } from '../user/users.repository';
+import { UserRepository } from '../user/user.repository';
 import { RefreshTokensDataModel } from '../types/refreshtoken';
 import { jwtConstants } from '../auth/constants';
 import { BlackListRepository } from '../black list/blacklist.repository';

@@ -19,6 +19,6 @@ import { Post, PostSchema } from '../post/post.schema';
   ],
   controllers: [CommentController],
   providers: [CommentService, CommentRepository, PostRepository, BlogRepository],
-  exports: [CommentRepository],
+  exports: [CommentService, CommentRepository],
 })
 export class CommentsModule {}

@@ -1,9 +1,9 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../user/users.service';
+import { UsersService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '../user/users.repository';
+import { UserRepository } from '../user/user.repository';
 import { jwtConstants } from './constants';
 import { AccessTokenService } from '../tokens/accesstoken.service';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';

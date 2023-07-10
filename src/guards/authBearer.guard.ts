@@ -1,9 +1,8 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
-import { UserRepository } from '../user/users.repository';
+import { UserRepository } from '../user/user.repository';
 import { BlackListRepository } from '../black list/blacklist.repository';
 
 @Injectable()
@@ -44,11 +43,13 @@ export class AuthGuardBearer implements CanActivate {
     // No Bearer token, so check for the refresh token
     const refreshToken: string = request.cookies.refreshToken;
     if (!refreshToken) {
-      throw new BadRequestException(['Refresh token not found']);
+      // throw new BadRequestException(['Refresh token not found']);
+      throw new UnauthorizedException();
     }
     const isInBlackList = await this.blackListRepository.findToken(refreshToken);
     if (isInBlackList) {
-      throw new BadRequestException(['Refresh token is already invalid']);
+      // throw new BadRequestException(['Refresh token is already invalid']);
+      throw new UnauthorizedException();
     }
     if (refreshToken) {
       try {
@@ -56,11 +57,13 @@ export class AuthGuardBearer implements CanActivate {
 
         const isValid = await this.refreshTokenService.isPayloadValid(payload);
         if (!isValid) {
-          throw new BadRequestException(['Invalid payload']);
+          // throw new BadRequestException(['Invalid payload']);
+          throw new UnauthorizedException();
         }
         const expired = await this.refreshTokenService.isTokenExpired(payload);
         if (expired) {
-          throw new BadRequestException(['Token has expired']);
+          // throw new BadRequestException(['Token has expired']);
+          throw new UnauthorizedException();
         }
         //put user into request
         const user = await this.userRepository.findUserById(payload.userId);

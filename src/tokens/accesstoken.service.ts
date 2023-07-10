@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from '../user/users.repository';
+import { UserRepository } from '../user/user.repository';
 import { jwtConstants } from '../auth/constants';
 import { UserDataType } from '../types/users';
 import { AccessTokensPayloadType } from './refreshtoken.class';

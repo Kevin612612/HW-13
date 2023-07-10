@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
 import { BlogRepository } from '../blog/blog.repository';
-import { UserRepository } from '../user/users.repository';
+import { UserRepository } from '../user/user.repository';
 import { PostRepository } from '../post/post.repository';
 
 @ValidatorConstraint({ name: 'customValidation', async: false })

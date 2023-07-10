@@ -2,7 +2,7 @@ import { Controller, Delete, Get, HttpCode, HttpStatus, Inject } from '@nestjs/c
 import { AppService } from './app.service';
 import { BlogRepository } from './blog/blog.repository';
 import { PostRepository } from './post/post.repository';
-import { UserRepository } from './user/users.repository';
+import { UserRepository } from './user/user.repository';
 import { RefreshTokensRepository } from './tokens/refreshtoken.repository';
 
 @Controller()

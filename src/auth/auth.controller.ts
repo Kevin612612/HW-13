@@ -15,13 +15,13 @@ import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { passwordRecoveryDTO } from './dto/passwordRecovery.dto';
 import { UserDTO } from '../user/dto/userInputDTO';
-import { UsersService } from '../user/users.service';
+import { UsersService } from '../user/user.service';
 import { Response, Request } from 'express';
 import { EmailService } from '../email/email.service';
 
 import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
-import { UserRepository } from '../user/users.repository';
+import { UserRepository } from '../user/user.repository';
 import { BlackListService } from '../black list/blacklist.service';
 import { AccessTokenService } from '../tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
@@ -114,7 +114,7 @@ export class AuthController {
       res
         .cookie('refreshToken', refreshTokenObject.value, {
           httpOnly: true,
-          secure: false,
+          secure: true,
         })
         .status(200)
         .json(accessTokenObject);

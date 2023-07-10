@@ -5,12 +5,7 @@ import { BlogController } from './blog.controller';
 import { BlogService } from './blog.service';
 import { BlogRepository } from './blog.repository';
 import { BlogExistsValidation } from '../validation/validation';
-import { PostService } from '../post/post.service';
-import { PostRepository } from '../post/post.repository';
-import { Post, PostSchema } from '../post/post.schema';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
-import { CommentRepository } from '../comments/comment.repository';
-import { Comment, CommentSchema } from '../comments/comment.schema';
 import { CommentsModule } from '../comments/comments.module';
 import { PostModule } from '../post/post.module';
 
@@ -20,8 +15,8 @@ import { PostModule } from '../post/post.module';
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
     ]),
+    PostModule,
     CommentsModule,
-    PostModule
   ],
   controllers: [BlogController],
   providers: [BlogService, BlogRepository, BlogExistsValidation],

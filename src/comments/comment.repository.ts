@@ -33,128 +33,146 @@ export class CommentRepository {
     return commentId.toString();
   }
 
+  //(1) method returns comments by postId
+  async getAllCommentsByPost(postId: string, sortBy: any, sortDirection: any): Promise<any[]> {
+    const order = sortDirection === 'asc' ? 1 : -1; // порядок сортировки
+    return this.commentModel
+      .find({ postId: postId })
+      .lean()
+      .sort({ [sortBy]: order })
+      .select({ _id: 0, __v: 0 }); //postId: 0, userAssess: 0
+  }
 
-    //(1) method returns comments by postId
-    async allComments(postId: string, sortBy: any, sortDirection: any): Promise<any[]> {
-        const order = sortDirection === 'asc' ? 1 : -1; // порядок сортировки
-        return this.commentModel
-            .find({postId: postId})
-            .lean()
-            .sort({[sortBy]: order})
-            .select({_id: 0, __v: 0}) //postId: 0, userAssess: 0
-    }
+  //(1.1) count of all comments
+  async countAllCommentsByPost(postId: string): Promise<number> {
+    return await this.commentModel.countDocuments({ postId: postId });
+  }
 
+  //(2) method create new comment
+  async newPostedComment(newComment: any): Promise<boolean> {
+    const result = await this.commentModel.insertMany(newComment);
+    return true;
+  }
 
-    //(2) method create new comment
-    async newPostedComment(newComment: any): Promise<boolean> {
-        const result = await this.commentModel.insertMany(newComment)
-        return true
-    }
+  //(3) method update comment by Id
+  async updateCommentById(commentId: string, content: string): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: commentId },
+      {
+        $set: {
+          content: content,
+        },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 
+  //(4) method delete comment by Id
+  async deleteComment(id: string): Promise<boolean> {
+    const result = await this.commentModel.deleteOne({ id: id });
+    return result.deletedCount === 1;
+  }
 
-    //(3) method update comment by Id
-    async updateCommentById(commentId: string, content: string): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: commentId}, {
-            $set: {
-                content: content
-            }
-        })
-        return result.matchedCount === 1
-    }
+  //(5) method returns comment by Id as view model
+  async findCommentById(id: string): Promise<any | undefined | null> {
+    return this.commentModel.findOne({ id: id }).select({ _id: 0, __v: 0, postId: 0 });
+  }
 
+  //(5-1) method returns comment by Id as data model
+  async findCommentByIdDbType(id: string): Promise<any | undefined | null> {
+    return this.commentModel.findOne({ id: id }).select({ _id: 0, __v: 0, postId: 0 });
+  }
 
-    //(4) method delete comment by Id
-    async deleteComment(id: string): Promise<boolean> {
-        const result = await this.commentModel.deleteOne({id: id})
-        return result.deletedCount === 1
-    }
+  //(6) method change like status by Id
+  async changeLikeStatus(id: string, likeStatus: string): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: id },
+      {
+        $set: {
+          'likesInfo.myStatus': likeStatus,
+        },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 
+  //(7) add like
+  async addLike(comment: CommentDataType, userId: string): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: comment.id },
+      {
+        $set: {
+          'likesInfo.likesCount': comment!.likesInfo.likesCount + 1,
+        },
+        $push: { userAssess: { userIdLike: userId, assess: 'Like' } },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 
-    //(5) method returns comment by Id as view model
-    async findCommentById(id: string): Promise<any | undefined | null> {
-        return this.commentModel.findOne({id: id}).select({_id: 0, __v: 0, postId: 0})
-    }
+  //(7-1) delete like
+  async deleteLike(comment: CommentDataType, userId: string): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: comment.id },
+      {
+        $set: {
+          'likesInfo.likesCount': comment.likesInfo.likesCount - 1,
+        },
+        $pull: { userAssess: { userIdLike: userId, assess: 'Like' } },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 
+  //(8) add disLike
+  async addDislike(comment: CommentDataType, userId: string): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: comment.id },
+      {
+        $set: {
+          'likesInfo.dislikesCount': comment!.likesInfo.dislikesCount + 1,
+        },
+        $push: { userAssess: { userIdLike: userId, assess: 'Dislike' } },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 
-    //(5-1) method returns comment by Id as data model
-    async findCommentByIdDbType(id: string): Promise<any | undefined | null> {
-        return this.commentModel.findOne({id: id}).select({_id: 0, __v: 0, postId: 0})
-    }
+  //(8-1) delete disLike
+  async deleteDislike(comment: CommentDataType, userId: string): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: comment.id },
+      {
+        $set: {
+          'likesInfo.dislikesCount': comment!.likesInfo.dislikesCount - 1,
+        },
+        $pull: { userAssess: { userIdLike: userId, assess: 'Dislike' } },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 
+  //(9) set myStatus None
+  async setNone(comment: CommentDataType): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: comment.id },
+      {
+        $set: {
+          'likesInfo.myStatus': 'None',
+        },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 
-    //(6) method change like status by Id
-    async changeLikeStatus(id: string, likeStatus: string): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: id}, {
-            $set: {
-                'likesInfo.myStatus': likeStatus
-            }
-        })
-        return result.matchedCount === 1
-    }
-
-    //(7) add like
-    async addLike(comment: CommentDataType, userId: string): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: comment.id}, {
-            $set: {
-                'likesInfo.likesCount': comment!.likesInfo.likesCount + 1
-            },
-            $push: {userAssess: {userIdLike: userId, assess: 'Like'}}
-
-        })
-        return result.matchedCount === 1
-    }
-
-    //(7-1) delete like
-    async deleteLike(comment: CommentDataType, userId: string): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: comment.id}, {
-            $set: {
-                'likesInfo.likesCount': comment.likesInfo.likesCount - 1
-            },
-            $pull: {userAssess: {userIdLike: userId, assess: 'Like'}}
-        })
-        return result.matchedCount === 1
-    }
-
-
-    //(8) add disLike
-    async addDislike(comment: CommentDataType, userId: string): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: comment.id}, {
-            $set: {
-                'likesInfo.dislikesCount': comment!.likesInfo.dislikesCount + 1
-            },
-            $push: {userAssess: {userIdLike: userId, assess: 'Dislike'}}
-        })
-        return result.matchedCount === 1
-    }
-
-
-    //(8-1) delete disLike
-    async deleteDislike(comment: CommentDataType, userId: string): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: comment.id}, {
-            $set: {
-                'likesInfo.dislikesCount': comment!.likesInfo.dislikesCount - 1
-            },
-            $pull: {userAssess: {userIdLike: userId, assess: 'Dislike'}}
-        })
-        return result.matchedCount === 1
-    }
-
-    //(9) set myStatus None
-    async setNone(comment: CommentDataType): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: comment.id}, {
-            $set: {
-                'likesInfo.myStatus': 'None'
-            }
-        })
-        return result.matchedCount === 1
-    }
-
-    //(10) add None
-    async addNone(comment: CommentDataType, userId: string): Promise<boolean> {
-        const result = await this.commentModel.updateOne({id: comment.id}, {
-            $push: {userAssess: {userIdLike: userId, assess: 'None'}}
-        })
-        return result.matchedCount === 1
-    }
-
+  //(10) add None
+  async addNone(comment: CommentDataType, userId: string): Promise<boolean> {
+    const result = await this.commentModel.updateOne(
+      { id: comment.id },
+      {
+        $push: { userAssess: { userIdLike: userId, assess: 'None' } },
+      },
+    );
+    return result.matchedCount === 1;
+  }
 }

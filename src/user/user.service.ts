@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserDTO } from '../user/dto/userInputDTO';
+import { UserDTO } from './dto/userInputDTO';
 import { UserDataType, UserTypeSchema, UserViewType } from '../types/users';
-import { UserRepository } from './users.repository';
+import { UserRepository } from './user.repository';
 import { QueryUserDTO } from '../dto/query.dto';
 import { User } from './user.class';
 import mongoose from 'mongoose';

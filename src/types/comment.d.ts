@@ -11,7 +11,7 @@ export type UserAssessType = {
   assess: keyof typeof Assess;
 };
 
-export type CommentatorInfoType ={
+export type CommentatorInfoType = {
   userId: string;
   userLogin: string;
 };
@@ -26,11 +26,18 @@ export type LikesInfoType = {
 
 //COMMENT VIEW TYPE
 export type CommentViewType = {
-  commentatorInfo: CommentatorInfoType;
   id: string;
   content: string;
+  commentatorInfo: CommentatorInfoType;
   createdAt: string;
   likesInfo: LikesInfoType;
+};
+
+export type CommentDataType = CommentViewType & {
+  _id: ObjectId;
+  postId: string;
+  userAssess: UserAssessType[];
+  __v: number;
 };
 
 //COMMENT DATA TYPE
@@ -45,13 +52,6 @@ export type CommentViewType = {
 //   userAssess: UserAssessType[];
 //   __v: number;
 // };
-
-export type CommentDataType = {
-  _id: ObjectId;
-  postId: string;
-  userAssess: UserAssessType[];
-  __v: number;
-} & CommentViewType;
 
 //COMMENT PAGING TYPE
 export type CommentsTypeSchema = {

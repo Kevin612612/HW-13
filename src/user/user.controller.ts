@@ -11,9 +11,9 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UserDTO } from '../user/dto/userInputDTO';
+import { UserDTO } from './dto/userInputDTO';
 import { UserTypeSchema, UserViewType } from '../types/users';
-import { UsersService } from './users.service';
+import { UsersService } from './user.service';
 import { QueryUserDTO } from '../dto/query.dto';
 import { UserIdDTO } from '../dto/id.dto';
 import { AuthGuardBasic } from '../guards/authBasic.guard';

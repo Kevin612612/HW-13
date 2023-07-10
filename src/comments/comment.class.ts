@@ -22,6 +22,7 @@ export class Comment {
     public myStatus: string = 'None',
     public userIdLike: string = '',
     public assess: string = 'None',
+    public __v: number = 0,
   ) {
     this._id = new ObjectId();
     id;
@@ -30,14 +31,15 @@ export class Comment {
       userId: userId,
       userLogin: userLogin,
     };
-    postId;
     this.createdAt = new Date().toISOString();
     this.likesInfo = {
       dislikesCount: dislikesCount,
       likesCount: likesCount,
       myStatus: myStatus,
     };
+    postId;
     this.userAssess = [];
+    this.__v = 0;
   }
 
   public async addAsyncParams(content: string, userId: string, userLogin: string, postId: string) {

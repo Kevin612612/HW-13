@@ -5,8 +5,8 @@ import { RefreshTokenSchema } from './refreshtoken.schema';
 import { RefreshTokenService } from './refreshtoken.service';
 import { AccessTokenService } from './accesstoken.service';
 import { BlackListModule } from '../black list/blacklist.module';
-import { UserRepository } from '../user/users.repository';
-import { User, UserSchema } from '../user/users.schema';
+import { UserRepository } from '../user/user.repository';
+import { User, UserSchema } from '../user/user.schema';
 
 @Module({
   imports: [
