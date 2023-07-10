@@ -56,8 +56,9 @@ export class PostController {
   }
 
   //(3)
-  @UseGuards(AuthGuardBearer)
+  @HttpCode(HttpStatus.CREATED)
   @Post('/:postId/comments')
+  @UseGuards(AuthGuardBearer)
   async createCommentByPost(@Param() param: PostIdDTO, @Body() body: CommentDTO, @Req() req): Promise<any> {    
     const user = req.user || null;
     return await this.commentService.newPostedCommentByPostId(param.postId, body.content, user.id, user.accountData.login);

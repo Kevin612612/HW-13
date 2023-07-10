@@ -1,9 +1,11 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { UserRepository } from '../user/user.repository';
 import { BlackListRepository } from '../black list/blacklist.repository';
+import { TokenDto } from '../dto/token.dto';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class AuthGuardBearer implements CanActivate {
@@ -20,10 +22,26 @@ export class AuthGuardBearer implements CanActivate {
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
+      console.log(token);
+      
+      // Пример проверки валидности токена
+      // const tokenDto = new TokenDto();
+      // tokenDto.token = token;
+
+      // validate(tokenDto).then(errors => {
+      //   if (errors.length > 0) {
+      //     console.log('Токен недействителен:', errors);
+      //     throw new BadRequestException(['token invalid']);
+
+      //   } else {
+      //     console.log('Токен действителен.');
+      //   }
+      // });
 
       try {
         //check if token expired
         const payload = await this.refreshTokenService.getPayloadFromRefreshToken(token);
+        
         const tokenExpired = await this.refreshTokenService.isTokenExpired(payload);
 
         if (tokenExpired) {
@@ -32,10 +50,12 @@ export class AuthGuardBearer implements CanActivate {
         //put user into request
         const user = await this.userRepository.findUserById(payload.userId);
 
+
         request.user = user; // Attach the user to the request object
         return true;
       } catch (error) {
-        // Token verification failed
+        console.log(error);
+
         return false;
       }
     }
