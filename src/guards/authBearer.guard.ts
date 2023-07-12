@@ -4,14 +4,14 @@ import { Request } from 'express';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { UserRepository } from '../user/user.repository';
 import { BlackListRepository } from '../black list/blacklist.repository';
-import { TokenDto } from '../dto/token.dto';
-import { validate } from 'class-validator';
+import { AccessTokenService } from '../tokens/accesstoken.service';
 
 @Injectable()
 export class AuthGuardBearer implements CanActivate {
   constructor(
     @Inject(JwtService) protected jwtService: JwtService,
     @Inject(RefreshTokenService) protected refreshTokenService: RefreshTokenService,
+    @Inject(AccessTokenService) protected accessTokenService: AccessTokenService,
     @Inject(UserRepository) private userRepository: UserRepository,
     @Inject(BlackListRepository) protected blackListRepository: BlackListRepository,
   ) {}
@@ -22,45 +22,24 @@ export class AuthGuardBearer implements CanActivate {
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      console.log(token);
-      
-      // Пример проверки валидности токена
-      // const tokenDto = new TokenDto();
-      // tokenDto.token = token;
-
-      // validate(tokenDto).then(errors => {
-      //   if (errors.length > 0) {
-      //     console.log('Токен недействителен:', errors);
-      //     throw new BadRequestException(['token invalid']);
-
-      //   } else {
-      //     console.log('Токен действителен.');
-      //   }
-      // });
-
       try {
         //check if token expired
-        const payload = await this.refreshTokenService.getPayloadFromRefreshToken(token);
-        
+        const payload = await this.accessTokenService.getPayloadFromAccessToken(token);
         const tokenExpired = await this.refreshTokenService.isTokenExpired(payload);
-
         if (tokenExpired) {
           throw new UnauthorizedException();
         }
         //put user into request
-        const user = await this.userRepository.findUserById(payload.userId);
-
-
+        const user = await this.userRepository.findUserById(payload.sub);
         request.user = user; // Attach the user to the request object
         return true;
       } catch (error) {
         console.log(error);
-
         return false;
       }
     }
 
-    // No Bearer token, so check for the refresh token
+    // No Bearer access token, so check for the refresh token
     const refreshToken: string = request.cookies.refreshToken;
     if (!refreshToken) {
       // throw new BadRequestException(['Refresh token not found']);

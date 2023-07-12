@@ -46,7 +46,8 @@ export class PostController {
   @Put('/:postId/like-status')
   async changeLikeStatus(@Param() dto: PostIdDTO, @Body() body: LikeStatusDTO, @Req() req) {
     const user = req.user || null;
-    return await this.postService.changeLikeStatus(dto.postId, body.likeStatus, user);
+    const result = await this.postService.changeLikeStatus(dto.postId, body.likeStatus, user);
+    return true;
   }
 
   //(2)
