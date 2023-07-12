@@ -64,6 +64,7 @@ describe('PostController (e2e)', () => {
     const userResponse = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(user_1);
     const createdUser1 = userResponse.body;
     console.log(createdUser1);
+
     //login user
     const loginResponse = await request(app.getHttpServer()).post(`/auth/login`).send({
       loginOrEmail: user_1.login,
@@ -71,25 +72,30 @@ describe('PostController (e2e)', () => {
     });
     const accessTokenUser_1 = loginResponse.body.accessToken;
     console.log(accessTokenUser_1);
+
     //blog
     const blogResponse = await request(app.getHttpServer()).post(`/blogs`).auth('admin', 'qwerty', { type: 'basic' }).send(blog_1);
     const createdBlog1 = blogResponse.body;
     console.log(createdBlog1);
+
     //
     post_1.blogId = createdBlog1.id;
     //post
     const postResponse = await request(app.getHttpServer()).post(`/posts`).auth('admin', 'qwerty', { type: 'basic' }).send(post_1);
     const createdPost1 = postResponse.body;
     console.log(createdPost1);
+
     //like post by user 1
     const likePost_1byUser_1 = await request(app.getHttpServer())
       .put(`/posts/${createdPost1.id}/like-status`)
       .auth(`${accessTokenUser_1}`, { type: 'bearer' })
+      .auth(`YWRtaW46cXdlcnR5`, { type: 'bearer' })
       .send({
         likeStatus: 'Like',
       });
     //get post
     const getPostResponse = await request(app.getHttpServer()).get(`/posts/${createdPost1.id}`);
     console.log(getPostResponse.body);
+
   });
 });

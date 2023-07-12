@@ -5,7 +5,7 @@ export const ValidationPipeOptions = {
   exceptionFactory: errors => {
     const errorsForResponse = [];
     
-    // take messages from array of errors an put them into errorsForResponse
+    // take messages from array of errors and put them into errorsForResponse
     errors.forEach(er => {
       const constraintsKeys = Object.keys(er.constraints);
       constraintsKeys.forEach(ckey => {

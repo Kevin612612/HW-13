@@ -25,7 +25,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
         break;
 
       case HttpStatus.FORBIDDEN:
-        response.status(status).json({ message: 'Unauthorized' });
+        const errorResponseForbidden = { errorsMessages: [] };
+        const responseBodyForbidden: any = exception.getResponse();        
+        responseBodyForbidden.message.forEach(mes => {
+          errorResponseForbidden.errorsMessages.push(mes);
+        });
+        response.status(status).json(errorResponseForbidden);
         break;
 
       //PIPE VALIDATION: INPUT DATA ARE NOT SATISFIED TO VALIDATION IN DTO SCHEMA
