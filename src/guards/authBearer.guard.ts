@@ -1,12 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { UserRepository } from '../user/user.repository';
 import { BlackListRepository } from '../black list/blacklist.repository';
 import { AccessTokenService } from '../tokens/accesstoken.service';
-import { TokenDto } from '../dto/token.dto';
-import { validate } from 'class-validator';
 
 @Injectable()
 export class AuthGuardBearer implements CanActivate {
@@ -28,7 +26,7 @@ export class AuthGuardBearer implements CanActivate {
       try {
         //check if token expired
         const payload = await this.accessTokenService.getPayloadFromAccessToken(token);
-        const tokenExpired = await this.refreshTokenService.isTokenExpired(payload);
+        const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
         if (tokenExpired) {
           throw new UnauthorizedException();
         }

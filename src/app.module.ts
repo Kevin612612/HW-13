@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -12,6 +12,8 @@ import { EmailModule } from './email/email.module';
 import { CommentsModule } from './comments/comments.module';
 import { TokenModule } from './tokens/tokens.module';
 import { BlackListModule } from './black list/blacklist.module';
+import { CheckAccessTokenMiddleware } from './middleware/extractUser.middleware';
+import { PostController } from './post/post.controller';
 
 //root module
 @Module({
@@ -30,14 +32,11 @@ import { BlackListModule } from './black list/blacklist.module';
   ],
   controllers: [AppController],
   providers: [AppService],
-})
+})  
 export class AppModule {
   // configure(consumer: MiddlewareConsumer) {
   //   consumer
-  //     .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
-  //     .exclude(
-  //       { path: 'users', method: RequestMethod.GET }, // Exclude GET /users route
-  //     )
-  //     .forRoutes('*');
+  //     .apply(CheckAccessTokenMiddleware)
+  //     .forRoutes({ path: '*', method: RequestMethod.ALL });
   // }
 }

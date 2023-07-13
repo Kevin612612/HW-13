@@ -1,4 +1,4 @@
-import { IsDefined, IsEnum, IsNumber, Validate } from 'class-validator';
+import { IsDefined, IsEnum, Validate } from 'class-validator';
 import { BlogExistsValidation, PostExistsValidation, UserExistsValidation } from '../validation/validation';
 
 export class BlogIdDTO {

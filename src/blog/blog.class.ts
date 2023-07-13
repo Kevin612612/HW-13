@@ -1,7 +1,7 @@
-import { BlogRepository } from 'src/blog/blog.repository';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
 import { BlogDTO } from './dto/blogInputDTO';
+import { BlogRepository } from './blog.repository';
 
 export class Blog {
   public _id: ObjectId;

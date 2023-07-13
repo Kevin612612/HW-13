@@ -12,6 +12,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
 
 import { PostDTO } from '../post/dto/postInputDTO';
@@ -23,6 +24,10 @@ import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { AuthGuardBasic } from '../guards/authBasic.guard';
 import { CommentService } from '../comments/comments.service';
 import { CommentDTO } from '../comments/dto/commentsInputDTO';
+import { Request } from 'express';
+import { Response } from 'express';
+import { UserExtractGuard } from '../guards/extractUser.guard';
+
 
 //(1) changeLikeStatus
 //(2) getAllCommentsByPost
@@ -41,11 +46,12 @@ export class PostController {
   ) {}
 
   //(1)
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(UserExtractGuard)
   @UseGuards(AuthGuardBearer)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Put('/:postId/like-status')
   async changeLikeStatus(@Param() dto: PostIdDTO, @Body() body: LikeStatusDTO, @Req() req) {
-    const user = req.user || null;
+    const user = req.user ? req.user : null;
     const result = await this.postService.changeLikeStatus(dto.postId, body.likeStatus, user);
     return true;
   }
@@ -57,19 +63,24 @@ export class PostController {
   }
 
   //(3)
+  @UseGuards(UserExtractGuard)
+  @UseGuards(AuthGuardBearer)
   @HttpCode(HttpStatus.CREATED)
   @Post('/:postId/comments')
-  @UseGuards(AuthGuardBearer)
-  async createCommentByPost(@Param() param: PostIdDTO, @Body() body: CommentDTO, @Req() req): Promise<any> {    
-    const user = req.user || null;
+  async createCommentByPost(@Param() param: PostIdDTO, @Body() body: CommentDTO, @Req() req): Promise<any> {
+    const user = req.user ? req.user : null;
     return await this.commentService.newPostedCommentByPostId(param.postId, body.content, user.id, user.accountData.login);
   }
 
   //(4)
+  @UseGuards(UserExtractGuard)
   @Get()
-  async getAllPosts(@Query() dto: QueryDTO, @Req() req): Promise<PostsTypeSchema> {
-    const userId = req.user.id || null;
-    return await this.postService.findAll(dto, userId);
+  async getAllPosts(@Query() dto: QueryDTO, @Req() req: Request): Promise<PostsTypeSchema> {
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
+    console.log('handler', user);
+    const result = await this.postService.findAll(dto, userId);
+    return result;
   }
 
   //(5)
@@ -80,11 +91,14 @@ export class PostController {
   }
 
   //(6)
+  @UseGuards(UserExtractGuard)
   @Get('/:postId')
-  async findPostById(@Param() params: PostIdDTO, @Req() req) {
-    const user = req.user || null;
+  async findPostById(@Param() params: PostIdDTO, @Req() req: Request, @Res() res: Response) {
+    console.log('start');
+    const user = req.user ? req.user : null;
+    console.log(user);
     const post = await this.postService.findPostById(params.postId, user);
-    return post;
+    res.send(post);
   }
 
   //(7)

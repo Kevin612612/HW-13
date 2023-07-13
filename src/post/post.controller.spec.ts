@@ -54,48 +54,79 @@ describe('PostController (e2e)', () => {
     await app.init();
   });
 
-  it('GET -> "/posts/:postId": get post by unauthorized user.', async () => {
-    const user_1 = createUser();
-    const blog_1 = createBlog();
+  it('test', async () => {
+    //create 4 users
+    //login 4 users
+    //ctreate blog
+    //create post
+    //like post by each user
+    //get post by user1
+    const users = [];
+    const accessTokens = [];
+    for (let index = 0; index < 4; index++) {
+      users.push(createUser());
+    }
+    const blog_1 = createUser();
     const post_1 = createPost();
+
     //clear data
     const cleanAll = await request(app.getHttpServer()).del(`/testing/all-data`);
-    //user
-    const userResponse = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(user_1);
-    const createdUser1 = userResponse.body;
-    console.log(createdUser1);
-
-    //login user
-    const loginResponse = await request(app.getHttpServer()).post(`/auth/login`).send({
-      loginOrEmail: user_1.login,
-      password: user_1.password,
+    //users
+    const user_1Response = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(users[0]);
+    const user_2Response = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(users[1]);
+    const user_3Response = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(users[2]);
+    const user_4Response = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(users[3]);
+    const createdUser1 = user_1Response.body;
+    const createdUser2 = user_2Response.body;
+    const createdUser3 = user_3Response.body;
+    const createdUser4 = user_4Response.body;
+    //login users
+    const login_1Response = await request(app.getHttpServer()).post(`/auth/login`).send({
+      loginOrEmail: users[0].login,
+      password: users[0].password,
     });
-    const accessTokenUser_1 = loginResponse.body.accessToken;
-    console.log(accessTokenUser_1);
+    const login_2Response = await request(app.getHttpServer()).post(`/auth/login`).send({
+      loginOrEmail: users[1].login,
+      password: users[1].password,
+    });
+    const login_3Response = await request(app.getHttpServer()).post(`/auth/login`).send({
+      loginOrEmail: users[2].login,
+      password: users[2].password,
+    });
+    const login_4Response = await request(app.getHttpServer()).post(`/auth/login`).send({
+      loginOrEmail: users[3].login,
+      password: users[3].password,
+    });
+    const accessTokenUser_1 = login_1Response.body.accessToken;
+    const accessTokenUser_2 = login_2Response.body.accessToken;
+    const accessTokenUser_3 = login_3Response.body.accessToken;
+    const accessTokenUser_4 = login_4Response.body.accessToken;
+    accessTokens.push(accessTokenUser_1, accessTokenUser_2, accessTokenUser_3, accessTokenUser_4);
 
     //blog
     const blogResponse = await request(app.getHttpServer()).post(`/blogs`).auth('admin', 'qwerty', { type: 'basic' }).send(blog_1);
     const createdBlog1 = blogResponse.body;
-    console.log(createdBlog1);
 
     //
     post_1.blogId = createdBlog1.id;
     //post
     const postResponse = await request(app.getHttpServer()).post(`/posts`).auth('admin', 'qwerty', { type: 'basic' }).send(post_1);
     const createdPost1 = postResponse.body;
-    console.log(createdPost1);
 
-    //like post by user 1
-    const likePost_1byUser_1 = await request(app.getHttpServer())
-      .put(`/posts/${createdPost1.id}/like-status`)
-      .auth(`${accessTokenUser_1}`, { type: 'bearer' })
-      .auth(`YWRtaW46cXdlcnR5`, { type: 'bearer' })
-      .send({
-        likeStatus: 'Like',
-      });
-    //get post
-    const getPostResponse = await request(app.getHttpServer()).get(`/posts/${createdPost1.id}`);
+    //like post by users
+    for (let i = 0; i < 4; i++) {
+      const likePost_1byUsers = await request(app.getHttpServer())
+        .put(`/posts/${createdPost1.id}/like-status`)
+        .auth(`${accessTokens[i]}`, { type: 'bearer' })
+        .send({
+          likeStatus: 'Like',
+        });
+    }
+
+    //get post by user_1
+    const getPostResponse = await request(app.getHttpServer())
+      .get(`/posts/${createdPost1.id}`)
+      .auth(`${accessTokens[0]}`, { type: 'bearer' });
     console.log(getPostResponse.body);
-
   });
 });
