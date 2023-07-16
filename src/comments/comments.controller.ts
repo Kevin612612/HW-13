@@ -54,7 +54,7 @@ export class CommentController {
   async findCommentById(@Param() params: CommentIdDTO, @Req() req, @Res() res) {
     const user = req.user ? req.user : null;
     const userId = user ? user.id : null;
-    const post = await this.commentService.findCommentById(params.commentId, user);
-    res.send(post);
+    const comment = await this.commentService.findCommentById(params.commentId, user);
+    res.send(comment);
   }
 }

@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
-@Schema()
+@Schema({ _id : false })
 export class CommentatorInfo {
   @Prop()
   userId: string;
@@ -14,7 +14,7 @@ export class CommentatorInfo {
 }
 export const CommentatorInfoSchema = SchemaFactory.createForClass(CommentatorInfo);
 
-@Schema()
+@Schema({ _id : false })
 export class LikesInfo {
   @Prop()
   dislikesCount: number;
@@ -27,7 +27,7 @@ export class LikesInfo {
 }
 export const LikesInfoSchema = SchemaFactory.createForClass(LikesInfo);
 
-@Schema()
+@Schema({ _id : false })
 export class UserAsses {
   @Prop()
   userIdLike: string;
@@ -37,7 +37,7 @@ export class UserAsses {
 }
 export const UserAssesSchema = SchemaFactory.createForClass(UserAsses);
 
-@Schema()
+@Schema({ _id : false })
 export class Comment {
   @Prop({ type: ObjectId, required: true, default: new ObjectId() })
   _id: ObjectId;
