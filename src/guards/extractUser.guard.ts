@@ -29,10 +29,8 @@ export class UserExtractGuard implements CanActivate {
         //put user into request
         const user = await this.userRepository.findUserById(payload.sub);
         request.user = user;
-        console.log('autguard user',user);
         return true;;
       } catch (error) {
-        console.log('error:', error);
         return true;;
       }
     }

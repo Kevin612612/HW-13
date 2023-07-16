@@ -32,7 +32,7 @@ export function createBlog() {
     websiteUrl: 'https://' + generateRandomString(5) + '@gmail.com',
   };
 }
-//create random blog
+//create random post
 export function createPost() {
   return {
     content: generateRandomString(5) + 'post',
@@ -54,7 +54,7 @@ describe('PostController (e2e)', () => {
     await app.init();
   });
 
-  it('test', async () => {
+  it('test1', async () => {
     //create 4 users
     //login 4 users
     //ctreate blog
@@ -66,7 +66,7 @@ describe('PostController (e2e)', () => {
     for (let index = 0; index < 4; index++) {
       users.push(createUser());
     }
-    const blog_1 = createUser();
+    const blog_1 = createBlog();
     const post_1 = createPost();
 
     //clear data
@@ -127,6 +127,39 @@ describe('PostController (e2e)', () => {
     const getPostResponse = await request(app.getHttpServer())
       .get(`/posts/${createdPost1.id}`)
       .auth(`${accessTokens[0]}`, { type: 'bearer' });
+    console.log(getPostResponse.body);
+  });
+
+  it('test2', async () => {
+    // PUT -> "/posts/:id": should update post by id; status 204;
+    // used additional methods: POST -> /blogs, POST -> /posts, GET -> /posts/:id;
+
+    const blog_1 = createBlog();
+    const post_1 = createPost();
+    // create blog
+    const blogResponse = await request(app.getHttpServer()).post(`/blogs`).auth('admin', 'qwerty', { type: 'basic' }).send(blog_1);
+    const createdBlog1 = blogResponse.body;
+    console.log(createdBlog1);
+    // create post
+    post_1.blogId = createdBlog1.id;
+    const postResponse = await request(app.getHttpServer()).post(`/posts`).auth('admin', 'qwerty', { type: 'basic' }).send(post_1);
+    const createdPost1 = postResponse.body;
+    console.log(createdPost1);
+    // update post
+    const postResponseUpdate = await request(app.getHttpServer())
+      .put(`/posts/${createdPost1.id}`)
+      .auth('admin', 'qwerty', { type: 'basic' })
+      .send({
+        content: 'content after update',
+        shortDescription: 'shortDescription after update',
+        title: 'title updated',
+        blogId: '5',
+      });
+    const updatedPost1 = postResponseUpdate;
+    console.log(updatedPost1);
+    // get post by id
+    const getPostResponse = await request(app.getHttpServer())
+      .get(`/posts/${createdPost1.id}`)
     console.log(getPostResponse.body);
   });
 });

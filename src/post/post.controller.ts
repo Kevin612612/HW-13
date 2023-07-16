@@ -78,7 +78,6 @@ export class PostController {
   async getAllPosts(@Query() dto: QueryDTO, @Req() req: Request): Promise<PostsTypeSchema> {
     const user = req.user ? req.user : null;
     const userId = user ? user.id : null;
-    console.log('handler', user);
     const result = await this.postService.findAll(dto, userId);
     return result;
   }
@@ -94,21 +93,21 @@ export class PostController {
   @UseGuards(UserExtractGuard)
   @Get('/:postId')
   async findPostById(@Param() params: PostIdDTO, @Req() req: Request, @Res() res: Response) {
-    console.log('start');
     const user = req.user ? req.user : null;
-    console.log(user);
     const post = await this.postService.findPostById(params.postId, user);
     res.send(post);
   }
 
   //(7)
-  @UseGuards(AuthGuardBearer)
+  @UseGuards(AuthGuardBasic)
   @Put('/:postId')
   async updatePostById(@Param() params: PostIdDTO, @Body() dto: PostDTO) {
     return await this.postService.updatePostById(params.postId, dto);
   }
 
   //(8)
+  @UseGuards(AuthGuardBasic)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:postId')
   async deletePost(@Param() params: PostIdDTO) {
     return await this.postService.deletePost(params.postId);

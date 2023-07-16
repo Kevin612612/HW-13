@@ -35,7 +35,6 @@ export class AuthGuardBearer implements CanActivate {
         request.user = user; // Attach the user to the request object
         return true;
       } catch (error) {
-        console.log('error:', error);
         throw new UnauthorizedException();
       }
     }

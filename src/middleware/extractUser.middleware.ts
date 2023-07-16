@@ -28,10 +28,8 @@ export class CheckAccessTokenMiddleware implements NestMiddleware {
         //put user into request
         const user = await this.userRepository.findUserById(payload.sub);
         req.user = user;
-        console.log('middleware user', user);
         next();
       } catch (error) {
-        console.log('error:', error);
         next();
       }
     }
