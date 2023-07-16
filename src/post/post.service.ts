@@ -29,7 +29,6 @@ export class PostService {
   async changeLikeStatus(postId: string, likeStatus: string, user: UserDataType): Promise<boolean> {
     //find post
     const post = await this.postRepository.findPostByIdDbType(postId);
-    if (!post) throw new NotFoundException(["Post with such Id doesn't exist"]);
     //change myStatus / myStatus = current assess
     const result = await this.postRepository.changeLikeStatus(postId, likeStatus);
     //check whether this user left assess to this post

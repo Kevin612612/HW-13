@@ -3,6 +3,7 @@ import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments 
 import { BlogRepository } from '../blog/blog.repository';
 import { UserRepository } from '../user/user.repository';
 import { PostRepository } from '../post/post.repository';
+import { CommentRepository } from '../comments/comment.repository';
 
 @ValidatorConstraint({ name: 'customValidation', async: false })
 export class CustomValidation implements ValidatorConstraintInterface {
@@ -48,6 +49,24 @@ export class PostExistsValidation implements ValidatorConstraintInterface {
 
   defaultMessage() {
     return `Post doesn't exist`;
+  }
+}
+
+@ValidatorConstraint({ name: 'CommentExists', async: true })
+@Injectable()
+export class CommentExistsValidation implements ValidatorConstraintInterface {
+  constructor(@Inject(CommentRepository) private commentRepository: CommentRepository) {}
+
+  async validate(value: string) {
+    const comment = await this.commentRepository.findCommentById(value);
+    if (!comment) {
+      throw new NotFoundException(["Comment doesn't exist"]);
+    }
+    return true;
+  }
+
+  defaultMessage() {
+    return `Comment doesn't exist`;
   }
 }
 

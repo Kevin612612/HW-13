@@ -1,58 +1,60 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
+import { CommentIdDTO, LikeStatusDTO } from '../dto/id.dto';
+import { UserExtractGuard } from '../guards/extractUser.guard';
+import { CommentService } from './comments.service';
+import { CommentDTO } from './dto/commentsInputDTO';
+
+// changeLikeStatus
+// updateCommentById
+// deleteComment
+// findCommentById
 
 @Controller('comments')
 export class CommentController {
-//   constructor(
-//     @Inject(PostService) protected postService: PostService,
-//     @Inject(BlogRepository) protected blogRepository: BlogRepository,
-//   ) {}
+  constructor(@Inject(CommentService) protected commentService: CommentService) {}
 
-//   @UseGuards(AuthGuardBearer)
-//   @Get()
-//   async getAllPosts(@Query() query: QueryDTO): Promise<PostsTypeSchema> {
-//     return await this.postService.findAll(null, query);
-//   }
+  //(1)
+  @UseGuards(UserExtractGuard)
+  @UseGuards(AuthGuardBearer)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put('/:commentId/like-status')
+  async changeLikeStatus(@Param() params: CommentIdDTO, @Body() body: LikeStatusDTO, @Req() req) {
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
+    const result = await this.commentService.changeLikeStatus(params.commentId, body.likeStatus, userId);
+    return true;
+  }
 
-//   @UseGuards(AuthGuardBearer)
-//   @Post()
-//   async createPost(@Body() dto: PostDTO, @Res() res: Response) {
-//     const blog = await this.blogRepository.getBlogById(dto.blogId);
-//     if (!blog) res.sendStatus(404);
-//     const result = await this.postService.createPost(dto.blogId, dto);
-//     res.send(result);
-//   }
+  //(2)
+  @UseGuards(UserExtractGuard)
+  @UseGuards(AuthGuardBearer)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put('/:commentId')
+  async updateCommentById(@Param() params: CommentIdDTO, @Body() body: CommentDTO, @Req() req) {
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
+    return await this.commentService.updateCommentById(params.commentId, body.content, userId);
+  }
 
-//   @UseGuards(AuthGuardBearer)
-//   @Get('/:postId')
-//   async getPostById(@Param() params: PostIdDTO, @Res() res: Response) {
-//     const post = await this.postService.getPostById(params.postId);
-//     if (!post) {
-//       res.sendStatus(404);
-//     } else {
-//       res.send(post);
-//     }
-//   }
+  //(3)
+  @UseGuards(UserExtractGuard)
+  @UseGuards(AuthGuardBearer)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:commentId')
+  async deleteComment(@Param() params: CommentIdDTO, @Req() req) {
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
+    return await this.commentService.deleteComment(params.commentId, userId);
+  }
 
-//   @UseGuards(AuthGuardBearer)
-//   @Put('/:postId')
-//   async updatePostById(@Param() params: PostIdDTO, @Body() post: PostDTO, @Res() res: Response) {
-//     const result = await this.postService.updatePostById(params.postId, post);
-//     if (!result) {
-//       res.sendStatus(404);
-//     } else {
-//       res.sendStatus(204);
-//     }
-//   }
-
-//   @UseGuards(AuthGuardBearer)
-//   @Delete('/:postId')
-//   async deletePost(@Param() params: PostIdDTO, @Res() res: Response) {
-//     const result = await this.postService.deletePost(params.postId);
-//     if (!result) {
-//       res.sendStatus(404);
-//     } else {
-//       res.sendStatus(204);
-//     }
-//   }
+  //(4)
+  @UseGuards(UserExtractGuard)
+  @Get('/:commentId')
+  async findCommentById(@Param() params: CommentIdDTO, @Req() req, @Res() res) {
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
+    const post = await this.commentService.findCommentById(params.commentId, user);
+    res.send(post);
+  }
 }

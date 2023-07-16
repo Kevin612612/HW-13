@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CommentRepository } from './comment.repository';
 import mongoose from 'mongoose';
 import { UserDataType } from '../types/users';
@@ -30,11 +30,7 @@ export class CommentService {
       searchNameTerm: query.searchNameTerm || '',
       pageSize: query.pageSize || 10,
     };
-    const allDataCommentss = await this.commentRepository.getAllCommentsByPost(
-      postId,
-      pageParams.sortBy,
-      pageParams.sortDirection,
-    );
+    const allDataCommentss = await this.commentRepository.getAllCommentsByPost(postId, pageParams.sortBy, pageParams.sortDirection);
     const allViewComments = allDataCommentss.map(comment => {
       return {
         id: comment.id,
@@ -57,10 +53,7 @@ export class CommentService {
       page: +pageParams.pageNumber,
       pageSize: +pageParams.pageSize,
       totalCount: quantityOfDocs,
-      items: allViewComments.slice(
-        (+pageParams.pageNumber - 1) * +pageParams.pageSize,
-        +pageParams.pageNumber * +pageParams.pageSize,
-      ),
+      items: allViewComments.slice((+pageParams.pageNumber - 1) * +pageParams.pageSize, +pageParams.pageNumber * +pageParams.pageSize),
     };
   }
 
@@ -108,22 +101,20 @@ export class CommentService {
     };
   }
 
-
   //(3) method change like status
-  async changeLikeStatus(commentId: string, likeStatus: string, user: UserDataType): Promise<number> {
+  async changeLikeStatus(commentId: string, likeStatus: string, userId: string): Promise<boolean> {
     const comment = await this.commentRepository.findCommentByIdDbType(commentId);
-    if (!comment) return 404;
     //change myStatus
     const result = await this.commentRepository.changeLikeStatus(commentId, likeStatus);
     //check whether this user left assess to this comment
-    const userAssess = comment.userAssess.find(obj => obj.userIdLike === user.id);
+    const userAssess = comment.userAssess.find(obj => obj.userIdLike === userId);
     //if he didn't leave comment -> add like/dislike/none to comment
     if (!userAssess) {
       if (likeStatus == 'Like') {
-        const result1 = await this.commentRepository.addLike(comment, user.id);
+        const result1 = await this.commentRepository.addLike(comment, userId);
       }
       if (likeStatus == 'Dislike') {
-        const result2 = await this.commentRepository.addDislike(comment, user.id);
+        const result2 = await this.commentRepository.addDislike(comment, userId);
       }
       if (likeStatus == 'None') {
         const result3 = await this.commentRepository.setNone(comment);
@@ -135,19 +126,19 @@ export class CommentService {
       }
       if (assess == 'Like' && likeStatus == 'Dislike') {
         //minus like and delete user from array then add addDislike()
-        const result1 = await this.commentRepository.deleteLike(comment, user.id);
-        const result2 = await this.commentRepository.addDislike(comment, user.id);
+        const result1 = await this.commentRepository.deleteLike(comment, userId);
+        const result2 = await this.commentRepository.addDislike(comment, userId);
         //set my status None
         const result3 = await this.commentRepository.setNone(comment);
       }
       if (assess == 'Like' && likeStatus == 'None') {
         //minus like and delete user from array
-        const result1 = await this.commentRepository.deleteLike(comment, user.id);
+        const result1 = await this.commentRepository.deleteLike(comment, userId);
       }
       if (assess == 'Dislike' && likeStatus == 'Like') {
         //minus dislike and delete user from array then add addLike()
-        const result1 = await this.commentRepository.deleteDislike(comment, user.id);
-        const result2 = await this.commentRepository.addLike(comment, user.id);
+        const result1 = await this.commentRepository.deleteDislike(comment, userId);
+        const result2 = await this.commentRepository.addLike(comment, userId);
         //set my status None
         const result3 = await this.commentRepository.setNone(comment);
       }
@@ -156,18 +147,17 @@ export class CommentService {
       }
       if (assess == 'Dislike' && likeStatus == 'None') {
         //minus dislike and delete user from array
-        const result1 = await this.commentRepository.deleteDislike(comment, user.id);
+        const result1 = await this.commentRepository.deleteDislike(comment, userId);
       }
     }
-    return 204;
+    return true;
   }
 
   //(4) method updates comment by ID
-  async updateCommentById(commentId: string, userId: string, content: string): Promise<number | string[]> {
+  async updateCommentById(commentId: string, content: string, userId: string): Promise<boolean | string[]> {
     //check if it is your account
     const comment = await this.commentRepository.findCommentById(commentId);
-    if (!comment) return 404;
-    if (comment.commentatorInfo.userId !== userId) return 403;
+    if (comment.commentatorInfo.userId !== userId) throw new ForbiddenException(['it\'s not your account']);
     try {
       const result = await this.commentRepository.updateCommentById(commentId, content);
     } catch (err: any) {
@@ -180,24 +170,22 @@ export class CommentService {
       }
       return validationErrors;
     }
-    return 204;
+    return true;
   }
 
   //(5) method deletes comment by ID
-  async deleteComment(commentId: string, userId: string): Promise<number> {
+  async deleteComment(commentId: string, userId: string): Promise<boolean> {
     //check if it is your account
     const comment = await this.commentRepository.findCommentById(commentId);
-    if (!comment) return 404;
-    if (comment.commentatorInfo.userId !== userId) return 403;
+    if (comment.commentatorInfo.userId !== userId) throw new ForbiddenException(['it\'s not your account']);
     const result = await this.commentRepository.deleteComment(commentId);
-    return 204;
+    return true;
   }
 
   //(6) method find comment by Id
   async findCommentById(commentId: string, user: UserDataType): Promise<CommentViewType | number> {
     //find comment ->  delete myStatus if user unauthorized -> return to user or 404 if not found
     const comment = await this.commentRepository.findCommentByIdDbType(commentId);
-    if (!comment) return 404;
     //hide info about likes from unauthorized user
     if (user == null) {
       comment.likesInfo.myStatus = 'None';
@@ -220,5 +208,4 @@ export class CommentService {
       likesInfo: comment.likesInfo,
     };
   }
-
 }
