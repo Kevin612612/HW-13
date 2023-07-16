@@ -8,6 +8,10 @@ import { PostRepository } from '../post/post.repository';
 import { BlogRepository } from '../blog/blog.repository';
 import { Blog, BlogSchema } from '../blog/blog.schema';
 import { Post, PostSchema } from '../post/post.schema';
+import { CommentExistsValidation } from '../validation/validation';
+import { TokenModule } from '../tokens/tokens.module';
+import { UserModule } from '../user/user.module';
+import { BlackListModule } from '../black list/blacklist.module';
 
 @Module({
   imports: [
@@ -15,10 +19,13 @@ import { Post, PostSchema } from '../post/post.schema';
       { name: Comment.name, schema: CommentSchema },
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
-    ])
+    ]),
+    TokenModule,
+    UserModule,
+    BlackListModule,
   ],
   controllers: [CommentController],
-  providers: [CommentService, CommentRepository, PostRepository, BlogRepository],
+  providers: [CommentService, CommentRepository, PostRepository, BlogRepository, CommentExistsValidation],
   exports: [CommentService, CommentRepository],
 })
 export class CommentsModule {}
