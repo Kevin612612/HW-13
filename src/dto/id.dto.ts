@@ -3,20 +3,17 @@ import { BlogExistsValidation, PostExistsValidation, UserExistsValidation } from
 
 export class BlogIdDTO {
   @Validate(BlogExistsValidation)
-  @IsNumberString()
   blogId: string;
 }
 
 export class PostIdDTO {
   @Validate(PostExistsValidation)
-  @IsNumberString()
   postId: string;
 }
 
 export class UserIdDTO {
   @IsDefined()
   @Validate(UserExistsValidation)
-  @IsNumberString()
   userId: string;
 }
 
