@@ -1,8 +1,9 @@
-import { IsNotEmpty, IsNumberString, IsOptional, Length, Validate } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsOptional, Length, Matches, Validate } from 'class-validator';
 import { BlogExistsValidation } from '../../validation/validation';
 
 export class PostDTO {
   @Length(1, 30)
+  @Matches(/^(?!\s*$).+/)
   @IsNotEmpty()
   title: string;
 
@@ -11,6 +12,7 @@ export class PostDTO {
   shortDescription: string;
 
   @Length(1, 1000)
+  @Matches(/^(?!\s*$).+/)
   @IsNotEmpty()
   content: string;
 
