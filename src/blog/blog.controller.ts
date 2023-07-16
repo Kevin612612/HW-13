@@ -24,6 +24,7 @@ import { Response } from 'express';
 import { BlogDTO } from './dto/blogInputDTO';
 import { BlogRepository } from './blog.repository';
 import { AuthGuardBasic } from '../guards/authBasic.guard';
+import { UserExtractGuard } from '../guards/extractUser.guard';
 
 @Controller('blogs')
 export class BlogController {
@@ -44,9 +45,11 @@ export class BlogController {
     return await this.blogService.createBlog(dto);
   }
 
+  @UseGuards(UserExtractGuard)
   @Get('/:blogId/posts')
   async getPostsByBlogId(@Param() params: BlogIdDTO, @Query() query: QueryDTO, @Req() req, @Res() res: Response) {
-    const userId = req.user.id || null;
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
     const result = await this.postService.findAll(query, userId, params.blogId);
     res.send(result);
   }

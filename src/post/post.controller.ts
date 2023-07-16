@@ -100,6 +100,7 @@ export class PostController {
 
   //(7)
   @UseGuards(AuthGuardBasic)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Put('/:postId')
   async updatePostById(@Param() params: PostIdDTO, @Body() dto: PostDTO) {
     return await this.postService.updatePostById(params.postId, dto);

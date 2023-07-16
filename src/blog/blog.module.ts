@@ -8,6 +8,8 @@ import { BlogExistsValidation } from '../validation/validation';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
 import { CommentsModule } from '../comments/comments.module';
 import { PostModule } from '../post/post.module';
+import { TokenModule } from '../tokens/tokens.module';
+import { UserModule } from '../user/user.module';
 
 
 @Module({
@@ -15,8 +17,10 @@ import { PostModule } from '../post/post.module';
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
     ]),
+    UserModule,
     PostModule,
     CommentsModule,
+    TokenModule,
   ],
   controllers: [BlogController],
   providers: [BlogService, BlogRepository, BlogExistsValidation],
