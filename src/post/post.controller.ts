@@ -28,7 +28,6 @@ import { Request } from 'express';
 import { Response } from 'express';
 import { UserExtractGuard } from '../guards/extractUser.guard';
 
-
 //(1) changeLikeStatus
 //(2) getAllCommentsByPost
 //(3) createCommentByPost
@@ -69,7 +68,9 @@ export class PostController {
   @Post('/:postId/comments')
   async createCommentByPost(@Param() param: PostIdDTO, @Body() body: CommentDTO, @Req() req): Promise<any> {
     const user = req.user ? req.user : null;
-    return await this.commentService.newPostedCommentByPostId(param.postId, body.content, user.id, user.accountData.login);
+    const userId = user ? user.id : null;
+    const result = await this.commentService.newPostedCommentByPostId(param.postId, body.content, userId, user.accountData.login);
+    return result;
   }
 
   //(4)

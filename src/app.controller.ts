@@ -4,6 +4,7 @@ import { BlogRepository } from './blog/blog.repository';
 import { PostRepository } from './post/post.repository';
 import { UserRepository } from './user/user.repository';
 import { RefreshTokensRepository } from './tokens/refreshtoken.repository';
+import { CommentRepository } from './comments/comment.repository';
 
 @Controller()
 export class AppController {
@@ -13,6 +14,7 @@ export class AppController {
     @Inject(BlogRepository) protected blogRepository: BlogRepository,
     @Inject(PostRepository) protected postRepository: PostRepository,
     @Inject(RefreshTokensRepository) protected refreshTokensRepository: RefreshTokensRepository,
+    @Inject(CommentRepository) protected commentRepository: CommentRepository,
   ) {}
 
   @Get()
@@ -27,5 +29,6 @@ export class AppController {
     await this.blogRepository.deleteAll();
     await this.postRepository.deleteAll();
     await this.refreshTokensRepository.deleteAll();
+    await this.commentRepository.deleteAll();
   }
 }

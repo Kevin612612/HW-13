@@ -175,4 +175,10 @@ export class CommentRepository {
     );
     return result.matchedCount === 1;
   }
+
+  //() delete all posts
+  async deleteAll(): Promise<number> {
+    const result = await this.commentModel.deleteMany({});
+    return result.deletedCount;
+  }
 }
