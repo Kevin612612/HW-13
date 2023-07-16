@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, Length, Validate } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsOptional, Length, Validate } from 'class-validator';
 import { BlogExistsValidation } from '../../validation/validation';
 
 export class PostDTO {
@@ -15,7 +15,7 @@ export class PostDTO {
   content: string;
 
   @Validate(BlogExistsValidation)
-  @IsInt()
+  @IsNumberString()
   @IsOptional()
   blogId: string;
 }
