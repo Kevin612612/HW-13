@@ -63,7 +63,8 @@ export class RefreshTokenService {
   async isTokenExpired(payload: any): Promise<boolean> {
     const currentTime = Math.floor(Date.now() / 1000); // Convert current time to seconds
     if (payload.iat && payload.expiresIn) {
-      const expirationTime: number = payload.iat + parseInt(payload.expiresIn, 10);
+      const expirationTime: number = payload.iat + parseInt(payload.expiresIn, 20);
+      //
       return currentTime >= expirationTime;
     }
     return true; // If the token payload doesn't have expiresIn, consider it as expired
