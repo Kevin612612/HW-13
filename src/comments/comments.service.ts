@@ -22,7 +22,7 @@ export class CommentService {
   ) {}
 
   //(1)
-  async getAllCommentsByPost(query: QueryDTO, postId?: string): Promise<any> {
+  async getAllCommentsByPost(query: QueryDTO, postId: string, userId: string): Promise<any> {
     const pageParams = {
       sortBy: query.sortBy || 'createdAt',
       sortDirection: query.sortDirection || 'desc',
@@ -30,30 +30,43 @@ export class CommentService {
       searchNameTerm: query.searchNameTerm || '',
       pageSize: query.pageSize || 10,
     };
-    const allDataCommentss = await this.commentRepository.getAllCommentsByPost(postId, pageParams.sortBy, pageParams.sortDirection);
-    const allViewComments = allDataCommentss.map(comment => {
-      return {
-        id: comment.id,
-        content: comment.content,
-        commentatorInfo: {
-          userId: comment.commentatorInfo.userId,
-          userLogin: comment.commentatorInfo.userLogin,
-        },
-        createdAt: comment.createdAt,
-        likesInfo: {
-          dislikesCount: comment.likesInfo.dislikesCount,
-          likesCount: comment.likesInfo.likesCount,
-          myStatus: comment.likesInfo.myStatus,
-        },
-      };
-    });
+    const allDataComments = await this.commentRepository.getAllCommentsByPost(postId, pageParams.sortBy, pageParams.sortDirection);
     const quantityOfDocs = await this.commentRepository.countAllCommentsByPost(postId);
+    //filter allDataComments and return array that depends on which user send get request
+    const sortedItems = allDataComments.map(obj => {
+      if (obj.userAssess.find(el => el.userIdLike === userId)) {
+        return {
+          id: obj.id,
+          content: obj.content,
+          commentatorInfo: obj.commentatorInfo,
+          createdAt: obj.createdAt,
+          likesInfo: {
+            likesCount: obj.likesInfo.likesCount,
+            dislikesCount: obj.likesInfo.dislikesCount,
+            myStatus: obj.userAssess.find(el => el.userIdLike === userId)?.assess ?? 'None',
+          },
+        };
+      } else {
+        return {
+          id: obj.id,
+          content: obj.content,
+          commentatorInfo: obj.commentatorInfo,
+          createdAt: obj.createdAt,
+          likesInfo: {
+            likesCount: obj.likesInfo.likesCount,
+            dislikesCount: obj.likesInfo.dislikesCount,
+            myStatus: 'None',
+          },
+        };
+      }
+    }); //if user left comment return his assess as myStatus
+
     return {
       pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
       page: +pageParams.pageNumber,
       pageSize: +pageParams.pageSize,
       totalCount: quantityOfDocs,
-      items: allViewComments.slice((+pageParams.pageNumber - 1) * +pageParams.pageSize, +pageParams.pageNumber * +pageParams.pageSize),
+      items: sortedItems.slice((+pageParams.pageNumber - 1) * +pageParams.pageSize, +pageParams.pageNumber * +pageParams.pageSize),
     };
   }
 
@@ -157,7 +170,7 @@ export class CommentService {
   async updateCommentById(commentId: string, content: string, userId: string): Promise<boolean | string[]> {
     //check if it is your account
     const comment = await this.commentRepository.findCommentById(commentId);
-    if (comment.commentatorInfo.userId !== userId) throw new ForbiddenException(['it\'s not your account']);
+    if (comment.commentatorInfo.userId !== userId) throw new ForbiddenException(["it's not your account"]);
     try {
       const result = await this.commentRepository.updateCommentById(commentId, content);
     } catch (err: any) {
@@ -177,7 +190,7 @@ export class CommentService {
   async deleteComment(commentId: string, userId: string): Promise<boolean> {
     //check if it is your account
     const comment = await this.commentRepository.findCommentById(commentId);
-    if (comment.commentatorInfo.userId !== userId) throw new ForbiddenException(['it\'s not your account']);
+    if (comment.commentatorInfo.userId !== userId) throw new ForbiddenException(["it's not your account"]);
     const result = await this.commentRepository.deleteComment(commentId);
     return true;
   }

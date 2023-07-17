@@ -86,7 +86,9 @@ describe('PostController (e2e)', () => {
     for (let index = 0; index < 4; index++) {
       users.push(createUser());
     }
+
     const blog_1 = createBlog();
+    
     for (let i = 0; i < 6; i++) {
       posts.push(createPost());
     }

@@ -41,6 +41,12 @@ export function createPost() {
     blogId: '0',
   };
 }
+//create random comment
+export function createComment() {
+  return {
+    content: generateRandomString(15) + ' comment',
+  };
+}
 
 describe('PostController (e2e)', () => {
   let app: INestApplication;
@@ -61,6 +67,7 @@ describe('PostController (e2e)', () => {
     //create post
     //like post by each user
     //get post by user1
+
     const users = [];
     const accessTokens = [];
     for (let index = 0; index < 4; index++) {
@@ -158,8 +165,142 @@ describe('PostController (e2e)', () => {
     const updatedPost1 = postResponseUpdate;
     console.log(updatedPost1);
     // get post by id
-    const getPostResponse = await request(app.getHttpServer())
-      .get(`/posts/${createdPost1.id}`)
+    const getPostResponse = await request(app.getHttpServer()).get(`/posts/${createdPost1.id}`);
     console.log(getPostResponse.body);
+  });
+
+  it('test 3', async () => {
+    // GET -> "/posts/:postId/comments": create 6 comments then:
+    // like comment 1 by user 1, user 2;
+    // like comment 2 by user 2, user 3;
+    // dislike comment 3 by user 1;
+    // like comment 4 by user 1, user 4, user 2, user 3;
+    // like comment 5 by user 2, dislike by user 3;
+    // like comment 6 by user 1, dislike by user 2.
+    // Get the comments by user 1 after all likes ;
+    // status 200; content: comments array for post with pagination;
+    // used additional methods: POST => /blogs, POST => /posts, POST => /posts/:postId/comments, PUT -> /posts/:postId/like-status;
+    const users = [];
+    const responsesUsers = [];
+    const createdUsers = [];
+    const responsesLogin = [];
+    const accessTokens = [];
+    const comments = [];
+    const responsesComments = [];
+    const createdComments = [];
+
+    for (let index = 0; index < 6; index++) {
+      users.push(createUser());
+    }
+
+    const blog_1 = createBlog();
+
+    const post_1 = createPost();
+
+    for (let i = 0; i < 6; i++) {
+      comments.push(createComment());
+    }
+
+    //clear data
+    const cleanAll = await request(app.getHttpServer()).del(`/testing/all-data`);
+
+    //create 6 users and login
+    for (let i = 0; i < 6; i++) {
+      responsesUsers.push(await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(users[i]));
+      createdUsers.push(responsesUsers[i].body);
+
+      responsesLogin.push(
+        await request(app.getHttpServer()).post(`/auth/login`).send({
+          loginOrEmail: users[i].login,
+          password: users[i].password,
+        }),
+      );
+      accessTokens.push(responsesLogin[i].body.accessToken);
+    }
+
+    //blog
+    const blogResponse = await request(app.getHttpServer()).post(`/blogs`).auth('admin', 'qwerty', { type: 'basic' }).send(blog_1);
+    const createdBlog1 = blogResponse.body;
+
+    //post
+    post_1.blogId = createdBlog1.id;
+    const responsePost = await request(app.getHttpServer()).post(`/posts`).auth('admin', 'qwerty', { type: 'basic' }).send(post_1);
+    const createdPost = responsePost.body;
+
+    // create 6 comments
+    for (let i = 0; i < 6; i++) {
+      responsesComments.push(
+        await request(app.getHttpServer())
+          .post(`/posts/${createdPost.id}/comments`)
+          .auth(`${accessTokens[i]}`, { type: 'bearer' })
+          .send(comments[i]),
+      );
+      createdComments.push(responsesComments[i].body);
+    }
+    // like comment 1 by user 1, user 2;
+    for (let i = 0; i < 2; i++) {
+      const likeComment_1byUsers = await request(app.getHttpServer())
+        .put(`/comments/1/like-status`)
+        .auth(`${accessTokens[i]}`, { type: 'bearer' })
+        .send({
+          likeStatus: 'Like',
+        });
+    }
+    // like comment 2 by user 2, user 3;
+    for (let i = 1; i < 3; i++) {
+      const likeComment_2byUsers = await request(app.getHttpServer())
+        .put(`/comments/2/like-status`)
+        .auth(`${accessTokens[i]}`, { type: 'bearer' })
+        .send({
+          likeStatus: 'Like',
+        });
+    }
+    // dislike comment 3 by user 1;
+    const likeComment_3byUsers = await request(app.getHttpServer())
+      .put(`/comments/3/like-status`)
+      .auth(`${accessTokens[0]}`, { type: 'bearer' })
+      .send({
+        likeStatus: 'Dislike',
+      });
+    // like comment 4 by user 1, user 4, user 2, user 3;
+    for (let i = 0; i < 4; i++) {
+      const likeComment_4byUsers = await request(app.getHttpServer())
+        .put(`/comments/4/like-status`)
+        .auth(`${accessTokens[i]}`, { type: 'bearer' })
+        .send({
+          likeStatus: 'Like',
+        });
+    }
+    // like comment 5 by user 2, dislike by user 3;
+    const likeComment_5byUser_2 = await request(app.getHttpServer())
+      .put(`/comments/5/like-status`)
+      .auth(`${accessTokens[1]}`, { type: 'bearer' })
+      .send({
+        likeStatus: 'Like',
+      });
+    const likeComment_5byUser_3 = await request(app.getHttpServer())
+      .put(`/comments/5/like-status`)
+      .auth(`${accessTokens[2]}`, { type: 'bearer' })
+      .send({
+        likeStatus: 'Dislike',
+      });
+    // like comment 6 by user 1, dislike by user 2
+    const likeComment_6byUser_1 = await request(app.getHttpServer())
+      .put(`/comments/6/like-status`)
+      .auth(`${accessTokens[0]}`, { type: 'bearer' })
+      .send({
+        likeStatus: 'Like',
+      });
+    const likeComment_6byUser_2 = await request(app.getHttpServer())
+      .put(`/comments/6/like-status`)
+      .auth(`${accessTokens[1]}`, { type: 'bearer' })
+      .send({
+        likeStatus: 'Dislike',
+      });
+    // Get the comments by user 1 after all likes
+    const getCommentsResponse = await request(app.getHttpServer())
+      .get(`/posts/${createdPost.id}/comments`)
+      .auth(`${accessTokens[0]}`, { type: 'bearer' });
+    console.log(getCommentsResponse.body.items);
   });
 });

@@ -56,9 +56,12 @@ export class PostController {
   }
 
   //(2)
+  @UseGuards(UserExtractGuard)
   @Get('/:postId/comments')
-  async getAllCommentsByPost(@Query() dto: QueryDTO, @Param() param: PostIdDTO): Promise<any> {
-    return await this.commentService.getAllCommentsByPost(dto, param.postId);
+  async getAllCommentsByPost(@Query() dto: QueryDTO, @Param() param: PostIdDTO, @Req() req): Promise<any> {
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
+    return await this.commentService.getAllCommentsByPost(dto, param.postId, userId);
   }
 
   //(3)
