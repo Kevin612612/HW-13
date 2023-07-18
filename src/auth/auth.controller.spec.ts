@@ -51,12 +51,13 @@ describe('AppController (e2e)', () => {
     const newRefreshToken = res.headers['set-cookie'][0].split(';')[0].split('=')[1];
     console.log('newAccessToken:', newAccessToken);
     console.log('newRefreshToken', newRefreshToken);
+    console.log(res.statusCode);
 
     //logout
     const res1 = await request(app.getHttpServer())
       .post(`/auth/logout`)
       .auth(`${newAccessToken}`, { type: 'bearer' })
       .set('Cookie', `refreshToken=${newRefreshToken}`);
-    console.log(res1);
+    console.log(res1.statusCode);
   });
 });

@@ -119,7 +119,7 @@ export class AuthController {
           secure: true,
         })
         .status(200)
-        .json(accessTokenObject);
+        .send(accessTokenObject);
     } else {
       res.sendStatus(401);
     }
