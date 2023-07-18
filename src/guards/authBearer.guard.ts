@@ -49,7 +49,5 @@ export class AuthGuardBearer implements CanActivate {
     } else {
       throw new UnauthorizedException();
     }
-    // No tokens or invalid format
-    return false;
   }
 }

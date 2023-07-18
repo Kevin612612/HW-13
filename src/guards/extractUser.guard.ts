@@ -1,14 +1,14 @@
-import { Injectable, CanActivate, ExecutionContext, Inject } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, Inject, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { AccessTokenService } from '../tokens/accesstoken.service';
 import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class UserExtractGuard implements CanActivate {
-    constructor(
-        @Inject(AccessTokenService) protected accessTokenService: AccessTokenService,
-        @Inject(UserRepository) protected userRepository: UserRepository,
-      ) {}
+  constructor(
+    @Inject(AccessTokenService) protected accessTokenService: AccessTokenService,
+    @Inject(UserRepository) protected userRepository: UserRepository,
+  ) {}
   //
   async canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
@@ -19,21 +19,19 @@ export class UserExtractGuard implements CanActivate {
         //check if token valid and not expired
         const payload = await this.accessTokenService.getPayloadFromAccessToken(token);
         const isValid = await this.accessTokenService.isPayloadValid(payload);
-        if (!isValid) {
-            return true;;
-        }
+        if (!isValid) throw new UnauthorizedException();
         const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
-        if (tokenExpired) {
-            return true;;
-        }
+        if (tokenExpired) throw new UnauthorizedException();
         //put user into request
         const user = await this.userRepository.findUserById(payload.sub);
         request.user = user;
-        return true;;
+        return true;
       } catch (error) {
-        return true;;
+        console.log(error);
+        throw new UnauthorizedException();
       }
+    } else {
+      throw new UnauthorizedException();
     }
-    return true;
   }
 }

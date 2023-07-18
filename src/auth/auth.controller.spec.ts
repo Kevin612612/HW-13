@@ -45,7 +45,6 @@ describe('AppController (e2e)', () => {
     //new pair of tokens
     const res = await request(app.getHttpServer())
       .post(`/auth/refresh-token`)
-      //.auth(`${accessToken}`, { type: 'bearer' })
       .set('Cookie', `refreshToken=${refreshToken}`);
     const newAccessToken = res.body.accessToken;
     const newRefreshToken = res.headers['set-cookie'][0].split(';')[0].split('=')[1];

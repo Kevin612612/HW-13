@@ -28,7 +28,8 @@ import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
 import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
-import { RefreshTokenGuard } from '../guards/RefreshToken.guard';
+import { RefreshTokenGuard } from '../guards/refreshToken.guard';
+import { UserExtractGuard } from '../guards/extractUser.guard';
 
 // passwordRecovery
 // newPassword
@@ -158,7 +159,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuardBearer)
+  @UseGuards(RefreshTokenGuard)
   @Post('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     //INPUT
@@ -181,13 +182,11 @@ export class AuthController {
     res.clearCookie('refreshToken').status(204).send("you're quit");
   }
 
-  @UseGuards(AuthGuardBearer)
+  @UseGuards(UserExtractGuard)
   @Get('me')
   async getInfo(@Req() req: Request, @Res() res: Response) {
     //INPUT
-    const refreshToken = req.cookies.refreshToken;
-    const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken);
-    const user = await this.userRepository.findUserById(payload.userId);
+    const user = req.user ? req.user : null;
     res.status(200).json({
       email: user.accountData.email,
       login: user.accountData.login,
