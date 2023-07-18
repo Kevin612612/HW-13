@@ -83,7 +83,7 @@ export class AuthController {
     res
       .cookie('refreshToken', tokens.refreshToken.value, {
         httpOnly: true,
-        secure: true,
+        secure: false,
       })
       .status(200)
       .send(tokens.accessToken);
@@ -110,11 +110,13 @@ export class AuthController {
       //create the pair of tokens and put them into db
       const accessTokenObject = await this.accessTokenService.generateAccessJWT(user);
       const refreshTokenObject = await this.refreshTokenService.generateRefreshJWT(user, deviceId, deviceName, IP);
+      console.log('new created access token', accessTokenObject.accessToken);
+      console.log('new created refresh token', refreshTokenObject.value);
       //send response with tokens
       res
         .cookie('refreshToken', refreshTokenObject.value, {
           httpOnly: true,
-          secure: true,
+          secure: false,
         })
         .status(200)
         .json(accessTokenObject);
@@ -160,12 +162,19 @@ export class AuthController {
   async logout(@Req() req: Request, @Res() res: Response) {
     //INPUT
     const refreshToken = req.cookies.refreshToken;
+    console.log(refreshToken);
     const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken);
+    console.log(payload);
+
     //BLL
     //make refreshToken Expired/Invalid
     const result = await this.refreshTokenService.makeRefreshTokenExpired(refreshToken);
+    console.log(result);
+
     //...and delete from DB
     const deleteRefreshToken = await this.refreshTokensRepository.deleteOne(payload.userId, payload.deviceId);
+    console.log(deleteRefreshToken);
+
     //RETURN
     //clear the refreshToken from the cookies
     res.clearCookie('refreshToken').status(204).send("you're quit");

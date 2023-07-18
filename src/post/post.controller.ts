@@ -79,7 +79,7 @@ export class PostController {
   //(4)
   @UseGuards(UserExtractGuard)
   @Get()
-  async getAllPosts(@Query() dto: QueryDTO, @Req() req: Request): Promise<PostsTypeSchema> {
+  async getAllPosts(@Query() dto: QueryDTO, @Req() req): Promise<PostsTypeSchema> {
     const user = req.user ? req.user : null;
     const userId = user ? user.id : null;
     const result = await this.postService.findAll(dto, userId);
@@ -96,7 +96,7 @@ export class PostController {
   //(6)
   @UseGuards(UserExtractGuard)
   @Get('/:postId')
-  async findPostById(@Param() params: PostIdDTO, @Req() req: Request, @Res() res: Response) {
+  async findPostById(@Param() params: PostIdDTO, @Req() req, @Res() res) {
     const user = req.user ? req.user : null;
     const post = await this.postService.findPostById(params.postId, user);
     res.send(post);
