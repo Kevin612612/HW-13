@@ -45,7 +45,9 @@ export class AuthGuardBearer implements CanActivate {
       } catch (error) {
         console.log(error);
         throw new UnauthorizedException();
-      }
+      } 
+    } else {
+      throw new UnauthorizedException();
     }
     // No tokens or invalid format
     return false;
