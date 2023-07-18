@@ -28,7 +28,7 @@ import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
 import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
-import { RefreshTokenGuard } from '../guards/RefreshToken.guard';
+import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 
 // passwordRecovery
 // newPassword
