@@ -50,4 +50,5 @@ export class AuthGuardBearer implements CanActivate {
       throw new UnauthorizedException();
     }
   }
+  
 }
