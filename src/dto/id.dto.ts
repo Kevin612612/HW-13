@@ -1,5 +1,5 @@
 import { IsDefined, IsEnum, Validate } from 'class-validator';
-import { BlogExistsValidation, CommentExistsValidation, PostExistsValidation, UserExistsValidation } from '../validation/validation';
+import { BlogExistsValidation, CommentExistsValidation, DeviceExistsValidation, PostExistsValidation, UserExistsValidation } from '../validation/validation';
 
 export class UserIdDTO {
   @IsDefined()
@@ -20,6 +20,11 @@ export class PostIdDTO {
 export class CommentIdDTO {
   @Validate(CommentExistsValidation)
   commentId: string;
+}
+
+export class DeviceIdDTO {
+  @Validate(DeviceExistsValidation)
+  deviceId: string;
 }
 
 export class LikeStatusDTO {

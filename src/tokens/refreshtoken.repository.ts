@@ -37,7 +37,7 @@ export class RefreshTokensRepository {
   async allActiveDevices(userId: string): Promise<RefreshTokensDataTypeSchema> {
     return await this.refreshTokenModel
       .find(
-        { $and: [{ expiredAt: { $gt: new Date() } }, { userId: userId }] },
+        { $and: [{ expiredAt: { $gt: new Date().toISOString() } }, { userId: userId }] },
         { projection: { _id: 0, value: 0, userId: 0, expiredAt: 0 } },
       )
       .lean();
@@ -53,6 +53,11 @@ export class RefreshTokensRepository {
   async findTokenByUserIdAndDeviceId(userId: string, deviceId: string): Promise<string | undefined> {
     const result = await this.refreshTokenModel.findOne({ userId: userId, deviceId: deviceId });
     return result?.userId ? result.userId : undefined;
+  }
+
+  //(3) method finds refreshToken by deviceId
+  async findTokenByDeviceId(deviceId: string): Promise<any | undefined> {
+    return await this.refreshTokenModel.findOne({ deviceId: deviceId });
   }
 
   //(4) method delete all tokens by this user  except current

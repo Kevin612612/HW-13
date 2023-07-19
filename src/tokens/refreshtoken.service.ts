@@ -12,6 +12,9 @@ import { RefreshToken, RefreshTokensPayloadType } from './refreshtoken.class';
 //(3) isPayloadValid
 //(4) isTokenExpired
 //(5) makeRefreshTokenExpired
+//(6) allDevices
+//(7) terminateAllOtherDevices
+//(8) terminateCurrentDevice
 
 @Injectable()
 export class RefreshTokenService {
@@ -75,37 +78,29 @@ export class RefreshTokenService {
     return true;
   }
 
-  //(1) this method transform all found data and returns them to router
-  //   async allDevices(refreshToken: string): Promise<any> {
-  //     //find refreshToken by value and return userId
-  //     const payload = this.jwtService.verifyAsync(refreshToken);
-  //     //find all refreshTokens by that userId and non expired date
-  //     if (payload) {
-  //       const result = await this.refreshTokensRepository.allActiveDevices(payload.userId);
-  //       return result.map(result => {
-  //         return {
-  //           ip: result.IP,
-  //           title: result.deviceName,
-  //           deviceId: result.deviceId,
-  //           lastActiveDate: result.createdAt,
-  //         };
-  //       });
-  //     }
-  //     return [];
-  //   }
+  //(6) this method transform all found data and returns them to router
+  async allDevices(userId: string): Promise<any> {
+    const result = await this.refreshTokensRepository.allActiveDevices(userId);
+    return result.map(result => {
+      return {
+        ip: result.IP,
+        title: result.deviceName,
+        deviceId: result.deviceId,
+        lastActiveDate: result.createdAt,
+      };
+    });
+  }
 
-  //(2) this method terminates all other devices
-  //   async terminateAllOtherDevices(refreshToken: string): Promise<boolean> {
-  //     const payload = this.jwtService.verifyAsync(refreshToken);
-  //     if (payload) {
-  //       return await this.refreshTokensRepository.deleteOthers(payload.userId, payload.deviceId);
-  //     }
-  //     return false;
-  //   }
+  //(7) this method terminates all other devices
+  async terminateAllOtherDevices(userId: string, deviceId: string): Promise<boolean> {
+    //todo: add deleted refreshtokens into blacklist
+    return await this.refreshTokensRepository.deleteOthers(userId, deviceId);
+  }
 
-  //(3) this method terminates current devices
-  async terminateCurrentDevice(userId: string, deviceId: string): Promise<boolean | number> {
-    const result = await this.refreshTokensRepository.deleteOne(userId, deviceId);
-    return result ? result : 404;
+  //(8) this method terminates current devices
+  async terminateCurrentDevice(userId: string, deviceId: string): Promise<boolean> {
+    //todo: add deleted refreshtoken into blacklist
+    return await this.refreshTokensRepository.deleteOne(userId, deviceId);
+
   }
 }

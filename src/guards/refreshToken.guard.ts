@@ -2,12 +2,14 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Injec
 import { Request } from 'express';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { BlackListRepository } from '../black list/blacklist.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
   constructor(
     @Inject(RefreshTokenService) protected refreshTokenService: RefreshTokenService,
     @Inject(BlackListRepository) protected blackListRepository: BlackListRepository,
+    @Inject(UserRepository) protected userRepository: UserRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<any> {
@@ -24,6 +26,9 @@ export class RefreshTokenGuard implements CanActivate {
       if (!isValid) throw new UnauthorizedException();
       const expired = await this.refreshTokenService.isTokenExpired(payload);
       if (expired) throw new UnauthorizedException();
+      //put user into request
+      const user = await this.userRepository.findUserById(payload.userId);
+      request.user = user;
       return true;
     } catch (error) {
       console.log(error);

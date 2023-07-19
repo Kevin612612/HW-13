@@ -9,6 +9,10 @@ export class BlackListService {
     return await this.blackListRepository.deleteAllData();
   }
 
+  async deleteTokens() {
+    return await this.blackListRepository.deleteTokens();
+  }
+
   async createBlackList() {
     return await this.blackListRepository.createBlackList();
   }

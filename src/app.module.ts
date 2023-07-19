@@ -14,6 +14,8 @@ import { TokenModule } from './tokens/tokens.module';
 import { BlackListModule } from './black list/blacklist.module';
 import { CheckAccessTokenMiddleware } from './middleware/extractUser.middleware';
 import { PostController } from './post/post.controller';
+import { DevicesModule } from './devices/devices.module';
+import { PutRequestIntoCacheMiddleware } from './middleware/putRequestIntoCache.middleware';
 
 //root module
 @Module({
@@ -24,19 +26,20 @@ import { PostController } from './post/post.controller';
     UserModule,
     BlogModule,
     PostModule,
-    EmailModule,
     CommentsModule,
+    EmailModule,
     TokenModule,
     BlackListModule,
     CacheModule.register({ isGlobal: false }),
+    DevicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })  
 export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer
-  //     .apply(CheckAccessTokenMiddleware)
-  //     .forRoutes({ path: '*', method: RequestMethod.ALL });
-  // }
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(PutRequestIntoCacheMiddleware, CheckAccessTokenMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
 }

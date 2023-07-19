@@ -19,6 +19,19 @@ export class BlackListRepository {
     return result.acknowledged;
   }
 
+  //(0) delete tokens
+  async deleteTokens(): Promise<boolean> {
+    const result = await this.blacklistModel.updateOne(
+      {},
+      {
+        $set: {
+          refreshTokens: [],
+        },
+      },
+    );
+    return result.acknowledged;
+  }
+
   //(1) method creates object
   async createBlackList(): Promise<any> {
     const blackListObject: BlackListType = new BlackList();

@@ -95,18 +95,19 @@ export class AuthController {
   @Post('refresh-token')
   async newPairOfTokens(@Req() req: Request, @Res() res: Response) {
     //INPUT
+    const user = req.user ? req.user : null;
+    const userId = user ? user.id : null;
     const refreshToken = req.cookies.refreshToken;
     const IP = req.socket.remoteAddress || 'noIp';
     const userAgent = req.headers['user-agent'];
     const deviceName = 'device';
     const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken); //once middleware is passed
-    const user = await this.userRepository.findUserById(payload.userId);
     const deviceId = payload.deviceId;
     // BLL
     // since validation is passed, so we can add refreshToken in black list
     const result = await this.blackListService.addToken(refreshToken);
     // //...and delete from DB
-    const deleteRefreshToken = await this.refreshTokensRepository.deleteOne(user.id, deviceId);
+    const deleteRefreshToken = await this.refreshTokensRepository.deleteOne(userId, deviceId);
     // //RETURN
     if (user) {
       //create the pair of tokens and put them into db

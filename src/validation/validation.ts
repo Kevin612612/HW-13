@@ -4,6 +4,7 @@ import { BlogRepository } from '../blog/blog.repository';
 import { UserRepository } from '../user/user.repository';
 import { PostRepository } from '../post/post.repository';
 import { CommentRepository } from '../comments/comment.repository';
+import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
 
 @ValidatorConstraint({ name: 'customValidation', async: false })
 export class CustomValidation implements ValidatorConstraintInterface {
@@ -67,6 +68,24 @@ export class CommentExistsValidation implements ValidatorConstraintInterface {
 
   defaultMessage() {
     return `Comment doesn't exist`;
+  }
+}
+
+@ValidatorConstraint({ name: 'DeviceExists', async: true })
+@Injectable()
+export class DeviceExistsValidation implements ValidatorConstraintInterface {
+  constructor(@Inject(RefreshTokensRepository) private refreshTokensRepository: RefreshTokensRepository) {}
+
+  async validate(value: string) {
+    const token = await this.refreshTokensRepository.findTokenByDeviceId(value);
+    if (!token) {
+      throw new NotFoundException(["Device doesn't exist"]);
+    }
+    return true;
+  }
+
+  defaultMessage() {
+    return `Device doesn't exist`;
   }
 }
 
