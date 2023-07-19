@@ -1,12 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import { BlogDTO } from './dto/blogInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogRepository } from './blog.repository';
 import { Blog } from './blog.class';
 import mongoose from 'mongoose';
-import { resourceLimits } from 'worker_threads';
 
 @Injectable()
 export class BlogService {

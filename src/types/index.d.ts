@@ -15,6 +15,7 @@ declare global {
             resultClient: any,
             resultOs: any,
             result: any,
+            userId: string,
         }
     }
 }

@@ -25,10 +25,45 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('test 1', async () => {
+  // it('test 1', async () => {
+  //   const user = createUser();
+  //   const userResponse = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(user);
+  //   const createdUser = userResponse.body;
+
+  //   //login
+  //   const loginResponse = await request(app.getHttpServer()).post(`/auth/login`).send({
+  //     loginOrEmail: user.login,
+  //     password: user.password,
+  //   });
+  //   const accessToken = loginResponse.body.accessToken;
+  //   const refreshToken = loginResponse.headers['set-cookie'][0].split(';')[0].split('=')[1];
+  //   console.log('accessToken login:', accessToken);
+  //   console.log('refreshToken login:', refreshToken);
+  //   //delay
+  //   setTimeout(() => {}, 12000);
+
+  //   //new pair of tokens
+  //   const res = await request(app.getHttpServer()).post(`/auth/refresh-token`).set('Cookie', `refreshToken=${refreshToken}`);
+  //   const newAccessToken = res.body.accessToken;
+  //   const newRefreshToken = res.headers['set-cookie'][0].split(';')[0].split('=')[1];
+  //   console.log('newAccessToken:', newAccessToken);
+  //   console.log('newRefreshToken', newRefreshToken);
+  //   console.log(res.statusCode);
+
+  //   //logout
+  //   const res1 = await request(app.getHttpServer())
+  //     .post(`/auth/logout`)
+  //     .auth(`${newAccessToken}`, { type: 'bearer' })
+  //     .set('Cookie', `refreshToken=${newRefreshToken}`);
+  //   console.log(res1.statusCode);
+  // });
+
+  it('auth/me', async () => {
+    //create user
     const user = createUser();
     const userResponse = await request(app.getHttpServer()).post(`/users`).auth('admin', 'qwerty', { type: 'basic' }).send(user);
     const createdUser = userResponse.body;
+    console.log('created user:', createdUser);
 
     //login
     const loginResponse = await request(app.getHttpServer()).post(`/auth/login`).send({
@@ -39,24 +74,15 @@ describe('AppController (e2e)', () => {
     const refreshToken = loginResponse.headers['set-cookie'][0].split(';')[0].split('=')[1];
     console.log('accessToken login:', accessToken);
     console.log('refreshToken login:', refreshToken);
+
     //delay
-    setTimeout(() => {}, 12000);
+    setTimeout(() => {}, 11000);
 
-    //new pair of tokens
-    const res = await request(app.getHttpServer())
-      .post(`/auth/refresh-token`)
-      .set('Cookie', `refreshToken=${refreshToken}`);
-    const newAccessToken = res.body.accessToken;
-    const newRefreshToken = res.headers['set-cookie'][0].split(';')[0].split('=')[1];
-    console.log('newAccessToken:', newAccessToken);
-    console.log('newRefreshToken', newRefreshToken);
-    console.log(res.statusCode);
-
-    //logout
+    //auth/me
     const res1 = await request(app.getHttpServer())
-      .post(`/auth/logout`)
-      .auth(`${newAccessToken}`, { type: 'bearer' })
-      .set('Cookie', `refreshToken=${newRefreshToken}`);
+      .get(`/auth/me`)
+      .auth(`${accessToken}`, { type: 'bearer' })
+      .set('Cookie', `refreshToken=${refreshToken}`);
     console.log(res1.statusCode);
   });
 });

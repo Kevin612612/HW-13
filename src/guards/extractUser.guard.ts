@@ -7,7 +7,7 @@ import { UserRepository } from '../user/user.repository';
 export class UserExtractGuard implements CanActivate {
   constructor(
     @Inject(AccessTokenService) protected accessTokenService: AccessTokenService,
-    @Inject(UserRepository) protected userRepository: UserRepository,
+    @Inject(UserRepository) private userRepository: UserRepository,
   ) {}
   //
   async canActivate(context: ExecutionContext) {
@@ -23,7 +23,7 @@ export class UserExtractGuard implements CanActivate {
         const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
         if (tokenExpired) throw new UnauthorizedException();
         //put user into request
-        const user = await this.userRepository.findUserById(payload.sub);
+        const user = await this.userRepository.findUserById(payload.sub) || null;
         request.user = user;
         return true;
       } catch (error) {

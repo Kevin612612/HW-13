@@ -10,10 +10,10 @@ export class PutRequestIntoCacheMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const path = req.originalUrl; //path of request
-    const ip = req.ip || req.socket.remoteAddress || 'noIp';
+    const path = req.originalUrl;                            //path of the request
+    const ip = req.ip || req.socket.remoteAddress || 'noIp'; // ip of the request
     //if array of requests to current url doesn't exist -> create empty array
-    const arrayOfRequests: any[] = (await this.cacheManager.get(path)) || [];
+    const arrayOfRequests: any[] = await this.cacheManager.get(path) || [];
     arrayOfRequests.push({ path: path, ip: ip, iat: Date.now() });
     const writeInCache = await this.cacheManager.set(path, arrayOfRequests, 0);
     next();

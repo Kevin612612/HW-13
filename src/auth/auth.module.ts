@@ -11,6 +11,8 @@ import { EmailModule } from '../email/email.module';
 import { UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed } from '../validation/validation';
 import { RefreshTokenSchema } from '../tokens/refreshtoken.schema';
 import { TokenModule } from '../tokens/tokens.module';
+import { BlogSchema } from '../blog/blog.schema';
+import { BlogModule } from '../blog/blog.module';
 
 @Module({
   imports: [

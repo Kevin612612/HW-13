@@ -82,8 +82,9 @@ export class UserRepository {
   }
 
   //(4.1) method returns user by Id
-  async findUserById(userId: string): Promise<UserDataType | undefined> {
-    return await this.userModel.findOne({ id: userId }).exec();
+  async findUserById(userId: string): Promise<UserDataType | null> {
+    const result = await this.userModel.findOne({ id: userId }) || null;
+    return result;
   }
 
   //(5) find user by login

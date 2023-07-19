@@ -93,7 +93,7 @@ export class AuthController {
 
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
-  async newPairOfTokens(@Req() req: Request, @Res() res: Response) {
+  async newPairOfTokens(@Req() req, @Res() res) {
     //INPUT
     const user = req.user ? req.user : null;
     const userId = user ? user.id : null;
@@ -183,12 +183,12 @@ export class AuthController {
     res.clearCookie('refreshToken').status(204).send("you're quit");
   }
 
-  @UseGuards(UserExtractGuard)
+  @UseGuards(AuthGuardBearer)
   @Get('me')
-  async getInfo(@Req() req: Request, @Res() res: Response) {
+  async getInfo(@Req() req, @Res() res) {
     //INPUT
     const user = req.user ? req.user : null;
-    res.status(200).json({
+    res.status(200).send({
       email: user.accountData.email,
       login: user.accountData.login,
       userId: user.id,

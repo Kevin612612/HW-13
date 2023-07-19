@@ -16,6 +16,7 @@ import { CheckAccessTokenMiddleware } from './middleware/extractUser.middleware'
 import { PostController } from './post/post.controller';
 import { DevicesModule } from './devices/devices.module';
 import { PutRequestIntoCacheMiddleware } from './middleware/putRequestIntoCache.middleware';
+import { CheckRequestNumberMiddleware } from './middleware/checkRequestNumber.middleware';
 
 //root module
 @Module({
@@ -39,7 +40,7 @@ import { PutRequestIntoCacheMiddleware } from './middleware/putRequestIntoCache.
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(PutRequestIntoCacheMiddleware, CheckAccessTokenMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
+      .forRoutes('*');
   }
 }

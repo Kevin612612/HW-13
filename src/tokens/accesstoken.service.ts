@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../user/user.repository';
 import { jwtConstants } from '../auth/constants';
 import { UserDataType } from '../types/users';
-import { AccessTokensPayloadType } from './refreshtoken.class';
+import { AccessTokensPayloadType } from '../types/accesstoken';
 
 //(1) create accesstoken
 
