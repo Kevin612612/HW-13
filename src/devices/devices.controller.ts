@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Inject, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Req, UseGuards } from '@nestjs/common';
 import { DeviceIdDTO } from '../dto/id.dto';
 import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
@@ -23,6 +23,7 @@ export class DevicesController {
 
   //(2)
   @UseGuards(RefreshTokenGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/devices')
   async deleteOtherDevices(@Req() req) {
     //INPUT

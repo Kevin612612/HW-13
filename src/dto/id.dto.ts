@@ -1,4 +1,4 @@
-import { IsDefined, IsEnum, Validate } from 'class-validator';
+import { IsDefined, IsEnum, IsNumberString, Validate } from 'class-validator';
 import { BlogExistsValidation, CommentExistsValidation, DeviceExistsValidation, PostExistsValidation, UserExistsValidation } from '../validation/validation';
 
 export class UserIdDTO {
@@ -23,6 +23,7 @@ export class CommentIdDTO {
 }
 
 export class DeviceIdDTO {
+  @IsNumberString()
   @Validate(DeviceExistsValidation)
   deviceId: string;
 }

@@ -7,6 +7,7 @@ import { RefreshTokenService } from '../tokens/refreshtoken.service';
 import { DevicesController } from './devices.controller';
 import { BlackListModule } from '../black list/blacklist.module';
 import { UserModule } from '../user/user.module';
+import { DeviceExistsValidation } from '../validation/validation';
 
 @Module({
     imports: [
@@ -18,7 +19,7 @@ import { UserModule } from '../user/user.module';
       BlackListModule,
     ],
     controllers: [DevicesController],
-    providers: [RefreshTokenService, RefreshTokensRepository],
+    providers: [RefreshTokenService, RefreshTokensRepository, DeviceExistsValidation],
     exports: [],
   })
   export class DevicesModule {}

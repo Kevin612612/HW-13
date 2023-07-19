@@ -77,7 +77,7 @@ export class DeviceExistsValidation implements ValidatorConstraintInterface {
   constructor(@Inject(RefreshTokensRepository) private refreshTokensRepository: RefreshTokensRepository) {}
 
   async validate(value: string) {
-    const token = await this.refreshTokensRepository.findTokenByDeviceId(value);
+    const token = await this.refreshTokensRepository.findTokenByDeviceId(value) || null;
     if (!token) {
       throw new NotFoundException(["Device doesn't exist"]);
     }
