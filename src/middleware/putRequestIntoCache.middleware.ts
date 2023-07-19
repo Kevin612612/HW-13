@@ -16,6 +16,7 @@ export class PutRequestIntoCacheMiddleware implements NestMiddleware {
     const arrayOfRequests: any[] = await this.cacheManager.get(path) || [];
     arrayOfRequests.push({ path: path, ip: ip, iat: Date.now() });
     const writeInCache = await this.cacheManager.set(path, arrayOfRequests, 0);
+    console.log('put:', path, arrayOfRequests);
     next();
   }
 }

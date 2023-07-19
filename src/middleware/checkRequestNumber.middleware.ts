@@ -13,11 +13,13 @@ export class CheckRequestNumberMiddleware implements NestMiddleware {
     const path = req.originalUrl; //path of request
     const ip = req.ip || req.socket.remoteAddress || 'noIp';
     //if array of requests to current url doesn't exist -> create empty array
-    const arrayOfRequests: any[] = (await this.cacheManager.get(path)) || [];
+    const arrayOfRequests: any[] = await this.cacheManager.get(path) || [];
     const arrayOfRequestsNew = arrayOfRequests.slice(-5); // take the last five requests
     if (arrayOfRequestsNew.length >= 5 && arrayOfRequestsNew[0].iat + 10000 > Date.now()) {
       throw new HttpException('Too Many Requests', HttpStatus.TOO_MANY_REQUESTS);
     }
+    console.log('take:', path, arrayOfRequestsNew);
+
     const writeInCache = await this.cacheManager.set(path, arrayOfRequestsNew, 0);
     next();
   }

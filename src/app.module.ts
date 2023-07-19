@@ -41,6 +41,10 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
-      .forRoutes('*');
-  }
+      .forRoutes(
+        '/auth/registration-confirmation', 
+        '/auth/registration-email-resending', 
+        '/auth/login',
+        '/auth/registration',
+      )  }
 }
