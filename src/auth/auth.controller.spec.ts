@@ -76,13 +76,13 @@ describe('AppController (e2e)', () => {
     console.log('refreshToken login:', refreshToken);
 
     //delay
-    setTimeout(() => {}, 11000);
+    //setTimeout(() => {}, 11000);
 
     //auth/me
     const res1 = await request(app.getHttpServer())
       .get(`/auth/me`)
       .auth(`${accessToken}`, { type: 'bearer' })
-      .set('Cookie', `refreshToken=${refreshToken}`);
     console.log(res1.statusCode);
+    console.log(res1.body);
   });
 });

@@ -9,22 +9,24 @@ export class UserExtractGuard implements CanActivate {
     @Inject(AccessTokenService) protected accessTokenService: AccessTokenService,
     @Inject(UserRepository) private userRepository: UserRepository,
   ) {}
-  //
-  async canActivate(context: ExecutionContext) {
+
+  async canActivate(context: ExecutionContext): Promise<any> {
     const request: Request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization || null;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    const accessToken = authHeader ? authHeader.split(' ')[1] : null; //access token
+    console.log('check accessToken', accessToken);
+
+    if (accessToken && authHeader && authHeader.startsWith('Bearer ')) {
       try {
-        const token = authHeader.split(' ')[1];
-        //check if token valid and not expired
-        const payload = await this.accessTokenService.getPayloadFromAccessToken(token);
+        //check access token
+        const payload = await this.accessTokenService.getPayloadFromAccessToken(accessToken);
         const isValid = await this.accessTokenService.isPayloadValid(payload);
         if (!isValid) throw new UnauthorizedException();
         const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
         if (tokenExpired) throw new UnauthorizedException();
         //put user into request
-        const user = await this.userRepository.findUserById(payload.sub) || null;
-        request.user = user;
+        const user = await this.userRepository.findUserById(payload.sub);
+        request.user = user; // Attach the user to the request object
         return true;
       } catch (error) {
         console.log(error);
@@ -34,5 +36,4 @@ export class UserExtractGuard implements CanActivate {
       throw new UnauthorizedException();
     }
   }
-  
 }

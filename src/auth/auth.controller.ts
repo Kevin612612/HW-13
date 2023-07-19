@@ -183,7 +183,7 @@ export class AuthController {
     res.clearCookie('refreshToken').status(204).send("you're quit");
   }
 
-  @UseGuards(AuthGuardBearer)
+  @UseGuards(UserExtractGuard)
   @Get('me')
   async getInfo(@Req() req, @Res() res) {
     //INPUT
