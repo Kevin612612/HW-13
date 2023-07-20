@@ -30,6 +30,7 @@ import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
 import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 import { UserExtractGuard } from '../guards/extractUser.guard';
+import { Throttle } from '@nestjs/throttler';
 
 // passwordRecovery
 // newPassword
@@ -71,6 +72,7 @@ export class AuthController {
     }
   }
 
+  @Throttle(5, 10)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Body() dto: LoginDTO, @Req() req: Request, @Res() res: Response) {
@@ -135,6 +137,7 @@ export class AuthController {
     return req.user;
   }
 
+  @Throttle(5, 10)
   @Post('registration-confirmation')
   async registrationConfirmation(@Body() dto: CodeConfirmationDTO, @Res() res: Response) {    
     const result = await this.usersService.confirmCodeFromEmail(dto.code);
@@ -145,12 +148,14 @@ export class AuthController {
     }
   }
 
+  @Throttle(5, 10)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registration(@Body() dto: UserDTO) {
     return await this.usersService.newRegisteredUser(dto);
   }
 
+  @Throttle(5, 10)
   @Post('registration-email-resending')
   async resendRegistrationCode(@Body() dto: EmailResendDTO, @Res() res: Response) {
     const result = await this.emailService.sendEmailConfirmationMessageAgain(dto.email);
