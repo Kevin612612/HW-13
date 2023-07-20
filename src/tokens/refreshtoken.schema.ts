@@ -29,6 +29,9 @@ export class RefreshToken {
 
   @Prop({ required: true, default: new Date(new Date().getTime() + (30 * 60 * 1000)).toISOString() })
   expiredAt: string;
+
+  @Prop({ versionKey: true })
+  __v: number;
 }
 
 export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);

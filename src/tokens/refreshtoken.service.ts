@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokensRepository } from './refreshtoken.repository';
 import { UserRepository } from '../user/user.repository';
@@ -37,7 +37,7 @@ export class RefreshTokenService {
     const liveTime = parseInt(jwtConstants.REFRESH_TOKEN_LIFE_TIME);
 
     const refreshTokenValue = await this.jwtService.signAsync(payload);
-    const refreshTokenObject: RefreshTokensDataModel = new RefreshToken(refreshTokenValue, user.id, deviceId, deviceName, IP);
+    const refreshTokenObject = new RefreshToken(refreshTokenValue, user.id, deviceId, deviceName, IP);
     //put it into db
     const result1 = await this.userRepository.addRefreshToken(user.id, refreshTokenValue, liveTime);
     const result2 = await this.refreshTokensRepository.newCreatedToken(refreshTokenObject);
@@ -100,7 +100,8 @@ export class RefreshTokenService {
   //(8) this method terminates current devices
   async terminateCurrentDevice(userId: string, deviceId: string): Promise<boolean> {
     //todo: add deleted refreshtoken into blacklist
-    return await this.refreshTokensRepository.deleteOne(userId, deviceId);
-
+    const result = await this.refreshTokensRepository.deleteOne(userId, deviceId);
+    if (!result) throw new ForbiddenException(["it's not your device"]);
+    return true;
   }
 }

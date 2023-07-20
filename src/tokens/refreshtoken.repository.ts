@@ -15,10 +15,10 @@ import { Model } from 'mongoose';
 export class RefreshTokensRepository {
   constructor(@InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshTokenDocument>) {}
 
-  async createDeviceId(): Promise<string> {
+  async createDeviceId(userId: string): Promise<string> {
     let deviceId = 1;
     while (deviceId) {
-      const token = await this.refreshTokenModel.findOne({ deviceId: deviceId.toString() });
+      const token = await this.refreshTokenModel.findOne({ $and: [{ deviceId: deviceId.toString() }, {userId: userId}]});
       if (!token) {
         break;
       }
@@ -77,4 +77,5 @@ export class RefreshTokensRepository {
     const result = await this.refreshTokenModel.findOne({ deviceId: deviceId });
     return result?.deviceId;
   }
+
 }

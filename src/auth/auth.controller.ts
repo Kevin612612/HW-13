@@ -75,10 +75,11 @@ export class AuthController {
   @Post('login')
   async login(@Body() dto: LoginDTO, @Req() req: Request, @Res() res: Response) {
     //collect data from request
+    const user = await this.userRepository.findUserByLoginOrEmail(dto.loginOrEmail)
     const IP = req.socket.remoteAddress || 'noIp';
     const userAgent = req.headers['user-agent'];
-    const deviceName = 'device';
-    const deviceId = await this.refreshTokensRepository.createDeviceId();
+    const deviceName = userAgent || 'device';
+    const deviceId = await this.refreshTokensRepository.createDeviceId(user.id);
     //create tokens
     const tokens = await this.authService.login(dto, deviceId, deviceName, IP);    
     //send them    
