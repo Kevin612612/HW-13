@@ -19,7 +19,9 @@ export class AccessTokenService {
       sub: user.id,
       expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME,
     };
-    const accessToken = await this.jwtService.signAsync(payload);
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME,
+    });
     //put it into db
     const addAccessToken = await this.userRepository.addAccessToken(user.id, accessToken, liveTimeInSeconds);
 

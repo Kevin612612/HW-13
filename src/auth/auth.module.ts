@@ -11,8 +11,6 @@ import { EmailModule } from '../email/email.module';
 import { UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed } from '../validation/validation';
 import { RefreshTokenSchema } from '../tokens/refreshtoken.schema';
 import { TokenModule } from '../tokens/tokens.module';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -23,7 +21,7 @@ import { APP_GUARD } from '@nestjs/core';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: jwtConstants.ACCESS_TOKEN_LIFE_TIME },
+      signOptions: { expiresIn: jwtConstants.REFRESH_TOKEN_LIFE_TIME },
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'RefreshToken', schema: RefreshTokenSchema }]),

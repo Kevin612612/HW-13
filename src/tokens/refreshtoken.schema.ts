@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { HydratedDocument } from 'mongoose';
+import { jwtConstants } from '../auth/constants';
 
 export type RefreshTokenDocument = HydratedDocument<RefreshToken>;
 
@@ -27,7 +28,7 @@ export class RefreshToken {
   @Prop({ required: true, default: new Date().toISOString() })
   createdAt: string;
 
-  @Prop({ required: true, default: new Date(new Date().getTime() + (30 * 60 * 1000)).toISOString() })
+  @Prop({ required: true, default: new Date(new Date().getTime() + (parseInt(jwtConstants.REFRESH_TOKEN_LIFE_TIME) * 1000)).toISOString() })
   expiredAt: string;
 
   @Prop({ versionKey: true })

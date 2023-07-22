@@ -36,7 +36,9 @@ export class RefreshTokenService {
     };
     const liveTime = parseInt(jwtConstants.REFRESH_TOKEN_LIFE_TIME);
 
-    const refreshTokenValue = await this.jwtService.signAsync(payload);
+    const refreshTokenValue = await this.jwtService.signAsync(payload, {
+      expiresIn: jwtConstants.REFRESH_TOKEN_LIFE_TIME,
+    });
     const refreshTokenObject = new RefreshToken(refreshTokenValue, user.id, deviceId, deviceName, IP);
     //put it into db
     const result1 = await this.userRepository.addRefreshToken(user.id, refreshTokenValue, liveTime);
