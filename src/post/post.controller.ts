@@ -27,6 +27,7 @@ import { CommentDTO } from '../comments/dto/commentsInputDTO';
 import { Request } from 'express';
 import { Response } from 'express';
 import { UserExtractGuard } from '../guards/extractUser.guard';
+import { SkipThrottle } from '@nestjs/throttler';
 
 //(1) changeLikeStatus
 //(2) getAllCommentsByPost
@@ -37,6 +38,7 @@ import { UserExtractGuard } from '../guards/extractUser.guard';
 //(7) updatePostById
 //(8) deletePost
 
+@SkipThrottle()
 @Controller('posts')
 export class PostController {
   constructor(

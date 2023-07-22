@@ -4,12 +4,14 @@ import { CommentIdDTO, LikeStatusDTO } from '../dto/id.dto';
 import { UserExtractGuard } from '../guards/extractUser.guard';
 import { CommentService } from './comments.service';
 import { CommentDTO } from './dto/commentsInputDTO';
+import { SkipThrottle } from '@nestjs/throttler';
 
 // changeLikeStatus
 // updateCommentById
 // deleteComment
 // findCommentById
 
+@SkipThrottle()
 @Controller('comments')
 export class CommentController {
   constructor(@Inject(CommentService) protected commentService: CommentService) {}

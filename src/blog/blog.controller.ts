@@ -25,7 +25,9 @@ import { BlogDTO } from './dto/blogInputDTO';
 import { BlogRepository } from './blog.repository';
 import { AuthGuardBasic } from '../guards/authBasic.guard';
 import { UserExtractGuard } from '../guards/extractUser.guard';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('blogs')
 export class BlogController {
   constructor(

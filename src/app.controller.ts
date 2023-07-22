@@ -5,7 +5,9 @@ import { PostRepository } from './post/post.repository';
 import { UserRepository } from './user/user.repository';
 import { RefreshTokensRepository } from './tokens/refreshtoken.repository';
 import { CommentRepository } from './comments/comment.repository';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller()
 export class AppController {
   constructor(

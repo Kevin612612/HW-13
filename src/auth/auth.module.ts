@@ -27,16 +27,9 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'RefreshToken', schema: RefreshTokenSchema }]),
-    ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 5,
-    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed, {
-    provide: APP_GUARD,
-    useClass: ThrottlerGuard,
-  },],
+  providers: [AuthService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed],
   exports: [AuthService],
 })
 export class AuthModule {}

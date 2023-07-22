@@ -13,6 +13,8 @@ import { CommentsModule } from './comments/comments.module';
 import { TokenModule } from './tokens/tokens.module';
 import { BlackListModule } from './black list/blacklist.module';
 import { DevicesModule } from './devices/devices.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 
 //root module
@@ -30,9 +32,16 @@ import { DevicesModule } from './devices/devices.module';
     BlackListModule,
     CacheModule.register({ isGlobal: false }),
     DevicesModule,
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 5,
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard,
+  },],
 })
 export class AppModule {
   // configure(consumer: MiddlewareConsumer) {

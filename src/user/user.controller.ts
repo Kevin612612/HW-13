@@ -17,7 +17,9 @@ import { UsersService } from './user.service';
 import { QueryUserDTO } from '../dto/query.dto';
 import { UserIdDTO } from '../dto/id.dto';
 import { AuthGuardBasic } from '../guards/authBasic.guard';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @UseGuards(AuthGuardBasic)
 @Controller('users')
 export class UsersController {
