@@ -20,7 +20,6 @@ export class DevicesController {
   async getAllDevices(@Req() req) {
     const user = req.user ? req.user : null;
     const userId = user ? user.id : null;
-    console.log('getAllDevices', 'userId:', userId);
     return await this.refreshTokenService.allDevices(userId);
   }
 
@@ -35,7 +34,6 @@ export class DevicesController {
     const refreshToken = req.cookies.refreshToken;
     const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken); //once guard is passed
     const deviceId = payload.deviceId;
-    console.log('deleteOtherDevices', 'userId:', userId, 'deviceId:', deviceId);
     //BLL
     return await this.refreshTokenService.terminateAllOtherDevices(userId, deviceId);
   }
@@ -48,7 +46,6 @@ export class DevicesController {
     //INPUT
     const user = req.user ? req.user : null;
     const userId = user ? user.id : null;
-    console.log('deleteOneDevice', 'userId:', userId);
     //BLL
     return await this.refreshTokenService.terminateCurrentDevice(userId, params.deviceId);
   }
