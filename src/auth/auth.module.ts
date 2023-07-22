@@ -11,8 +11,8 @@ import { EmailModule } from '../email/email.module';
 import { UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed } from '../validation/validation';
 import { RefreshTokenSchema } from '../tokens/refreshtoken.schema';
 import { TokenModule } from '../tokens/tokens.module';
-import { BlogSchema } from '../blog/blog.schema';
-import { BlogModule } from '../blog/blog.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -27,9 +27,16 @@ import { BlogModule } from '../blog/blog.module';
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'RefreshToken', schema: RefreshTokenSchema }]),
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 5,
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed],
+  providers: [AuthService, UserExistsByLoginOrEmail, UserExistsByLogin, UserExistsByEmail, EmailAlreadyConfirmed, {
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard,
+  },],
   exports: [AuthService],
 })
 export class AuthModule {}

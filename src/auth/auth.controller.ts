@@ -30,7 +30,7 @@ import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
 import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 import { UserExtractGuard } from '../guards/extractUser.guard';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 // passwordRecovery
 // newPassword
@@ -55,11 +55,13 @@ export class AuthController {
     @Inject(UserRepository) private userRepository: UserRepository,
   ) {}
 
+  @SkipThrottle()
   @Post('password-recovery')
   async passwordRecovery(@Body() dto: passwordRecoveryDTO) {
     return await this.authService.sendRecoveryCode(dto.email);
   }
 
+  @SkipThrottle()
   @Post('new-password')
   async newPassword(@Body() dto: NewPasswordDTO) {
     const user = await this.userRepository.findUserByPasswordCode(dto.recoveryCode);
@@ -94,6 +96,7 @@ export class AuthController {
       .send(tokens.accessToken);
   }
 
+  @SkipThrottle()
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   async newPairOfTokens(@Req() req, @Res() res) {
@@ -131,6 +134,7 @@ export class AuthController {
     }
   }
 
+  @SkipThrottle()
   @UseGuards(AuthGuardBearer)
   @Get('profile')
   getProfile(@Req() req) {
@@ -166,6 +170,7 @@ export class AuthController {
     }
   }
 
+  @SkipThrottle()
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
@@ -189,6 +194,7 @@ export class AuthController {
     res.clearCookie('refreshToken').status(204).send("you're quit");
   }
 
+  @SkipThrottle()
   @UseGuards(UserExtractGuard)
   @Get('me')
   async getInfo(@Req() req, @Res() res) {
