@@ -69,7 +69,7 @@ export class RefreshTokensRepository {
   //(5) method delete token of this user
   async deleteOne(userId: string, deviceId: string): Promise<boolean> {
     const result = await this.refreshTokenModel.deleteOne({ userId: userId, deviceId: deviceId });
-    return result.acknowledged;
+    return !!result.deletedCount;
   }
 
   //(6) method finds by deviceId

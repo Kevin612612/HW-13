@@ -101,7 +101,10 @@ export class RefreshTokenService {
   async terminateCurrentDevice(userId: string, deviceId: string): Promise<boolean> {
     //todo: add deleted refreshtoken into blacklist
     const result = await this.refreshTokensRepository.deleteOne(userId, deviceId);
-    if (!result) throw new ForbiddenException(["it's not your device"]);
-    return true;
+    if (result) {
+      return true;
+    } else {
+      throw new ForbiddenException(["it's not your device"]);
+    }
   }
 }
