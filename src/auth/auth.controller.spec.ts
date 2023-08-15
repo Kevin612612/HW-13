@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../app.module';
-import { createUser } from '../user/user.controller.spec';
 import { appSettings } from '../app.settings';
+import { createUser } from '../secondary functions/secondary functions';
 
 jest.setTimeout(10_000);
 

@@ -1,10 +1,10 @@
 import { Controller, Delete, Get, HttpCode, HttpStatus, Inject } from '@nestjs/common';
 import { AppService } from './app.service';
-import { BlogRepository } from './blog/blog.repository';
-import { PostRepository } from './post/post.repository';
-import { UserRepository } from './user/user.repository';
-import { RefreshTokensRepository } from './tokens/refreshtoken.repository';
-import { CommentRepository } from './comments/comment.repository';
+import { BlogRepository } from './entity_blog/blog.repository';
+import { PostRepository } from './entity_post/post.repository';
+import { UserRepository } from './entity_user/user.repository';
+import { RefreshTokensRepository } from './entity_tokens/refreshtoken.repository';
+import { CommentRepository } from './entity_comment/comment.repository';
 import { SkipThrottle } from '@nestjs/throttler';
 
 @SkipThrottle()

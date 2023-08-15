@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { RefreshToken, RefreshTokenSchema } from '../tokens/refreshtoken.schema';
+import { RefreshToken, RefreshTokenSchema } from '../entity_tokens/refreshtoken.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TokenModule } from '../tokens/tokens.module';
-import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
-import { RefreshTokenService } from '../tokens/refreshtoken.service';
+import { TokenModule } from '../entity_tokens/tokens.module';
+import { RefreshTokensRepository } from '../entity_tokens/refreshtoken.repository';
+import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
 import { DevicesController } from './devices.controller';
-import { BlackListModule } from '../black list/blacklist.module';
-import { UserModule } from '../user/user.module';
-import { DeviceExistsValidation } from '../validation/validation';
+import { BlackListModule } from '../entity_black_list/blacklist.module';
+import { UserModule } from '../entity_user/user.module';
+import { DeviceExistsValidation } from '../validation/deviceValidation';
 
 @Module({
     imports: [

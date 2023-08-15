@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString, Validate } from 'class-validator';
-import { CustomValidation } from '../validation/validation';
+import { CustomValidation } from '../validation/customValidation';
 
 enum SortDirectionEnum {
   'asc',

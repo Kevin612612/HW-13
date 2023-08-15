@@ -1,5 +1,5 @@
 import { Matches, Validate } from 'class-validator';
-import { EmailAlreadyConfirmed } from '../../validation/validation';
+import { EmailAlreadyConfirmed } from '../../validation/userValidation';
 
 export class EmailResendDTO {
   @Validate(EmailAlreadyConfirmed)

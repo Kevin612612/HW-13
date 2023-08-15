@@ -1,5 +1,9 @@
 import { IsDefined, IsEnum, IsNumberString, Validate } from 'class-validator';
-import { BlogExistsValidation, CommentExistsValidation, DeviceExistsValidation, PostExistsValidation, UserExistsValidation } from '../validation/validation';
+import { BlogExistsValidation } from '../validation/blogValidation';
+import { CommentExistsValidation } from '../validation/commentValidation';
+import { DeviceExistsValidation } from '../validation/deviceValidation';
+import { PostExistsValidation } from '../validation/postValidation';
+import { UserExistsValidation } from '../validation/userValidation';
 
 export class UserIdDTO {
   @IsDefined()

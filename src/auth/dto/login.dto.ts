@@ -1,5 +1,5 @@
 import { Length, Validate } from 'class-validator';
-import { UserExistsByLoginOrEmail } from '../../validation/validation';
+import { UserExistsByLoginOrEmail } from '../../validation/userValidation';
 
 export class LoginDTO {
   @Validate(UserExistsByLoginOrEmail)

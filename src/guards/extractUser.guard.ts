@@ -1,39 +1,43 @@
 import { Injectable, CanActivate, ExecutionContext, Inject, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import { AccessTokenService } from '../tokens/accesstoken.service';
-import { UserRepository } from '../user/user.repository';
+import { AccessTokenService } from '../entity_tokens/accesstoken.service';
+import { UserRepository } from '../entity_user/user.repository';
 
 @Injectable()
 export class UserExtractGuard implements CanActivate {
-  constructor(
-    @Inject(AccessTokenService) protected accessTokenService: AccessTokenService,
-    @Inject(UserRepository) private userRepository: UserRepository,
-  ) {}
+	constructor(
+		@Inject(AccessTokenService) protected accessTokenService: AccessTokenService,
+		@Inject(UserRepository) private userRepository: UserRepository,
+	) {}
 
-  async canActivate(context: ExecutionContext): Promise<any> {
-    const request: Request = context.switchToHttp().getRequest();
-    const authHeader = request.headers.authorization || null;
-    const accessToken = authHeader ? authHeader.split(' ')[1] : null; //access token
-    console.log('check accessToken', accessToken);
+	async canActivate(context: ExecutionContext): Promise<any> {
+		console.log('UserExtractGuard starts performing'); //that string is for vercel log reading
+		const request: Request = context.switchToHttp().getRequest();
+		const authHeader = request.headers.authorization || null;
+		const accessToken = authHeader?.split(' ')[1] || null;
+		console.log('check accessToken', accessToken); //that string is for vercel log reading
 
-    if (accessToken && authHeader && authHeader.startsWith('Bearer ')) {
-      try {
-        //check access token
-        const payload = await this.accessTokenService.getPayloadFromAccessToken(accessToken);
-        const isValid = await this.accessTokenService.isPayloadValid(payload);
-        if (!isValid) throw new UnauthorizedException();
-        const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
-        if (tokenExpired) throw new UnauthorizedException();
-        //put user into request
-        const user = await this.userRepository.findUserById(payload.sub);
-        request.user = user; // Attach the user to the request object
-        return true;
-      } catch (error) {
-        console.log(error);
-        throw new UnauthorizedException();
-      }
-    } else {
-      throw new UnauthorizedException();
-    }
-  }
+		if (!accessToken || !authHeader || !authHeader.startsWith('Bearer ')) {
+			throw new UnauthorizedException();
+		}
+		try {
+			const payloadFromAccessToken = await this.validateAccessTokenAndExtractPayload(accessToken);
+			request.user = await this.userRepository.findUserById(payloadFromAccessToken.sub);
+			return true;
+		} catch (error) {
+			console.log('Error from UserExtractGuard:', error);
+			throw new UnauthorizedException();
+		}
+	}
+
+	private async validateAccessTokenAndExtractPayload(accessToken: string): Promise<any> {
+		const payload = await this.accessTokenService.getPayloadFromAccessToken(accessToken);
+		/** Validation*/
+    const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
+    const tokenIsValid = await this.accessTokenService.isPayloadValid(payload);
+		if (tokenExpired || !tokenIsValid) {
+			throw new UnauthorizedException();
+		}
+		return payload;
+	}
 }

@@ -14,16 +14,16 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { passwordRecoveryDTO } from './dto/passwordRecovery.dto';
-import { UserDTO } from '../user/dto/userInputDTO';
-import { UsersService } from '../user/user.service';
+import { UserDTO } from '../entity_user/dto/userInputDTO';
+import { UsersService } from '../entity_user/user.service';
 import { Response, Request } from 'express';
 import { EmailService } from '../email/email.service';
 
-import { RefreshTokensRepository } from '../tokens/refreshtoken.repository';
-import { RefreshTokenService } from '../tokens/refreshtoken.service';
-import { UserRepository } from '../user/user.repository';
-import { BlackListService } from '../black list/blacklist.service';
-import { AccessTokenService } from '../tokens/accesstoken.service';
+import { RefreshTokensRepository } from '../entity_tokens/refreshtoken.repository';
+import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
+import { UserRepository } from '../entity_user/user.repository';
+import { BlackListService } from '../entity_black_list/blacklist.service';
+import { AccessTokenService } from '../entity_tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';

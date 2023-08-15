@@ -1,7 +1,7 @@
 import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { AccessTokenService } from '../tokens/accesstoken.service';
-import { UserRepository } from '../user/user.repository';
+import { AccessTokenService } from '../entity_tokens/accesstoken.service';
+import { UserRepository } from '../entity_user/user.repository';
 
 @Injectable()
 export class CheckAccessTokenMiddleware implements NestMiddleware {

@@ -1,4 +1,4 @@
-import { ExtendedLikesInfo } from './../post/post.schema';
+import { ExtendedLikesInfo } from '../entity_post/post.schema';
 import { ObjectId } from 'mongodb';
 
 export type NewestLikesType = {

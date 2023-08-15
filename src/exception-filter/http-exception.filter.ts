@@ -14,7 +14,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       case HttpStatus.NOT_FOUND:
         const errorResponseNotFound = { errorsMessages: [] };
         const responseBodyNotFound: any = exception.getResponse(); 
-        responseBodyNotFound.message.forEach(mes => {
+        responseBodyNotFound.message.forEach((mes) => {
           errorResponseNotFound.errorsMessages.push(mes);
         });
         response.status(status).json(errorResponseNotFound);

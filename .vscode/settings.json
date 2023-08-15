@@ -2,5 +2,14 @@
     "workbench.colorTheme": "Webstorm IntelliJ Darcula Theme",
     "workbench.editor.decorations.colors": true,
     "typescript.preferences.importModuleSpecifier": "relative",
-    "workbench.editor.enablePreview": false
+    "workbench.editor.enablePreview": true,
+    "cSpell.words": [
+        "accesstoken",
+        "dbconfig",
+        "depcruise",
+        "nestjs",
+        "refreshtoken",
+        "refreshtokens",
+        "typeorm"
+    ]
 }
