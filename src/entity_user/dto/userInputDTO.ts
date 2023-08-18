@@ -1,4 +1,4 @@
-import { Length, Matches, Validate } from 'class-validator';
+import { IsBoolean, Length, Matches, MinLength, Validate } from 'class-validator';
 import { UserExistsByLoginValidation, UserExistsByEmailValidation } from '../../validation/userValidation';
 
 export class UserDTO {
@@ -13,4 +13,12 @@ export class UserDTO {
   @Validate(UserExistsByEmailValidation)
   @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
   email: string;
+}
+
+export class BanDTO {
+  @IsBoolean()
+  isBanned: boolean;
+
+  @MinLength(20)
+  banReason: string;
 }

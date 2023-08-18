@@ -88,10 +88,10 @@ export class BanInfo {
 	@Prop({ default: false })
 	isBanned: boolean;
 
-	@Prop({ default: new Date().toISOString() })
+	@Prop({ default: null })
 	banDate: string;
 
-	@Prop()
+	@Prop({ default: null })
 	banReason: string;
 }
 export const BanInfoSchema = SchemaFactory.createForClass(BanInfo);

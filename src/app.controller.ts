@@ -13,7 +13,7 @@ import { BlogTypeSchema } from './types/blog';
 import { BlogIdDTO, UserIdDTO } from './dto/id.dto';
 import { AuthGuardBasic } from './guards/authBasic.guard';
 import { LogFunctionName } from './decorators/logger.decorator';
-import { UserDTO } from './entity_user/dto/userInputDTO';
+import { BanDTO, UserDTO } from './entity_user/dto/userInputDTO';
 import { UserTypeSchema, UserViewType } from './types/users';
 
 @SkipThrottle()
@@ -64,6 +64,12 @@ export class SysAdminController {
   @LogFunctionName()
 	async bindBlogWithUser(@Param() blogId: BlogIdDTO, @Param() userId: UserIdDTO) {
 		return await this.blogService.bindBlogWithUser(blogId.blogId, userId.userId);
+	}
+
+  @Put('users/:userId/ban')
+	@LogFunctionName()
+	async banUser(@Param() userId: UserIdDTO, @Body() banDTO: BanDTO) {
+		return await this.usersService.banUser(userId.userId, banDTO.banReason);
 	}
 
   @Get('users')

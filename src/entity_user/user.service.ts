@@ -15,6 +15,7 @@ import { EmailService } from '../email/email.service';
 //(4) confirmCodeFromEmail
 //(5) updatePassword
 //(6) newRegisteredUser
+//(7) banUser
 
 @Injectable()
 export class UsersService {
@@ -129,7 +130,7 @@ export class UsersService {
 				login: result.accountData.login,
 				email: result.accountData.email,
 				createdAt: result.accountData.createdAt,
-        banInfo: result.banInfo,
+				banInfo: result.banInfo,
 			};
 		} catch (err: any) {
 			// throw new Exception()
@@ -187,10 +188,15 @@ export class UsersService {
 				login: createdUser.accountData.login,
 				email: createdUser.accountData.email,
 				createdAt: createdUser.accountData.createdAt,
-        banInfo: createdUser.banInfo,
+				banInfo: createdUser.banInfo,
 			};
 		} catch (error) {
 			return 400; //email hasn't been sent
 		}
+	}
+
+	//7 method bans user
+	async banUser(userId: string, reason: string) {
+		return await this.userRepository.banUser(userId, reason);
 	}
 }

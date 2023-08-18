@@ -72,8 +72,8 @@ export class User {
 		};
 		this.banInfo = {
       isBanned: false,
-      banDate: new Date().toISOString(),
-      banReason: '',
+      banDate: null,
+      banReason: null,
     };
 		this.__v = 0;
 	}
