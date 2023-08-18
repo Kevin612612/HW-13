@@ -231,4 +231,17 @@ export class UserRepository {
 		);
 		return true;
 	}
+
+	//(17) unban User
+	async unbanUser(userId: string): Promise<boolean> {
+		const result = await this.userModel.findOneAndUpdate(
+			{ id: userId },
+			{
+				'banInfo.isBanned': false,
+				'banInfo.banDate': null,
+				'banInfo.banReason': null,
+			},
+		);
+		return true;
+	}
 }

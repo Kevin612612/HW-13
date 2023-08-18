@@ -124,3 +124,23 @@ export class EmailAlreadyConfirmedValidation implements ValidatorConstraintInter
     return `User already confirmed or doesn't exist`;
   }
 }
+
+@ValidatorConstraint({ name: 'BannedUser', async: true })
+@Injectable()
+export class BannedUserValidation implements ValidatorConstraintInterface {
+  constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
+
+  @LogFunctionName()
+  async validate(value: string) {
+    const user = await this.userRepository.findUserByLoginOrEmail(value);
+
+    if (user.banInfo.isBanned === true) {
+      throw new UnauthorizedException();
+    }
+    return true;
+  }
+
+  defaultMessage() {
+    return `User is banned`;
+  }
+}

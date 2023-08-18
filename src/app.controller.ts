@@ -69,7 +69,7 @@ export class SysAdminController {
   @Put('users/:userId/ban')
 	@LogFunctionName()
 	async banUser(@Param() userId: UserIdDTO, @Body() banDTO: BanDTO) {
-		return await this.usersService.banUser(userId.userId, banDTO.banReason);
+		return await this.usersService.banUser(userId.userId, banDTO);
 	}
 
   @Get('users')

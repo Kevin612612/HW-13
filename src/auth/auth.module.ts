@@ -14,6 +14,7 @@ import {
 	UserExistsByLoginValidation,
 	UserExistsByEmailValidation,
 	EmailAlreadyConfirmedValidation,
+	BannedUserValidation,
 } from '../validation/userValidation';
 import { ConfigService } from '@nestjs/config';
 
@@ -42,6 +43,7 @@ import { ConfigService } from '@nestjs/config';
 		UserExistsByLoginValidation,
 		UserExistsByEmailValidation,
 		EmailAlreadyConfirmedValidation,
+		BannedUserValidation
 	],
 	exports: [AuthService],
 })

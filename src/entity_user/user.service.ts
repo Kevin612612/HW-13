@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserDTO } from './dto/userInputDTO';
+import { UserDTO, BanDTO } from './dto/userInputDTO';
 import { UserDataType, UserTypeSchema, UserViewType } from '../types/users';
 import { UserRepository } from './user.repository';
 import { QueryUserDTO } from '../dto/query.dto';
@@ -196,7 +196,11 @@ export class UsersService {
 	}
 
 	//7 method bans user
-	async banUser(userId: string, reason: string) {
-		return await this.userRepository.banUser(userId, reason);
+	async banUser(userId: string, banDTO) {
+		if (banDTO.isBanned === true) {
+			return await this.userRepository.banUser(userId, banDTO.reason);
+		} else {
+			return await this.userRepository.unbanUser(userId);
+		}
 	}
 }
