@@ -2,6 +2,8 @@ import { Injectable, CanActivate, ExecutionContext, Inject, UnauthorizedExceptio
 import { Request } from 'express';
 import { AccessTokenService } from '../entity_tokens/accesstoken.service';
 import { UserRepository } from '../entity_user/user.repository';
+import { LogFunctionName } from '../decorators/logger.decorator';
+
 
 @Injectable()
 export class UserExtractGuard implements CanActivate {
@@ -10,8 +12,8 @@ export class UserExtractGuard implements CanActivate {
 		@Inject(UserRepository) private userRepository: UserRepository,
 	) {}
 
+	@LogFunctionName()
 	async canActivate(context: ExecutionContext): Promise<any> {
-		console.log('UserExtractGuard starts performing'); //that string is for vercel log reading
 		const request: Request = context.switchToHttp().getRequest();
 		const authHeader = request.headers.authorization || null;
 		const accessToken = authHeader?.split(' ')[1] || null;

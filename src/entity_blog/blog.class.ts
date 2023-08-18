@@ -14,6 +14,7 @@ export class Blog {
 		public name: string = 'no name',
 		public description: string = 'no description',
 		public websiteUrl: string = 'no url',
+		public owner: string = 'NoName',
 		public __v: number = 0,
 	) {
 		this._id = new ObjectId();

@@ -25,7 +25,8 @@ async function bootstrap() {
 	preliminaryActions(app);
 
 	await app.listen(port, () => {
-		logger.log(`App listening on port ${port}`);
+		console.log('##########################################################')
+		logger.log(`App started listening on port ${port} at ${new Date()}`);
 	});
 }
 

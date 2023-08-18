@@ -2,7 +2,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
+import Joi from 'joi';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AppController, SysAdminController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './entity_user/user.module';
@@ -13,17 +16,25 @@ import { CommentsModule as CommentModule } from './entity_comment/comment.module
 import { TokenModule } from './entity_tokens/tokens.module';
 import { BlackListModule } from './entity_black_list/blacklist.module';
 import { DevicesModule } from './devices/devices.module';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { MyInterceptor } from './interceptors/logger.interceptor';
+import { getConfiguration } from './custom.configuration';
 
 const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, TokenModule, UserModule];
 
 //root module
 @Module({
 	imports: [
-		ConfigModule.forRoot({ isGlobal: true, envFilePath: 'src/environments/development.env' }), //add first
-		//ConfigModule.forRoot({ isGlobal: true, envFilePath: 'src/environments/deployment.env' }),
-		//ConfigModule.forRoot({ isGlobal: true, envFilePath: 'src/environments/test.env' }),
+		ConfigModule.forRoot({
+			isGlobal: true,
+			envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
+			load: [getConfiguration],
+			validationSchema: Joi.object({
+				NODE_ENV: Joi.string().valid('development', 'production', 'testing').default('development'),
+				PORT: Joi.number().default(3000).required(),
+			}),
+		}), //add first
+		CqrsModule.forRoot(),
 		MongooseModule.forRootAsync({
 			useFactory: async (configService: ConfigService) => ({
 				uri: configService.get('MONGO_URL'),
@@ -40,12 +51,16 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 		}),
 		...entityModules,
 	],
-	controllers: [AppController],
+	controllers: [AppController, SysAdminController],
 	providers: [
 		AppService,
 		{
 			provide: APP_GUARD,
 			useClass: ThrottlerGuard,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: MyInterceptor,
 		},
 	],
 })

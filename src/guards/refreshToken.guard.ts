@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
 import { BlackListRepository } from '../entity_black_list/blacklist.repository';
 import { UserRepository } from '../entity_user/user.repository';
+import { LogFunctionName } from '../decorators/logger.decorator';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
@@ -12,8 +13,8 @@ export class RefreshTokenGuard implements CanActivate {
     @Inject(UserRepository) protected userRepository: UserRepository,
   ) {}
 
+  @LogFunctionName()
   async canActivate(context: ExecutionContext): Promise<any> {
-    console.log('RefreshTokenGuard starts performing'); //that string is for vercel log reading
     const request: Request = context.switchToHttp().getRequest();
     const refreshToken = request.cookies.refreshToken || null;
     console.log('check refreshToken', refreshToken); //that string is for vercel log reading

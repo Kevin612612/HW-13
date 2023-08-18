@@ -39,6 +39,9 @@ export class Blog {
 	@Prop({ required: true, default: false })
 	isMembership: boolean;
 
+	@Prop({ required: true, default: 'NoName' })
+	owner: string;
+
 	@Prop({ versionKey: true })
 	__v: number;
 }

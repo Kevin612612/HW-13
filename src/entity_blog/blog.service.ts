@@ -5,10 +5,14 @@ import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogRepository } from './blog.repository';
 import { Blog } from './blog.class';
 import mongoose from 'mongoose';
+import { UserRepository } from '../entity_user/user.repository';
 
 @Injectable()
 export class BlogService {
-	constructor(@Inject(BlogRepository) protected blogRepository: BlogRepository) {}
+	constructor(
+		@Inject(BlogRepository) protected blogRepository: BlogRepository,
+		@Inject(UserRepository) protected userRepository: UserRepository,
+	) {}
 
 	async findAll(query: QueryDTO): Promise<BlogTypeSchema> {
 		const pageParams = {
@@ -68,5 +72,10 @@ export class BlogService {
 
 	async deleteBlog(blogId: string): Promise<number> {
 		return await this.blogRepository.deleteBlogById(blogId);
+	}
+
+	async bindBlogWithUser(blogId: string, userId: string) {
+		const user = await this.userRepository.findUserById(userId);
+		return await this.blogRepository.addOwner(blogId, user.accountData.login);
 	}
 }

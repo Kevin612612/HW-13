@@ -9,7 +9,7 @@ import { CommentsModule } from '../entity_comment/comment.module';
 import { PostModule } from '../entity_post/post.module';
 import { TokenModule } from '../entity_tokens/tokens.module';
 import { UserModule } from '../entity_user/user.module';
-import { BlogExistsValidation } from '../validation/blogValidation';
+import { BlogExistsValidation, BlogHasOwnerValidation } from '../validation/blogValidation';
 
 @Module({
 	imports: [
@@ -20,8 +20,8 @@ import { BlogExistsValidation } from '../validation/blogValidation';
 		TokenModule,
 	],
 	controllers: [BlogController],
-	providers: [BlogService, BlogRepository, BlogExistsValidation],
-	exports: [BlogRepository],
+	providers: [BlogService, BlogRepository, BlogExistsValidation, BlogHasOwnerValidation],
+	exports: [BlogService, BlogRepository],
 })
 export class BlogModule {
 	configure(consumer: MiddlewareConsumer) {

@@ -1,7 +1,7 @@
 import { Validate } from 'class-validator';
-import { CodeAlreadyConfirmed } from '../../validation/userValidation';
+import { CodeAlreadyConfirmedValidation } from '../../validation/userValidation';
 
 export class CodeConfirmationDTO {
-  @Validate(CodeAlreadyConfirmed)
+  @Validate(CodeAlreadyConfirmedValidation)
   code: string;
 }

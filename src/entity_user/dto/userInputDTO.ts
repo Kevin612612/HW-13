@@ -1,8 +1,8 @@
 import { Length, Matches, Validate } from 'class-validator';
-import { UserExistsByLogin, UserExistsByEmail } from '../../validation/userValidation';
+import { UserExistsByLoginValidation, UserExistsByEmailValidation } from '../../validation/userValidation';
 
 export class UserDTO {
-  @Validate(UserExistsByLogin)
+  @Validate(UserExistsByLoginValidation)
   @Length(3, 10)
   @Matches('^[a-zA-Z0-9_-]*$')
   login: string;
@@ -10,7 +10,7 @@ export class UserDTO {
   @Length(6, 20)
   password: string;
 
-  @Validate(UserExistsByEmail)
+  @Validate(UserExistsByEmailValidation)
   @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
   email: string;
 }

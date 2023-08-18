@@ -10,3 +10,11 @@ export function getFunctionName(): string {
 	const functionName = /\s+at (.+) \(/.exec(callerLine)[1];
 	return functionName;
 }
+
+export function getClassName(): string {
+	const stack = new Error().stack;
+	const callerLine = stack.split('\n')[2];
+	const functionName = /\s+at (.+) \(/.exec(callerLine)[1];
+	const className = functionName.split('.')[0]
+	return className;
+}

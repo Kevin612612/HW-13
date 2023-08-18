@@ -5,6 +5,7 @@ import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
 import { UserRepository } from '../entity_user/user.repository';
 import { BlackListRepository } from '../entity_black_list/blacklist.repository';
 import { AccessTokenService } from '../entity_tokens/accesstoken.service';
+import { LogFunctionName } from '../decorators/logger.decorator';
 
 @Injectable()
 export class AuthGuardBearer implements CanActivate {
@@ -16,8 +17,8 @@ export class AuthGuardBearer implements CanActivate {
 		@Inject(BlackListRepository) protected blackListRepository: BlackListRepository,
 	) {}
 
+	@LogFunctionName()
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		console.log('AuthGuardBearer starts performing'); //that string is for vercel log reading
 		const request: Request = context.switchToHttp().getRequest();
 		const authHeader = request.headers.authorization || null;
 		const accessToken = authHeader?.split(' ')[1] || null;

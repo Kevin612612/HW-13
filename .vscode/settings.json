@@ -5,11 +5,13 @@
     "workbench.editor.enablePreview": true,
     "cSpell.words": [
         "accesstoken",
+        "cqrs",
         "dbconfig",
         "depcruise",
         "nestjs",
         "refreshtoken",
         "refreshtokens",
-        "typeorm"
+        "typeorm",
+        "uuidv"
     ]
 }

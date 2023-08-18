@@ -21,6 +21,7 @@ export type BlogDataType = {
   websiteUrl: string;
   createdAt: string;
   isMembership: boolean;
+  owner: string;
   __v: number;
 };
 

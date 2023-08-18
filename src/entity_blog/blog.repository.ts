@@ -7,6 +7,7 @@ import { BlogDTO } from './dto/blogInputDTO';
 
 @Injectable()
 export class BlogRepository {
+	
 	constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
 	async createBlogId() {
@@ -68,5 +69,17 @@ export class BlogRepository {
 	async deleteAll(): Promise<number> {
 		const result = await this.blogModel.deleteMany({});
 		return result.deletedCount;
+	}
+
+	async addOwner(blogId: string, userLogin: string): Promise<number> {
+		const result = await this.blogModel.updateOne(
+			{ id: blogId },
+			{
+				$set: {
+					owner: userLogin,
+				},
+			},
+		);
+		return result.modifiedCount;
 	}
 }

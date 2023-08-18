@@ -1,5 +1,5 @@
 import { IsDefined, IsEnum, IsNumberString, Validate } from 'class-validator';
-import { BlogExistsValidation } from '../validation/blogValidation';
+import { BlogExistsValidation, BlogHasOwnerValidation } from '../validation/blogValidation';
 import { CommentExistsValidation } from '../validation/commentValidation';
 import { DeviceExistsValidation } from '../validation/deviceValidation';
 import { PostExistsValidation } from '../validation/postValidation';
@@ -12,6 +12,7 @@ export class UserIdDTO {
 }
 
 export class BlogIdDTO {
+  @Validate(BlogHasOwnerValidation)
   @Validate(BlogExistsValidation)
   blogId: string;
 }
