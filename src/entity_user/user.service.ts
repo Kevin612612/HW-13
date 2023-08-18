@@ -32,24 +32,26 @@ export class UsersService {
 	//(1) this method returns all users
 	async findAll(query: QueryUserDTO): Promise<UserTypeSchema> {
 		const pageParams = {
-			sortBy: query.sortBy || 'createdAt',
+			sortBy: query.sortBy ? `accountData.${query.sortBy }` : 'accountData.createdAt',
 			sortDirection: query.sortDirection || 'desc',
 			pageNumber: query.pageNumber || 1,
 			searchLoginTerm: query.searchLoginTerm || '',
 			searchEmailTerm: query.searchEmailTerm || '',
 			pageSize: query.pageSize || 10,
+			banStatus: query.banStatus || 'all'
 		};
 
-		if (!query.sortBy) {
-			pageParams.sortBy = 'accountData.createdAt';
-		} else {
-			pageParams.sortBy = 'accountData.' + query.sortBy;
-		}
+		// if (!query.sortBy) {
+		// 	pageParams.sortBy = 'accountData.createdAt';
+		// } else {
+		// 	pageParams.sortBy = 'accountData.' + query.sortBy;
+		// }
 
 		if (query.sortBy === 'id') {
 			pageParams.sortBy = 'id';
 		}
 
+		//find all users by login or email
 		const filter = pageParams.searchLoginTerm
 			? pageParams.searchEmailTerm
 				? {
@@ -84,7 +86,7 @@ export class UsersService {
 			: {};
 
 		const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
-		const quantityOfDocs = await this.userRepository.countAllUsers(filter);
+		//const quantityOfDocs = await this.userRepository.countAllUsers(filter);
 		//transform view to view type
 		let usersViewtype: UserViewType[] = users.map((obj) => {
 			return {
@@ -104,6 +106,15 @@ export class UsersService {
 				return (dateA.getTime() - dateB.getTime()) * order;
 			});
 		}
+		//take banned or unbaneed or all
+		if (pageParams.banStatus == 'banned') {
+			usersViewtype = usersViewtype.filter(el => el.banInfo.isBanned == true)
+		}
+		if (pageParams.banStatus == 'notBanned') {
+			usersViewtype = usersViewtype.filter(el => el.banInfo.isBanned == false)
+		}
+
+		const quantityOfDocs = usersViewtype.length;
 
 		return {
 			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
