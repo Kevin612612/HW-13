@@ -196,9 +196,9 @@ export class UsersService {
 	}
 
 	//7 method bans user
-	async banUser(userId: string, banDTO) {
+	async banUser(userId: string, banDTO: BanDTO) {
 		if (banDTO.isBanned === true) {
-			return await this.userRepository.banUser(userId, banDTO.reason);
+			return await this.userRepository.banUser(userId, banDTO.banReason);
 		} else {
 			return await this.userRepository.unbanUser(userId);
 		}

@@ -66,6 +66,7 @@ export class SysAdminController {
 		return await this.blogService.bindBlogWithUser(blogId.blogId, userId.userId);
 	}
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Put('users/:userId/ban')
 	@LogFunctionName()
 	async banUser(@Param() userId: UserIdDTO, @Body() banDTO: BanDTO) {
