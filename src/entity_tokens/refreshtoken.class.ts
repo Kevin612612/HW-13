@@ -23,14 +23,16 @@ export class RefreshTokensPayloadType {
 	deviceId: string;
 	expiresIn: string;
 	iat: number;
+	exp: number;
 
-	constructor(userId: string, login: string, email: string, deviceId: string, expiresIn: string, iat: number) {
+	constructor(userId: string, login: string, email: string, deviceId: string, expiresIn: string, iat: number, exp: number) {
 		this.userId = userId;
 		this.login = login;
 		this.email = email;
 		this.deviceId = deviceId;
 		this.expiresIn = expiresIn;
 		this.iat = iat;
+		this.exp = exp;
 	}
 }
 

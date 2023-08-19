@@ -24,15 +24,21 @@ export class AccessTokenService {
 
 	//(1) generate accesstoken
 	async generateAccessJWT(user: UserDataType) {
+		console.log('generating access jwt')
 		const liveTimeInSeconds: number = parseInt(this.accessTokenLifeTime);
+		console.log(liveTimeInSeconds);
 		const payload = {
 			loginOrEmail: user.accountData.login,
 			sub: user.id,
 			expiresIn: liveTimeInSeconds,
 		};
+		console.log(payload);
+
 		const accessToken = await this.jwtService.signAsync(payload, {
 			expiresIn: liveTimeInSeconds,
 		});
+		console.log(accessToken);
+
 		//put it into db
 		const addAccessToken = await this.userRepository.addAccessToken(user.id, accessToken, liveTimeInSeconds);
 
