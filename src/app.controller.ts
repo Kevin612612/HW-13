@@ -56,7 +56,7 @@ export class SysAdminController {
   @Get('blogs')
   @LogFunctionName()
 	async getAllBlogs(@Query() query: QueryDTO): Promise<BlogTypeSchema> {
-		return await this.blogService.findAll(query);
+		return await this.blogService.findAll(query, null);
 	}
 
   @HttpCode(HttpStatus.NO_CONTENT)

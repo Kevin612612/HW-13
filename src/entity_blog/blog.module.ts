@@ -10,6 +10,7 @@ import { PostModule } from '../entity_post/post.module';
 import { TokenModule } from '../entity_tokens/tokens.module';
 import { UserModule } from '../entity_user/user.module';
 import { BlogExistsValidation, BlogHasOwnerValidation } from '../validation/blogValidation';
+import { BlackListModule } from '../entity_black_list/blacklist.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { BlogExistsValidation, BlogHasOwnerValidation } from '../validation/blog
 		PostModule,
 		CommentsModule,
 		TokenModule,
+		BlackListModule,
 	],
 	controllers: [BlogController],
 	providers: [BlogService, BlogRepository, BlogExistsValidation, BlogHasOwnerValidation],
