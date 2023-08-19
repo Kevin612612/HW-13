@@ -43,8 +43,9 @@ import { ConfigService } from '@nestjs/config';
 		UserExistsByLoginValidation,
 		UserExistsByEmailValidation,
 		EmailAlreadyConfirmedValidation,
-		BannedUserValidation
+		BannedUserValidation,
 	],
 	exports: [AuthService],
 })
 export class AuthModule {}
+

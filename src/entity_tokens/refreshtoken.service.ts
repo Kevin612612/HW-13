@@ -17,7 +17,7 @@ import { RefreshToken, RefreshTokensPayloadType } from './refreshtoken.class';
 
 @Injectable()
 export class RefreshTokenService {
-	private refreshTokenLifeTime: number;
+	private refreshTokenLifeTime: string;
 	constructor(
 		@Inject(JwtService) private jwtService: JwtService,
 		@Inject(RefreshTokensRepository) private refreshTokensRepository: RefreshTokensRepository,
@@ -25,26 +25,25 @@ export class RefreshTokenService {
 		@Inject(UserRepository) protected userRepository: UserRepository,
 		@Inject(ConfigService) protected configService: ConfigService,
 	) {
-		this.refreshTokenLifeTime = parseInt(this.configService.get('REFRESH_TOKEN_LIFE_TIME'));
+		this.refreshTokenLifeTime = this.configService.get('REFRESH_TOKEN_LIFE_TIME');
 	}
 
 	//(1) generate refreshToken
 	async generateRefreshJWT(user: any, deviceId: string, deviceName: string, IP: string) {
+		const liveTimeInSeconds: number = parseInt(this.refreshTokenLifeTime);
 		const payload = {
 			userId: user.id,
 			login: user.accountData.login,
 			email: user.accountData.email,
 			deviceId: deviceId,
-			expiresIn: this.refreshTokenLifeTime,
+			expiresIn: liveTimeInSeconds,
 		};
-		const liveTime = this.refreshTokenLifeTime;
-
 		const refreshTokenValue = await this.jwtService.signAsync(payload, {
-			expiresIn: this.refreshTokenLifeTime,
+			expiresIn: liveTimeInSeconds,
 		});
 		const refreshTokenObject = new RefreshToken(refreshTokenValue, user.id, deviceId, deviceName, IP, this.configService);
 		//put it into db
-		const result1 = await this.userRepository.addRefreshToken(user.id, refreshTokenValue, liveTime);
+		const result1 = await this.userRepository.addRefreshToken(user.id, refreshTokenValue, liveTimeInSeconds);
 		const result2 = await this.refreshTokensRepository.newCreatedToken(refreshTokenObject);
 
 		return refreshTokenObject;
@@ -57,14 +56,8 @@ export class RefreshTokenService {
 
 	//(3) check type of payload
 	async isPayloadValid(payload: any): Promise<boolean> {
-		return (
-			payload.hasOwnProperty('userId') &&
-			payload.hasOwnProperty('login') &&
-			payload.hasOwnProperty('email') &&
-			payload.hasOwnProperty('deviceId') &&
-			payload.hasOwnProperty('expiresIn') &&
-			payload.hasOwnProperty('iat')
-		);
+		const requiredKeys = ['userId', 'login', 'email', 'deviceId', 'expiresIn', 'iat'];
+		return requiredKeys.every((key) => payload.hasOwnProperty(key));
 	}
 
 	//(4) check token expiration

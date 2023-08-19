@@ -10,3 +10,5 @@ export class LoginDTO {
   @Length(1, 10)
   password: string;
 }
+
+  

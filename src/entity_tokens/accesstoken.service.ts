@@ -28,10 +28,10 @@ export class AccessTokenService {
 		const payload = {
 			loginOrEmail: user.accountData.login,
 			sub: user.id,
-			expiresIn: this.accessTokenLifeTime,
+			expiresIn: liveTimeInSeconds,
 		};
 		const accessToken = await this.jwtService.signAsync(payload, {
-			expiresIn: this.accessTokenLifeTime,
+			expiresIn: liveTimeInSeconds,
 		});
 		//put it into db
 		const addAccessToken = await this.userRepository.addAccessToken(user.id, accessToken, liveTimeInSeconds);
