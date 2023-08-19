@@ -14,7 +14,7 @@ export class BlogService {
 		@Inject(UserRepository) protected userRepository: UserRepository,
 	) {}
 
-	async findAll(query: QueryDTO): Promise<BlogTypeSchema> {
+	async findAll(query: QueryDTO, userName: string): Promise<BlogTypeSchema> {
 		const pageParams = {
 			sortBy: query.sortBy || 'createdAt',
 			sortDirection: query.sortDirection || 'desc',
@@ -22,8 +22,15 @@ export class BlogService {
 			searchNameTerm: query.searchNameTerm || '',
 			pageSize: query.pageSize || 10,
 		};
-		const blogs = await this.blogRepository.findAll(pageParams.sortBy, pageParams.sortDirection, pageParams.searchNameTerm);
-		const quantityOfDocs = await this.blogRepository.countAllBlogs(pageParams.searchNameTerm);
+
+		// define filter
+		const filterConditions = [];
+		if (pageParams.searchNameTerm) filterConditions.push({'blogName': {$regex: pageParams.searchNameTerm, $options: 'i'}});	
+		if (userName) filterConditions.push({'owner': userName});	
+		const filter = filterConditions.length > 0 ? { $and: filterConditions } : {};
+
+		const blogs = await this.blogRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
+		const quantityOfDocs = await this.blogRepository.countAllBlogs(filter);
 
 		return {
 			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),

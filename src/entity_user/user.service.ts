@@ -32,63 +32,28 @@ export class UsersService {
 	//(1) this method returns all users
 	async findAll(query: QueryUserDTO): Promise<UserTypeSchema> {
 		const pageParams = {
-			sortBy: query.sortBy ? `accountData.${query.sortBy }` : 'accountData.createdAt',
+			sortBy: query.sortBy ? `accountData.${query.sortBy}` : 'accountData.createdAt',
 			sortDirection: query.sortDirection || 'desc',
 			pageNumber: query.pageNumber || 1,
 			searchLoginTerm: query.searchLoginTerm || '',
 			searchEmailTerm: query.searchEmailTerm || '',
 			pageSize: query.pageSize || 10,
-			banStatus: query.banStatus || 'all'
+			banStatus: query.banStatus || 'all',
 		};
-
-		// if (!query.sortBy) {
-		// 	pageParams.sortBy = 'accountData.createdAt';
-		// } else {
-		// 	pageParams.sortBy = 'accountData.' + query.sortBy;
-		// }
 
 		if (query.sortBy === 'id') {
 			pageParams.sortBy = 'id';
 		}
 
-		//find all users by login or email
-		const filter = pageParams.searchLoginTerm
-			? pageParams.searchEmailTerm
-				? {
-						$or: [
-							{
-								'accountData.login': {
-									$regex: pageParams.searchLoginTerm,
-									$options: 'i',
-								},
-							},
-							{
-								'accountData.email': {
-									$regex: pageParams.searchEmailTerm,
-									$options: 'i',
-								},
-							},
-						],
-				  }
-				: {
-						'accountData.login': {
-							$regex: pageParams.searchLoginTerm,
-							$options: 'i',
-						},
-				  }
-			: pageParams.searchEmailTerm
-			? {
-					'accountData.email': {
-						$regex: pageParams.searchEmailTerm,
-						$options: 'i',
-					},
-			  }
-			: {};
+		// define filter
+		const filterConditions = [];
+		if (pageParams.searchLoginTerm) filterConditions.push({'accountData.login': {$regex: pageParams.searchLoginTerm, $options: 'i'}});	
+		if (pageParams.searchEmailTerm) filterConditions.push({'accountData.email': {$regex: pageParams.searchEmailTerm, $options: 'i'}});	
+		const filter = filterConditions.length > 0 ? { $or: filterConditions } : {};
 
 		const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
-		//const quantityOfDocs = await this.userRepository.countAllUsers(filter);
 		//transform view to view type
-		let usersViewtype: UserViewType[] = users.map((obj) => {
+		let usersResultView: UserViewType[] = users.map((obj) => {
 			return {
 				id: obj.id,
 				login: obj.accountData.login,
@@ -100,28 +65,28 @@ export class UsersService {
 		//sorting
 		const order = pageParams.sortDirection == 'desc' ? -1 : 1;
 		if (pageParams.sortBy == 'createdAt') {
-			usersViewtype = usersViewtype.sort((a, b) => {
+			usersResultView = usersResultView.sort((a, b) => {
 				const dateA = new Date(a.createdAt);
 				const dateB = new Date(b.createdAt);
 				return (dateA.getTime() - dateB.getTime()) * order;
 			});
 		}
-		//take banned or unbaneed or all
+		//take banned or unbanned or all
 		if (pageParams.banStatus == 'banned') {
-			usersViewtype = usersViewtype.filter(el => el.banInfo.isBanned == true)
+			usersResultView = usersResultView.filter((el) => el.banInfo.isBanned == true);
 		}
 		if (pageParams.banStatus == 'notBanned') {
-			usersViewtype = usersViewtype.filter(el => el.banInfo.isBanned == false)
+			usersResultView = usersResultView.filter((el) => el.banInfo.isBanned == false);
 		}
 
-		const quantityOfDocs = usersViewtype.length;
+		const quantityOfDocs = usersResultView.length;
 
 		return {
 			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
 			page: +pageParams.pageNumber,
 			pageSize: +pageParams.pageSize,
 			totalCount: quantityOfDocs,
-			items: usersViewtype.slice(
+			items: usersResultView.slice(
 				(+pageParams.pageNumber - 1) * +pageParams.pageSize,
 				+pageParams.pageNumber * +pageParams.pageSize,
 			),
@@ -206,7 +171,7 @@ export class UsersService {
 		}
 	}
 
-	//7 method bans user
+	//(7) method bans user
 	async banUser(userId: string, banDTO: BanDTO) {
 		if (banDTO.isBanned === true) {
 			return await this.userRepository.banUser(userId, banDTO.banReason);

@@ -22,9 +22,8 @@ export class BlogRepository {
 		return blogId.toString();
 	}
 
-	async findAll(sortBy: string, sortDirection: string, searchNameTerm: string): Promise<BlogViewType[]> {
+	async findAll(filter, sortBy: string, sortDirection: string): Promise<BlogViewType[]> {
 		const order = sortDirection == 'asc' ? 1 : -1;
-		const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
 		return await this.blogModel
 			.find(filter)
 			.sort({ [sortBy]: order })
@@ -32,8 +31,7 @@ export class BlogRepository {
 			.exec();
 	}
 
-	async countAllBlogs(searchNameTerm: string) {
-		const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
+	async countAllBlogs(filter) {
 		return await this.blogModel.countDocuments(filter);
 	}
 
