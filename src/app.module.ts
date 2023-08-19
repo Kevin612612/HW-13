@@ -18,7 +18,8 @@ import { BlackListModule } from './entity_black_list/blacklist.module';
 import { DevicesModule } from './devices/devices.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { MyInterceptor } from './interceptors/logger.interceptor';
-import { getConfiguration } from './custom.configuration';
+import configuration from './custom.configuration';
+
 
 const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, TokenModule, UserModule];
 
@@ -27,11 +28,12 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
-			load: [getConfiguration],
+			//envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
+			//load: [configuration],
 			validationSchema: Joi.object({
-				NODE_ENV: Joi.string().valid('development', 'production', 'testing').default('development'),
 				PORT: Joi.number().default(3000).required(),
+				MONGO_URL: Joi.string().required(),
+				NODE_ENV: Joi.string().valid('development', 'production', 'testing').default('development'),
 			}),
 		}), //add first
 		CqrsModule.forRoot(),

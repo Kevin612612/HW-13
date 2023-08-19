@@ -18,8 +18,8 @@ async function bootstrap() {
 
 	appSettings(app);
 
-	const configService: ConfigService = app.get(ConfigService);
-	const port = configService.get('PORT') || 6000;
+	const configService: ConfigService = await app.get(ConfigService);
+	const port = await configService.get('PORT') || 3002;
 
 	/** preliminary operations */
 	preliminaryActions(app);
