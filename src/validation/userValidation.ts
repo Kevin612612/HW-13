@@ -136,7 +136,7 @@ export class BannedUserValidation implements ValidatorConstraintInterface {
 		const user = await this.userRepository.findUserByLoginOrEmail(value);
 		console.log('BannedUserValidation', user);
 
-		if (user.banInfo.isBanned === true) throw new NotFoundException([[`user doesn't exist`]]);
+		if (user.banInfo.isBanned === true) throw new UnauthorizedException();
 
 		return true;
 	}
