@@ -19,19 +19,17 @@ import { DevicesModule } from './devices/devices.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { MyInterceptor } from './interceptors/logger.interceptor';
 import configuration from './custom.configuration';
-import { envFile } from './environments/envFilePath';
 import { SysAdminController } from './sa.controller';
 
 
 const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, TokenModule, UserModule];
-const envFilePath = envFile || null; //for vercel finds the env variables in its own environment
 
 //root module
 @Module({
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: envFilePath,
+			//envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
 			//load: [configuration],
 			validationSchema: Joi.object({
 				PORT: Joi.number().default(3000).required(),
