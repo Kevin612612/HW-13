@@ -1,9 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BlogRepository } from '../entity_blog/blog.repository';
 import { PostRepository } from './post.repository';
 import { PostDTO } from './dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
-import { PostsTypeSchema, PostViewType } from '../types/post';
+import { PostsTypeSchema, PostViewType, PostViewTypeWithAssesses } from '../types/post';
 import { Post } from './post.class';
 import mongoose from 'mongoose';
 import { UserDataType } from '../types/users';
@@ -19,247 +19,244 @@ import { CommentRepository } from '../entity_comment/comment.repository';
 
 @Injectable()
 export class PostService {
-  constructor(
-    @Inject(PostRepository) protected postRepository: PostRepository,
-    @Inject(BlogRepository) protected blogRepository: BlogRepository,
-    @Inject(CommentRepository) protected commentRepository: CommentRepository,
-  ) {}
+	constructor(
+		@Inject(PostRepository) protected postRepository: PostRepository,
+		@Inject(BlogRepository) protected blogRepository: BlogRepository,
+		@Inject(CommentRepository) protected commentRepository: CommentRepository,
+	) {}
 
-  //(1) method changes like status
-  async changeLikeStatus(postId: string, likeStatus: string, user: UserDataType): Promise<boolean> {
-    //find post
-    const post = await this.postRepository.findPostByIdDbType(postId);
-    //change myStatus / myStatus = current assess
-    const result = await this.postRepository.changeLikeStatus(postId, likeStatus);
-    //check whether this user left assess to this post
-    const userAssess = post.userAssess.find(obj => obj.userIdLike === user.id);
-    //if this user didn't leave like/dislike -> add like/dislike/none to post
-    if (!userAssess) {
-      if (likeStatus == 'Like') {
-        const result1 = await this.postRepository.addLike(post, user);
-      }
-      if (likeStatus == 'Dislike') {
-        const result2 = await this.postRepository.addDislike(post, user.id);
-      }
-      if (likeStatus == 'None') {
-        const result3 = await this.postRepository.setNone(post);
-      }
-    } else {
-      //assess of this user
-      const assess = userAssess.assess;
-      if (assess == 'Like' && likeStatus == 'Like') {
-        //nothing
-      }
-      if (assess == 'Like' && likeStatus == 'Dislike') {
-        //minus like and delete user from array then add addDislike()
-        const result1 = await this.postRepository.deleteLike(post, user.id);
-        const result2 = await this.postRepository.addDislike(post, user.id);
-        //set my status None
-        const result3 = await this.postRepository.setNone(post);
-      }
-      if (assess == 'Like' && likeStatus == 'None') {
-        //minus like and delete user from array
-        const result1 = await this.postRepository.deleteLike(post, user.id);
-      }
-      if (assess == 'Dislike' && likeStatus == 'Like') {
-        //minus dislike and delete user from array then add addLike()
-        const result1 = await this.postRepository.deleteDislike(post, user.id);
-        const result2 = await this.postRepository.addLike(post, user);
-        //set my status None
-        const result3 = await this.postRepository.setNone(post);
-      }
-      if (assess == 'Dislike' && likeStatus == 'Dislike') {
-        //nothing
-      }
-      if (assess == 'Dislike' && likeStatus == 'None') {
-        //minus dislike and delete user from array
-        const result1 = await this.postRepository.deleteDislike(post, user.id);
-      }
-    }
-    return true;
-  }
+	//(1) method changes like status
+	async changeLikeStatus(postId: string, likeStatus: string, user: UserDataType): Promise<boolean> {
+		//find post
+		const post = await this.postRepository.findPostByIdDbType(postId);
+		//change myStatus / myStatus = current assess
+		const result = await this.postRepository.changeLikeStatus(postId, likeStatus);
+		//check whether this user left assess to this post
+		const userAssess = post.userAssess.find((obj) => obj.userIdLike === user.id);
+		//if this user didn't leave like/dislike -> add like/dislike/none to post
+		if (!userAssess) {
+			if (likeStatus == 'Like') {
+				const result1 = await this.postRepository.addLike(post, user);
+			}
+			if (likeStatus == 'Dislike') {
+				const result2 = await this.postRepository.addDislike(post, user.id);
+			}
+			if (likeStatus == 'None') {
+				const result3 = await this.postRepository.setNone(post);
+			}
+		} else {
+			//assess of this user
+			const assess = userAssess.assess;
+			if (assess == 'Like' && likeStatus == 'Like') {
+				//nothing
+			}
+			if (assess == 'Like' && likeStatus == 'Dislike') {
+				//minus like and delete user from array then add addDislike()
+				const result1 = await this.postRepository.deleteLike(post, user.id);
+				const result2 = await this.postRepository.addDislike(post, user.id);
+				//set my status None
+				const result3 = await this.postRepository.setNone(post);
+			}
+			if (assess == 'Like' && likeStatus == 'None') {
+				//minus like and delete user from array
+				const result1 = await this.postRepository.deleteLike(post, user.id);
+			}
+			if (assess == 'Dislike' && likeStatus == 'Like') {
+				//minus dislike and delete user from array then add addLike()
+				const result1 = await this.postRepository.deleteDislike(post, user.id);
+				const result2 = await this.postRepository.addLike(post, user);
+				//set my status None
+				const result3 = await this.postRepository.setNone(post);
+			}
+			if (assess == 'Dislike' && likeStatus == 'Dislike') {
+				//nothing
+			}
+			if (assess == 'Dislike' && likeStatus == 'None') {
+				//minus dislike and delete user from array
+				const result1 = await this.postRepository.deleteDislike(post, user.id);
+			}
+		}
+		return true;
+	}
 
-  //(4) this method return all posts || all posts by blogId || all posts by name || all posts by blogId and name
-  async findAll(query: QueryDTO, userId: string, blogId?: string): Promise<PostsTypeSchema> {
-    const pageParams = {
-      sortBy: query.sortBy || 'createdAt',
-      sortDirection: query.sortDirection || 'desc',
-      pageNumber: query.pageNumber || 1,
-      searchNameTerm: query.searchNameTerm || '',
-      pageSize: query.pageSize || 10,
-    };
-    const allDataPosts = await this.postRepository.findAll(
-      pageParams.searchNameTerm,
-      pageParams.sortBy,
-      pageParams.sortDirection,
-      blogId,
-    );
-    const quantityOfDocs = await this.postRepository.countAllPosts(blogId, pageParams.searchNameTerm);
+	//(4) this method return all posts || all posts by blogId || all posts by name || all posts by blogId and name
+	async findAll(query: QueryDTO, userId: string, blogId?: string): Promise<any> {
+		const pageParams = {
+			sortBy: query.sortBy || 'createdAt',
+			sortDirection: query.sortDirection || 'desc',
+			pageNumber: query.pageNumber || 1,
+			searchNameTerm: query.searchNameTerm || '',
+			pageSize: query.pageSize || 10,
+		};
 
-    //filter allDataPosts and return array that depends on which user send GET-request
-    const sortedItems = allDataPosts.map(post => {
-      if (post.userAssess.find(el => el.userIdLike === userId)) {
-        //if current user exist in userAsses array
-        return {
-          extendedLikesInfo: {
-            likesCount: post.extendedLikesInfo.likesCount,
-            dislikesCount: post.extendedLikesInfo.dislikesCount,
-            myStatus: post.userAssess.find(el => el.userIdLike === userId)?.assess || 'None',
-            newestLikes: post.extendedLikesInfo.newestLikes
-              .slice(-3)
-              .map(obj => {
-                return {
-                  addedAt: obj.addedAt,
-                  login: obj.login,
-                  userId: obj.userId,
-                };
-              })
-              .reverse(),
-          },
-          id: post.id,
-          title: post.title,
-          shortDescription: post.shortDescription,
-          content: post.content,
-          blogId: post.blogId,
-          blogName: post.blogName,
-          createdAt: post.createdAt,
-        };
-      } else {
-        return {
-          extendedLikesInfo: {
-            likesCount: post.extendedLikesInfo.likesCount,
-            dislikesCount: post.extendedLikesInfo.dislikesCount,
-            myStatus: 'None',
-            newestLikes: post.extendedLikesInfo.newestLikes
-              .slice(-3)
-              .map(obj => {
-                return {
-                  addedAt: obj.addedAt,
-                  login: obj.login,
-                  userId: obj.userId,
-                };
-              })
-              .reverse(),
-          },
-          id: post.id,
-          title: post.title,
-          shortDescription: post.shortDescription,
-          content: post.content,
-          blogId: post.blogId,
-          blogName: post.blogName,
-          createdAt: post.createdAt,
-        };
-      }
-    });
+		// define filter
+		const filterConditions = [];
+		if (pageParams.searchNameTerm) {
+			filterConditions.push({ title: { $regex: pageParams.searchNameTerm, $options: 'i' } });
+		}
+		if (blogId) {
+			filterConditions.push({ blogId: blogId });
+		}
+		const filter = filterConditions.length > 0 ? { $and: filterConditions } : {};
 
-    return {
-      pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
-      page: +pageParams.pageNumber,
-      pageSize: +pageParams.pageSize,
-      totalCount: quantityOfDocs,
-      items: sortedItems.slice(
-        (+pageParams.pageNumber - 1) * +pageParams.pageSize,
-        +pageParams.pageNumber * +pageParams.pageSize,
-      ),
-    };
-  }
+		// searching posts
+		const allDataPosts = await this.postRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
+		const quantityOfDocs = await this.postRepository.countAllPosts(filter);
 
-  //(5) method creates post with specific blogId
-  async createPost(dto: PostDTO): Promise<PostViewType | string[]> {
-    let newPost = new Post(this.postRepository, this.blogRepository); //empty post
-    newPost = await newPost.addAsyncParams(dto); // fill post with async params
-    // put this new post into db
-    try {
-      const createdPost = await this.postRepository.createPost(newPost);
-      return {
-        id: createdPost.id,
-        title: createdPost.title,
-        shortDescription: createdPost.shortDescription,
-        content: createdPost.content,
-        blogId: createdPost.blogId,
-        blogName: createdPost.blogName,
-        createdAt: createdPost.createdAt,
-        extendedLikesInfo: createdPost.extendedLikesInfo,
-      };
-    } catch (err: any) {
-      const validationErrors = [];
-      if (err instanceof mongoose.Error.ValidationError) {
-        for (const path in err.errors) {
-          const error = err.errors[path].message;
-          validationErrors.push(error);
-        }
-      }
-      return validationErrors;
-    }
-  }
+		//transform myStatus property that depends on which user send GET-request
+		const posts1: PostViewTypeWithAssesses[] = allDataPosts.map((post) => {
+			const userAssess = post.userAssess.find((el) => el.userIdLike === userId); // find the assess of current user if it exists
+			post.extendedLikesInfo.myStatus = userAssess?.assess || 'None'; // if not assess = None
+			return post;
+		});
 
-  //(6) method returns post by ID
-  async findPostById(postId: string, user: any): Promise<PostViewType | number> {
-    //find post
-    const post = await this.postRepository.findPostByIdDbType(postId);
-    //hide info about likes from unauthorized user
-    if (user == null) {
-      post.extendedLikesInfo.myStatus = 'None';
-    }
-    //if user authorized
-    if (user != null) {
-      //if user authorized -> find his like/dislike in userAssess Array in post
-      const assess = post.userAssess.find(obj => obj.userIdLike === user.id)?.assess;
-      //return post to user with his assess if this user left like or dislike
-      if (assess) {
-        post.extendedLikesInfo.myStatus = assess; //like or dislike
-      } else {
-        post.extendedLikesInfo.myStatus = 'None';
-      }
-    }
+		//delete property userAssess from each post - caz it's not needed anymore
+		const posts2: PostViewType[] = posts1.map((post) => {
+			const { userAssess, ...newItem } = post;
+			return newItem;
+		});
 
-    //return viewModel converted from dataModel into view with 3 last assess
-    return {
-      id: post.id,
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt,
-      extendedLikesInfo: {
-        likesCount: post.extendedLikesInfo.likesCount,
-        dislikesCount: post.extendedLikesInfo.dislikesCount,
-        myStatus: post.extendedLikesInfo.myStatus,
-        newestLikes: post.extendedLikesInfo.newestLikes
-          .slice(-3)
-          .sort((a, b) => b.login.localeCompare(a.login))
-          .map(obj => {
-            return {
-              addedAt: obj.addedAt,
-              login: obj.login,
-              userId: obj.userId,
-            };
-          }),
-      },
-    };
-  }
+		//transform newestLikes property to display the last three ones
+		const sortedItems: PostViewType[] = posts2.map((post) => {
+			post.extendedLikesInfo.newestLikes = post.extendedLikesInfo.newestLikes
+				.slice(-3)
+				.map((obj) => {
+					return {
+						addedAt: obj.addedAt,
+						login: obj.login,
+						userId: obj.userId,
+					};
+				})
+				.reverse();
+			return post;
+		});
 
-  //(7) method updates post by postId
-  async updatePostById(postId: string, dto: PostDTO): Promise<boolean | number | string[]> {
-    const foundBlog = await this.blogRepository.getBlogById(dto.blogId);
-    try {
-      const result = this.postRepository.updatePostById(postId, dto);
-      return true;
-    } catch (err: any) {
-      const validationErrors = [];
-      if (err instanceof mongoose.Error.ValidationError) {
-        for (const path in err.errors) {
-          const error = err.errors[path].message;
-          validationErrors.push(error);
-        }
-      }
-      return validationErrors;
-    }
-  }
+		//filter allDataPosts and return array that depends on which user send GET-request
+		// const sortedItems = allDataPosts.map((post) => {
+		// 	const userAssess = post.userAssess.find((el) => el.userIdLike === userId);
 
-  //(8) method deletes post by postId
-  async deletePost(postId: string): Promise<number> {
-    return await this.postRepository.deletePostById(postId);
-  }
+		// 	return {
+		// 		extendedLikesInfo: {
+		// 			likesCount: post.extendedLikesInfo.likesCount,
+		// 			dislikesCount: post.extendedLikesInfo.dislikesCount,
+		// 			myStatus: userAssess?.assess || 'None',
+		// 			newestLikes: post.extendedLikesInfo.newestLikes
+		// 				.slice(-3)
+		// 				.map((obj) => {
+		// 					return {
+		// 						addedAt: obj.addedAt,
+		// 						login: obj.login,
+		// 						userId: obj.userId,
+		// 					};
+		// 				})
+		// 				.reverse(),
+		// 		},
+		// 		id: post.id,
+		// 		title: post.title,
+		// 		shortDescription: post.shortDescription,
+		// 		content: post.content,
+		// 		blogId: post.blogId,
+		// 		blogName: post.blogName,
+		// 		createdAt: post.createdAt,
+		// 	};
+		// });
+
+		return {
+			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
+			page: +pageParams.pageNumber,
+			pageSize: +pageParams.pageSize,
+			totalCount: quantityOfDocs,
+			items: sortedItems.slice(
+				(+pageParams.pageNumber - 1) * +pageParams.pageSize,
+				+pageParams.pageNumber * +pageParams.pageSize,
+			),
+		};
+	}
+
+	//(5) method creates post with specific blogId
+	async createPost(dto: PostDTO): Promise<PostViewType | string[]> {
+		let newPost = new Post(this.postRepository, this.blogRepository); //empty post
+		newPost = await newPost.addAsyncParams(dto); // fill post with async params
+		// put this new post into db
+		try {
+			const createdPost = await this.postRepository.createPost(newPost);
+			return {
+				id: createdPost.id,
+				title: createdPost.title,
+				shortDescription: createdPost.shortDescription,
+				content: createdPost.content,
+				blogId: createdPost.blogId,
+				blogName: createdPost.blogName,
+				createdAt: createdPost.createdAt,
+				extendedLikesInfo: createdPost.extendedLikesInfo,
+			};
+		} catch (err: any) {
+			const validationErrors = [];
+			if (err instanceof mongoose.Error.ValidationError) {
+				for (const path in err.errors) {
+					const error = err.errors[path].message;
+					validationErrors.push(error);
+				}
+			}
+			return validationErrors;
+		}
+	}
+
+	//(6) method returns post by ID
+	async findPostById(postId: string, user: any): Promise<PostViewType | number> {
+		//find post
+		const post = await this.postRepository.findPostByIdDbType(postId);
+		//hide info about likes from unauthorized user
+		if (!user) {
+			post.extendedLikesInfo.myStatus = 'None';
+		} else {
+			const assess = post.userAssess.find(obj => obj.userIdLike === user.id)?.assess;
+			post.extendedLikesInfo.myStatus = assess || 'None';
+		}
+
+		//delete property __v and _id and userAssess from post 
+		const { __v, _id, userAssess, ...postView } = post;
+
+		//transform newestLikes' view
+		postView.extendedLikesInfo.newestLikes = postView.extendedLikesInfo.newestLikes
+				.slice(-3)
+				.map((obj) => {
+					return {
+						addedAt: obj.addedAt,
+						login: obj.login,
+						userId: obj.userId,
+					};
+				})
+				.reverse();
+
+		//return viewModel converted from dataModel into view with 3 last assess
+		return postView;
+	}
+
+	//(7) method updates post by postId
+	async updatePostById(userName: string, postId: string, dto: PostDTO, blogId?: string): Promise<boolean | number | string[]> {
+		const resultBlogId = dto.blogId || blogId; //blogId comes from either dto or from params
+		const foundBlog = await this.blogRepository.getBlogById(resultBlogId);
+		if (foundBlog.owner !== userName) throw new ForbiddenException([`it's not your blog`]);
+		try {
+			const result = this.postRepository.updatePostById(postId, dto, foundBlog);
+			return true;
+		} catch (err: any) {
+			const validationErrors = [];
+			if (err instanceof mongoose.Error.ValidationError) {
+				for (const path in err.errors) {
+					const error = err.errors[path].message;
+					validationErrors.push(error);
+				}
+			}
+			return validationErrors;
+		}
+	}
+
+	//(8) method deletes post by postId
+	async deletePost(userName: string, blogId: string, postId: string): Promise<number> {
+		const foundBlog = await this.blogRepository.getBlogById(blogId);
+		if (foundBlog.owner !== userName) throw new ForbiddenException([`it's not your blog`]);
+		return await this.postRepository.deletePostById(postId);
+	}
 }

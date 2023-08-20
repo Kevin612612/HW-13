@@ -6,7 +6,7 @@
 // import { UsersService } from 'src/user/users.service';
 // import { AppController } from 'src/app.controller';
 // import { AppService } from 'src/app.service';
-// import { BlogController } from 'src/blog/blog.controller';
+// import { BloggerController } from 'src/blog/blog.controller';
 // import { BlogRepository } from 'src/blog/blog.repository';
 // import { BlogService } from 'src/blog/blog.service';
 // import { PostController } from 'src/post/post.controller';
@@ -22,7 +22,7 @@
 //   beforeEach(async () => {
 //     const moduleFixture: TestingModule = await Test.createTestingModule({
 //       imports: [AppModule],
-//       controllers: [AppController, UsersController, BlogController, PostController],
+//       controllers: [AppController, UsersController, BloggerController, PostController],
 //       providers: [
 //         AppService,
 //         UsersService,

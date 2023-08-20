@@ -35,7 +35,7 @@ export type ExtendedLikesInfoType = {
 //   blogId: string;
 // };
 
-//POST VIEW TYPE
+// POST VIEW TYPE
 export type PostViewType = {
   id: string;
   title: string;
@@ -47,20 +47,18 @@ export type PostViewType = {
   extendedLikesInfo: ExtendedLikesInfoType;
 };
 
-//POST DATA TYPE
-export type PostDataType = {
+// POST VIEW TYPE WITH USERS'S ASSESSES
+export type PostViewTypeWithAssesses = PostViewType & {
+  userAssess: UserAssessType[];
+};
+
+// POST DATA TYPE
+export type PostDataType = PostViewType & {
   _id: ObjectId;
-  id: string;
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-  blogName: string;
-  createdAt: string;
-  extendedLikesInfo: ExtendedLikesInfoType;
   userAssess: UserAssessType[];
   __v: number;
 };
+
 
 //POST PAGING TYPE
 export type PostsTypeSchema = {

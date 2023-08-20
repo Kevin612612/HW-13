@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './blog.schema';
-import { BlogController } from './blog.controller';
+import { BlogController, BloggerController } from './blog.controller';
 import { BlogService } from './blog.service';
 import { BlogRepository } from './blog.repository';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
@@ -21,7 +21,7 @@ import { BlackListModule } from '../entity_black_list/blacklist.module';
 		TokenModule,
 		BlackListModule,
 	],
-	controllers: [BlogController],
+	controllers: [BloggerController, BlogController],
 	providers: [BlogService, BlogRepository, BlogExistsValidation, BlogHasOwnerValidation],
 	exports: [BlogService, BlogRepository],
 })

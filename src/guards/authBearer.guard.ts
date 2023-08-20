@@ -23,8 +23,8 @@ export class AuthGuardBearer implements CanActivate {
 		const authHeader = request.headers.authorization || null;
 		const accessToken = authHeader?.split(' ')[1] || null;
 		const refreshToken = request.cookies.refreshToken || null;
-		console.log('check accessToken', accessToken); //that string is for vercel log reading
-		console.log('check refreshToken', refreshToken); //that string is for vercel log reading
+		//console.log('check accessToken', accessToken); //that string is for vercel log reading
+		//console.log('check refreshToken', refreshToken); //that string is for vercel log reading
 
 		if (!accessToken || !refreshToken || !authHeader || !authHeader.startsWith('Bearer ')) {
 			throw new UnauthorizedException();

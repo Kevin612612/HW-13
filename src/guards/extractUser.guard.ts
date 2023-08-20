@@ -4,7 +4,6 @@ import { AccessTokenService } from '../entity_tokens/accesstoken.service';
 import { UserRepository } from '../entity_user/user.repository';
 import { LogFunctionName } from '../decorators/logger.decorator';
 
-
 @Injectable()
 export class UserExtractGuard implements CanActivate {
 	constructor(
@@ -35,8 +34,8 @@ export class UserExtractGuard implements CanActivate {
 	private async validateAccessTokenAndExtractPayload(accessToken: string): Promise<any> {
 		const payload = await this.accessTokenService.getPayloadFromAccessToken(accessToken);
 		/** Validation*/
-    const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
-    const tokenIsValid = await this.accessTokenService.isPayloadValid(payload);
+		const tokenExpired = await this.accessTokenService.isTokenExpired(payload);
+		const tokenIsValid = await this.accessTokenService.isPayloadValid(payload);
 		if (tokenExpired || !tokenIsValid) {
 			throw new UnauthorizedException();
 		}

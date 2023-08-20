@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import Joi from 'joi';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { AppController, SysAdminController } from './app.controller';
+import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './entity_user/user.module';
@@ -19,6 +19,8 @@ import { DevicesModule } from './devices/devices.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { MyInterceptor } from './interceptors/logger.interceptor';
 import configuration from './custom.configuration';
+import { envFile } from './environments/envFilePath';
+import { SysAdminController } from './sa.controller';
 
 
 const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, TokenModule, UserModule];
@@ -28,7 +30,7 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			//envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
+			envFilePath: envFile,
 			//load: [configuration],
 			validationSchema: Joi.object({
 				PORT: Joi.number().default(3000).required(),

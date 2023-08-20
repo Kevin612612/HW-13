@@ -29,6 +29,9 @@ export class BlogHasOwnerValidation implements ValidatorConstraintInterface {
   async validate(value: string) {
     console.log('BlogHasOwnerValidation starts performing'); // ! that string is for vercel log reading
     const blog = await this.blogRepository.getBlogById(value);
+    if (!blog) {
+      throw new NotFoundException(["Blog doesn't exist"]);
+    }
     if (blog.owner !== 'NoName') {
       throw new BadRequestException([{ message: 'Blog has already owner', field: 'blogId' }]);
 

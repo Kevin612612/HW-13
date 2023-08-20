@@ -12,15 +12,14 @@ export type BlogViewType = {
   isMembership: boolean;
 };
 
+//BLOG VIEW TYPE WITH OWNER
+export type BlogViewTypeWithOwner = BlogViewType & {
+  owner: string;
+};
+
 //BLOG DATA TYPE
-export type BlogDataType = {
+export type BlogDataType = BlogViewType & {
   _id: ObjectId;
-  id: string;
-  name: string;
-  description: string;
-  websiteUrl: string;
-  createdAt: string;
-  isMembership: boolean;
   owner: string;
   __v: number;
 };

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument } from './blog.schema';
-import { BlogDataType, BlogViewType } from '../types/blog';
+import { BlogDataType, BlogViewType, BlogViewTypeWithOwner } from '../types/blog';
 import { BlogDTO } from './dto/blogInputDTO';
 
 @Injectable()
@@ -22,13 +22,13 @@ export class BlogRepository {
 		return blogId.toString();
 	}
 
-	async findAll(filter, sortBy: string, sortDirection: string): Promise<BlogViewType[]> {
+	async findAll(filter, sortBy: string, sortDirection: string): Promise<BlogViewTypeWithOwner[]> {
 		const order = sortDirection == 'asc' ? 1 : -1;
 		return await this.blogModel
 			.find(filter)
 			.sort({ [sortBy]: order })
 			.select({ _id: 0, __v: 0 })
-			.exec();
+			.lean();
 	}
 
 	async countAllBlogs(filter) {
@@ -40,9 +40,8 @@ export class BlogRepository {
 		return await createdBlog.save();
 	}
 
-	async getBlogById(blogId: string): Promise<any> {
-		const result = await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).exec();
-		return result;
+	async getBlogById(blogId: string): Promise<BlogViewTypeWithOwner> {
+		return await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).lean();
 	}
 
 	async updateBlogById(blogId: string, blog: BlogDTO): Promise<number> {

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BlogDTO } from './dto/blogInputDTO';
 import { QueryDTO } from '../dto/query.dto';
-import { BlogTypeSchema, BlogViewType } from '../types/blog';
+import { BlogTypeSchema, BlogViewType, BlogViewTypeWithOwner } from '../types/blog';
 import { BlogRepository } from './blog.repository';
 import { Blog } from './blog.class';
 import mongoose from 'mongoose';
@@ -14,7 +14,7 @@ export class BlogService {
 		@Inject(UserRepository) protected userRepository: UserRepository,
 	) {}
 
-	async findAll(query: QueryDTO, userName: string): Promise<BlogTypeSchema> {
+	async findAll(query: QueryDTO, userName?: string): Promise<BlogTypeSchema> {
 		const pageParams = {
 			sortBy: query.sortBy || 'createdAt',
 			sortDirection: query.sortDirection || 'desc',
@@ -29,15 +29,22 @@ export class BlogService {
 		if (userName) filterConditions.push({'owner': userName});	
 		const filter = filterConditions.length > 0 ? { $and: filterConditions } : {};
 
+		// searching blogs
 		const blogs = await this.blogRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
 		const quantityOfDocs = await this.blogRepository.countAllBlogs(filter);
+
+		//delete property owner from each blog 
+		const blogsView: BlogViewType[] = blogs.map((blog) => {
+			const { owner, ...newItem } = blog;
+			return newItem;
+		});
 
 		return {
 			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
 			page: +pageParams.pageNumber,
 			pageSize: +pageParams.pageSize,
 			totalCount: quantityOfDocs,
-			items: blogs.slice((+pageParams.pageNumber - 1) * +pageParams.pageSize, +pageParams.pageNumber * +pageParams.pageSize),
+			items: blogsView.slice((+pageParams.pageNumber - 1) * +pageParams.pageSize, +pageParams.pageNumber * +pageParams.pageSize),
 		};
 	}
 
@@ -69,8 +76,10 @@ export class BlogService {
 		}
 	}
 
-	async getBlogById(blogId: string): Promise<any> {
-		return await this.blogRepository.getBlogById(blogId);
+	async getBlogById(blogId: string): Promise<BlogViewType> {
+		const result = await this.blogRepository.getBlogById(blogId);
+		const {owner, ...blogView} = result;
+		return blogView;
 	}
 
 	async updateBlogById(blogId: string, blog: BlogDTO): Promise<number> {

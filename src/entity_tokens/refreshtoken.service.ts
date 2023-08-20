@@ -30,9 +30,7 @@ export class RefreshTokenService {
 
 	//(1) generate refreshToken
 	async generateRefreshJWT(user: any, deviceId: string, deviceName: string, IP: string) {
-		console.log('generating refresh jwt')
 		const liveTimeInSeconds: number = parseInt(this.refreshTokenLifeTime);
-		console.log(liveTimeInSeconds);
 		const payload = {
 			userId: user.id,
 			login: user.accountData.login,
@@ -40,13 +38,9 @@ export class RefreshTokenService {
 			deviceId: deviceId,
 			expiresIn: liveTimeInSeconds,
 		};
-		console.log(payload);
-
 		const refreshTokenValue = await this.jwtService.signAsync(payload, {
 			expiresIn: liveTimeInSeconds,
 		});
-		console.log(refreshTokenValue);
-
 		const refreshTokenObject = new RefreshToken(refreshTokenValue, user.id, deviceId, deviceName, IP, this.configService);
 		//put it into db
 		const result1 = await this.userRepository.addRefreshToken(user.id, refreshTokenValue, liveTimeInSeconds);
@@ -105,10 +99,7 @@ export class RefreshTokenService {
 	async terminateCurrentDevice(userId: string, deviceId: string): Promise<boolean> {
 		// todo: add deleted refreshtoken into blacklist
 		const result = await this.refreshTokensRepository.deleteOne(userId, deviceId);
-		if (result) {
-			return true;
-		} else {
-			throw new ForbiddenException(["it's not your device"]);
-		}
+		if (!result) throw new ForbiddenException(["it's not your device"]);
+		return true;
 	}
 }
