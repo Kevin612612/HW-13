@@ -49,7 +49,7 @@ export class BloggerController {
 		return await this.blogService.deleteBlog(params.blogId);
 	}
 
-	@UseGuards(AuthGuardBearer)
+	//@UseGuards(AuthGuardBearer)
 	@Post()
 	async createBlog(@Body() dto: BlogDTO): Promise<BlogViewType | string[]> {
 		return await this.blogService.createBlog(dto);

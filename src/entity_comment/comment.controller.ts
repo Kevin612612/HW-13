@@ -5,6 +5,7 @@ import { UserExtractGuard } from '../guards/extractUser.guard';
 import { CommentService } from './comment.service';
 import { CommentDTO } from './dto/commentsInputDTO';
 import { SkipThrottle } from '@nestjs/throttler';
+import { UserDataType } from '../types/users';
 
 // changeLikeStatus
 // updateCommentById
@@ -48,7 +49,7 @@ export class CommentController {
   @UseGuards(UserExtractGuard)
   @Get('/:commentId')
   async findCommentById(@Param() params: CommentIdDTO, @Req() req) {
-    const user = req.user ? req.user : null;
+    const user: UserDataType = req.user ? req.user : null;
     return await this.commentService.findCommentById(params.commentId, user);
   }
 }
