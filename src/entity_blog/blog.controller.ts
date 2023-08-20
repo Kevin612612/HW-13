@@ -62,7 +62,7 @@ export class BloggerController {
 		return await this.blogService.findAll(query, userName);
 	}
 
-	@UseGuards(AuthGuardBearer)
+	//@UseGuards(AuthGuardBearer)
 	@Post('/:blogId/posts')
 	async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO, @Res() res: Response) {
 		dto.blogId = params.blogId;
