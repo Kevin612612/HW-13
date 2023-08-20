@@ -6,19 +6,21 @@ import { Comment } from './comment.class';
 import { CommentViewType } from '../types/comment';
 import { QueryDTO } from '../dto/query.dto';
 import { PostRepository } from '../entity_post/post.repository';
+import { UserRepository } from '../entity_user/user.repository';
 
 //(1) getAllCommentsByPost
 //(2) createComment
 //(3) changeLikeStatus
 //(4) updateCommentById
 //(5) deleteComment
-//(6) findCommentById
+//(6.1) findCommentById
 
 @Injectable()
 export class CommentService {
   constructor(
     @Inject(CommentRepository) protected commentRepository: CommentRepository,
     @Inject(PostRepository) protected postRepository: PostRepository,
+    @Inject(UserRepository) protected userRepository: UserRepository,
   ) {}
 
   //(1)
@@ -79,7 +81,7 @@ export class CommentService {
   ): Promise<any | number | string[]> {
     const foundPost = await this.postRepository.findPostById(postId);
     if (!foundPost) {
-      throw new NotFoundException(['post doesnt exist']);
+      throw new NotFoundException([`post doesn't exist`]);
     }
     //create new comment
     let newComment = new Comment(this.commentRepository); //empty comment
@@ -196,23 +198,38 @@ export class CommentService {
   }
 
   //(6) method find comment by Id
-  async findCommentById(commentId: string, user: UserDataType): Promise<CommentViewType | number> {
-    //find comment ->  delete myStatus if user unauthorized -> return to user or 404 if not found
+  // async findCommentById(commentId: string, user: UserDataType): Promise<CommentViewType | number> {
+  //   //find comment ->  delete myStatus if user unauthorized -> return to user or 404 if not found
+  //   const comment = await this.commentRepository.findCommentByIdDbType(commentId);
+  //   //hide info about likes from unauthorized user
+  //   if (user == null) {
+  //     comment.likesInfo.myStatus = 'None';
+  //   }
+  //   if (user != null) {
+  //     //if user authorized -> find his like/dislike in userAssess Array in comment
+  //     const assess = comment.userAssess.find(obj => obj.userIdLike === user.id)?.assess ?? null;
+  //     //return comment to user with his assess if this user left like or dislike
+  //     if (assess) {
+  //       comment.likesInfo.myStatus = assess; //like or dislike
+  //     } else {
+  //       comment.likesInfo.myStatus = 'None';
+  //     }
+  //   }
+  //   return {
+  //     commentatorInfo: comment.commentatorInfo,
+  //     id: comment.id,
+  //     content: comment.content,
+  //     createdAt: comment.createdAt,
+  //     likesInfo: comment.likesInfo,
+  //   };
+  // }
+
+  //(6.1) method find comment by Id
+  async findCommentById(commentId: string): Promise<CommentViewType | number> {
     const comment = await this.commentRepository.findCommentByIdDbType(commentId);
-    //hide info about likes from unauthorized user
-    if (user == null) {
-      comment.likesInfo.myStatus = 'None';
-    }
-    if (user != null) {
-      //if user authorized -> find his like/dislike in userAssess Array in comment
-      const assess = comment.userAssess.find(obj => obj.userIdLike === user.id)?.assess ?? null;
-      //return comment to user with his assess if this user left like or dislike
-      if (assess) {
-        comment.likesInfo.myStatus = assess; //like or dislike
-      } else {
-        comment.likesInfo.myStatus = 'None';
-      }
-    }
+    const userId = comment.commentatorInfo.userId;
+    const user = await this.userRepository.findUserById(userId);
+    if (user.banInfo.isBanned == true) throw new NotFoundException([[`comment doesn't exist`]])
     return {
       commentatorInfo: comment.commentatorInfo,
       id: comment.id,

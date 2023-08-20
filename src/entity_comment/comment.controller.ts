@@ -46,10 +46,8 @@ export class CommentController {
   }
 
   //(4)
-  @UseGuards(UserExtractGuard)
   @Get('/:commentId')
-  async findCommentById(@Param() params: CommentIdDTO, @Req() req) {
-    const user: UserDataType = req.user ? req.user : null;
-    return await this.commentService.findCommentById(params.commentId, user);
+  async findCommentById(@Param() params: CommentIdDTO) {
+    return await this.commentService.findCommentById(params.commentId);
   }
 }

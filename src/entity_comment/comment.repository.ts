@@ -79,8 +79,8 @@ export class CommentRepository {
   }
 
   //(5-1) method returns comment by Id as data model
-  async findCommentByIdDbType(id: string): Promise<any | undefined | null> {
-    return this.commentModel.findOne({ id: id }).select({ _id: 0, __v: 0, postId: 0 });
+  async findCommentByIdDbType(id: string): Promise<CommentDataType> {
+    return this.commentModel.findOne({ id: id }).lean();
   }
 
   //(6) method change like status by Id
