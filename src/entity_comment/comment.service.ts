@@ -229,8 +229,7 @@ export class CommentService {
     const comment = await this.commentRepository.findCommentByIdDbType(commentId);
     const userId = comment.commentatorInfo.userId;
     const user = await this.userRepository.findUserById(userId);
-    if (!user) throw new NotFoundException(["User doesn't exist"])
-    if (user.banInfo.isBanned == true) throw new NotFoundException([[`comment doesn't exist`]])
+    if (user.banInfo.isBanned == true) throw new NotFoundException([[`user doesn't exist`]])
     return {
       commentatorInfo: comment.commentatorInfo,
       id: comment.id,

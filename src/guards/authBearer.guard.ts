@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
@@ -32,7 +32,9 @@ export class AuthGuardBearer implements CanActivate {
 		try {
 			const payloadFromAccessToken = await this.validateAccessTokenAndExtractPayload(accessToken);
 			const payloadFromRefreshToken = await this.validateRefreshTokenAndExtractPayload(refreshToken);
-			request.user = await this.userRepository.findUserById(payloadFromAccessToken.sub);
+			const user = await this.userRepository.findUserById(payloadFromAccessToken.sub);
+			if (user.banInfo.isBanned == true) throw new NotFoundException([[`user doesn't exist`]])
+			request.user = user;
 			return true;
 		} catch (error) {
 			console.log('Error from AuthGuardBearer:', error);
