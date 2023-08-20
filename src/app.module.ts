@@ -30,7 +30,7 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: envFile,
+			envFilePath: envFile || null,//for vercel finds the env variables in its own environment
 			//load: [configuration],
 			validationSchema: Joi.object({
 				PORT: Joi.number().default(3000).required(),
