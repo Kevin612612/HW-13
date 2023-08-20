@@ -24,11 +24,12 @@ export class Blog {
 		this.websiteUrl = websiteUrl;
 		this.createdAt = new Date().toISOString();
 		this.isMembership = false;
+		this.owner = owner;
 		this.__v = 0;
 	}
 
-	public async addAsyncParams(dto: BlogDTO) {
+	public async addAsyncParams(dto: BlogDTO, owner: string) {
 		const blogId = await this.blogRepository.createBlogId();
-		return new Blog(this.blogRepository, blogId, dto.name, dto.description, dto.websiteUrl);
+		return new Blog(this.blogRepository, blogId, dto.name, dto.description, dto.websiteUrl, owner);
 	}
 }

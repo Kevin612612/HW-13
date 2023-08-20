@@ -14,7 +14,7 @@ import {
 	Req,
 	HttpCode,
 } from '@nestjs/common';
-import { BlogIdDTO, PostIdDTO } from '../dto/id.dto';
+import { BlogIdDTO, BlogIdDTO_1, PostIdDTO } from '../dto/id.dto';
 import { PostDTO } from '../entity_post/dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { PostService } from '../entity_post/post.service';
@@ -51,20 +51,21 @@ export class BloggerController {
 
 	@UseGuards(AuthGuardBearer)
 	@Post()
-	async createBlog(@Body() dto: BlogDTO): Promise<BlogViewType | string[]> {
-		return await this.blogService.createBlog(dto);
+	async createBlog(@Body() dto: BlogDTO, @Req() req): Promise<BlogViewType | string[]> {
+		const userName = req.user?.accountData.login || null;
+		return await this.blogService.createBlog(dto, userName);
 	}
 
 	@UseGuards(AuthGuardBearer)
 	@Get()
-	async getAllBlogs(@Query() query: QueryDTO, @Req() req, @Res() res): Promise<BlogTypeSchema> {
+	async getAllBlogs(@Query() query: QueryDTO, @Req() req): Promise<BlogTypeSchema> {
 		const userName = req.user?.accountData.login || null;
 		return await this.blogService.findAll(query, userName);
 	}
 
 	@UseGuards(AuthGuardBearer)
 	@Post('/:blogId/posts')
-	async createPostByBlogId(@Param() params: BlogIdDTO, @Body() dto: PostDTO, @Res() res: Response) {
+	async createPostByBlogId(@Param() params: BlogIdDTO_1, @Body() dto: PostDTO, @Res() res: Response) {
 		dto.blogId = params.blogId;
 		const result = await this.postService.createPost(dto);
 		res.send(result);

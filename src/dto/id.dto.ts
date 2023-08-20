@@ -17,6 +17,11 @@ export class BlogIdDTO {
   blogId: string;
 }
 
+export class BlogIdDTO_1 {
+  @Validate(BlogExistsValidation)
+  blogId: string;
+}
+
 export class PostIdDTO {
   @Validate(PostExistsValidation)
   postId: string;
