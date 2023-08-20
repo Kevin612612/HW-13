@@ -64,7 +64,7 @@ export class PostController {
 	}
 
 	//(3)
-	//@UseGuards(AuthGuardBearer)
+	@UseGuards(AuthGuardBearer)
 	@HttpCode(HttpStatus.CREATED)
 	@Post('/:postId/comments')
 	async createCommentByPost(@Param() param: PostIdDTO, @Body() body: CommentDTO, @Req() req): Promise<any> {
