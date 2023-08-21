@@ -40,7 +40,7 @@ export class BlogRepository {
 		return await createdBlog.save();
 	}
 
-	async getBlogById(blogId: string): Promise<BlogViewTypeWithOwner> {
+	async getBlogById(blogId: string): Promise<BlogViewTypeWithOwner | undefined> {
 		return await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).lean();
 	}
 
