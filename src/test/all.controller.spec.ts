@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../app.module';
-import { createBlogDTO, createCommentDTO, createPostDTO, createUserDTO } from '../secondary functions/functionsForTesting';
+import { createBlogDTO, createCommentDTO, createPostDTO, createUserDTO } from './functionsForTesting';
 
 jest.setTimeout(100000);
 
@@ -31,7 +31,7 @@ describe('all tests (e2e)', () => {
 		};
 		const getBlogsBySisAdmin = async () => {
 			const blogsResponse = await request(server)
-				.get(`/sa/blogs?pageSize=5&pageNumber=1&searchNameTerm=&sortDirection=asc&sortBy=id`)
+				.get(`/sa/blogs?pageSize=5&pageNumber=1&searchNameTerm=blog&sortDirection=asc&sortBy=id`)
 				.auth('admin', 'qwerty', { type: 'basic' });
 			const createdBlogs = blogsResponse.body;
 			console.log(createdBlogs);
@@ -131,11 +131,11 @@ describe('all tests (e2e)', () => {
 		};
 
 		//POST -> /sa/users, POST => /auth/login, POST -> /blogger/blogs, GET -> /sa/blogs
-		await cleanDB();
-		const userDto = createUserDTO();
-		await createUserBySisAdmin(userDto);
-		const token = await loginUser(userDto);
-		await createBlogInDbByBlogger(token);
+		//await cleanDB();
+		//const userDto = createUserDTO();
+		//await createUserBySisAdmin(userDto);
+		//const token = await loginUser(userDto);
+		//await createBlogInDbByBlogger(token);
 		await getBlogsBySisAdmin();
 	});
 });

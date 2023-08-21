@@ -45,7 +45,7 @@ export class BloggerController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@UseGuards(AuthGuardBearer)
 	@Delete('/:blogId')
-	async deleteBlog(@Param() params: BlogIdDTO) {
+	async deleteBlog(@Param() params: BlogIdDTO_1) {
 		return await this.blogService.deleteBlog(params.blogId);
 	}
 

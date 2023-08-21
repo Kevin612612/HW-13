@@ -26,8 +26,8 @@ export class BlogService {
 
 		// define filter
 		const filterConditions = [];
-		if (pageParams.searchNameTerm) filterConditions.push({ blogName: { $regex: pageParams.searchNameTerm, $options: 'i' } });
-		if (userName) filterConditions.push({ owner: userName });
+		if (pageParams.searchNameTerm) filterConditions.push({ name: { $regex: pageParams.searchNameTerm, $options: 'i' } });
+		if (userName) filterConditions.push({ 'blogOwnerInfo.userLogin': userName });
 		const filter = filterConditions.length > 0 ? { $and: filterConditions } : {};
 
 		// searching blogs
