@@ -33,9 +33,9 @@ export class AuthGuardBearer implements CanActivate {
 		const payloadFromAccessToken = await this.validateAccessTokenAndExtractPayload(accessToken);
 		//const payloadFromRefreshToken = await this.validateRefreshTokenAndExtractPayload(refreshToken);
 		const user = await this.userRepository.findUserById(payloadFromAccessToken.sub);
-		if (user.banInfo.isBanned === true) {
-			throw new NotFoundException([`user is banned`]);
-		}
+		// if (user.banInfo.isBanned === true) {
+		// 	throw new NotFoundException([`user is banned`]);
+		// }
 		request.user = user;
 		return true;
 		// } catch (error) {
