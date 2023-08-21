@@ -4,6 +4,17 @@ import { HydratedDocument } from 'mongoose';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
+@Schema({ _id : false })
+export class BlogOwner {
+  @Prop()
+  userId: string;
+
+  @Prop()
+  userLogin: string;
+}
+export const BlogOwnerSchema = SchemaFactory.createForClass(BlogOwner);
+
+
 @Schema()
 export class Blog {
 	@Prop({ type: ObjectId, required: true, default: new ObjectId() })
@@ -39,8 +50,8 @@ export class Blog {
 	@Prop({ required: true, default: false })
 	isMembership: boolean;
 
-	@Prop({ required: true, default: 'NoName' })
-	owner: string;
+	@Prop({ type: BlogOwnerSchema })
+	blogOwnerInfo: any;
 
 	@Prop({ versionKey: true })
 	__v: number;

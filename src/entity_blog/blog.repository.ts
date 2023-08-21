@@ -68,12 +68,13 @@ export class BlogRepository {
 		return result.deletedCount;
 	}
 
-	async addOwner(blogId: string, userLogin: string): Promise<number> {
+	async addOwner(blogId: string, userLogin: string, userId: string): Promise<number> {
 		const result = await this.blogModel.updateOne(
 			{ id: blogId },
 			{
 				$set: {
-					owner: userLogin,
+					'blogOwnerInfo.userId' : userId,
+					'blogOwnerInfo.userLogin' : userLogin,
 				},
 			},
 		);

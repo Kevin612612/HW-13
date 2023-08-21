@@ -1,3 +1,4 @@
+import { BlogOwnerInfoType } from './../types/blog.d';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
 import { BlogDTO } from './dto/blogInputDTO';
@@ -14,7 +15,10 @@ export class Blog {
 		public name: string = 'no name',
 		public description: string = 'no description',
 		public websiteUrl: string = 'no url',
-		public owner: string = 'NoName',
+		public blogOwnerInfo: BlogOwnerInfoType = {
+			userId: null,
+			userLogin: null
+		},
 		public __v: number = 0,
 	) {
 		this._id = new ObjectId();
@@ -24,12 +28,12 @@ export class Blog {
 		this.websiteUrl = websiteUrl;
 		this.createdAt = new Date().toISOString();
 		this.isMembership = false;
-		this.owner = owner;
+		this.blogOwnerInfo = blogOwnerInfo;
 		this.__v = 0;
 	}
 
-	public async addAsyncParams(dto: BlogDTO, owner: string) {
+	public async addAsyncParams(dto: BlogDTO, blogOwnerInfo: BlogOwnerInfoType) {
 		const blogId = await this.blogRepository.createBlogId();
-		return new Blog(this.blogRepository, blogId, dto.name, dto.description, dto.websiteUrl, owner);
+		return new Blog(this.blogRepository, blogId, dto.name, dto.description, dto.websiteUrl, blogOwnerInfo);
 	}
 }

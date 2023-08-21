@@ -249,7 +249,7 @@ export class PostService {
 	async updatePostById(userName: string, postId: string, dto: PostDTO, blogId?: string): Promise<boolean | number | string[]> {
 		const resultBlogId = dto.blogId || blogId; //blogId comes from either dto or from params
 		const foundBlog = await this.blogRepository.getBlogById(resultBlogId);
-		if (foundBlog.owner !== userName) throw new ForbiddenException([`it's not your blog`]);
+		if (foundBlog.blogOwnerInfo.userLogin !== userName) throw new ForbiddenException([`it's not your blog`]);
 		try {
 			const result = this.postRepository.updatePostById(postId, dto, foundBlog);
 			return true;
@@ -268,7 +268,7 @@ export class PostService {
 	//(8) method deletes post by postId
 	async deletePost(userName: string, blogId: string, postId: string): Promise<number> {
 		const foundBlog = await this.blogRepository.getBlogById(blogId);
-		if (foundBlog.owner !== userName) throw new ForbiddenException([`it's not your blog`]);
+		if (foundBlog.blogOwnerInfo.userLogin !== userName) throw new ForbiddenException([`it's not your blog`]);
 		return await this.postRepository.deletePostById(postId);
 	}
 }

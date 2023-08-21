@@ -32,9 +32,8 @@ export class BlogHasOwnerValidation implements ValidatorConstraintInterface {
     if (!blog) {
       throw new NotFoundException(["Blog doesn't exist"]);
     }
-    if (blog.owner !== 'NoName') {
+    if (blog.blogOwnerInfo.userLogin) {
       throw new BadRequestException([{ message: 'Blog has already owner', field: 'blogId' }]);
-
     }
     return true;
   }

@@ -34,9 +34,9 @@ export class BlogService {
 		const blogs = await this.blogRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
 		const quantityOfDocs = await this.blogRepository.countAllBlogs(filter);
 
-		//delete property owner from each blog except for sisAdmin
+		//delete property blogOwnerInfo from each blog except for sisAdmin
 		const blogsView = (role !== 'sisAdmin') ? 
-		blogs.map((blog) => {const { owner, ...newItem } = blog;
+		blogs.map((blog) => {const { blogOwnerInfo, ...newItem } = blog;
 							return newItem})
 		: blogs;
 
@@ -79,7 +79,7 @@ export class BlogService {
 
 	async getBlogById(blogId: string): Promise<BlogViewType> {
 		const result = await this.blogRepository.getBlogById(blogId);
-		const { owner, ...blogView } = result;
+		const { blogOwnerInfo, ...blogView } = result;
 		return blogView;
 	}
 
@@ -93,6 +93,6 @@ export class BlogService {
 
 	async bindBlogWithUser(blogId: string, userId: string) {
 		const user = await this.userRepository.findUserById(userId);
-		return await this.blogRepository.addOwner(blogId, user.accountData.login);
+		return await this.blogRepository.addOwner(blogId, user.accountData.login, user.id);
 	}
 }
