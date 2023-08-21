@@ -30,11 +30,12 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 		ConfigModule.forRoot({
 			isGlobal: true,
 			//envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
+			envFilePath: `src/environments/testing.env`,
 			//load: [configuration],
 			validationSchema: Joi.object({
 				PORT: Joi.number().default(3000).required(),
 				MONGO_URL: Joi.string().required(),
-				NODE_ENV: Joi.string().valid('development', 'production', 'testing').default('development'),
+				//NODE_ENV: Joi.string().default('development').valid('development', 'production', 'testing'),
 			}),
 		}), //add first
 		CqrsModule.forRoot(),

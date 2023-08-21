@@ -17,7 +17,7 @@ export class RefreshTokenGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<any> {
     const request: Request = context.switchToHttp().getRequest();
     const refreshToken = request.cookies.refreshToken || null;
-    console.log('check refreshToken', refreshToken); //that string is for vercel log reading
+    //console.log('check refreshToken', refreshToken); //that string is for vercel log reading
 
     try {
       const payloadFromRefreshToken = await this.validateRefreshTokenAndExtractPayload(refreshToken);

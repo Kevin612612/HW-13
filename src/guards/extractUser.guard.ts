@@ -16,7 +16,7 @@ export class UserExtractGuard implements CanActivate {
 		const request: Request = context.switchToHttp().getRequest();
 		const authHeader = request.headers.authorization || null;
 		const accessToken = authHeader?.split(' ')[1] || null;
-		console.log('check accessToken', accessToken); //that string is for vercel log reading
+		//console.log('check accessToken', accessToken); //that string is for vercel log reading
 
 		if (!accessToken || !authHeader || !authHeader.startsWith('Bearer ')) {
 			throw new UnauthorizedException();
