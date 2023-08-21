@@ -219,7 +219,9 @@ export class PostService {
 		for (const assess of post.userAssess) {
 			const user = await this.userRepository.findUserById(assess.userIdLike);
 			if (user.banInfo.isBanned) {
-				if (assess.assess === 'Like') post.extendedLikesInfo.likesCount--;
+				if (assess.assess === 'Like') {
+					post.extendedLikesInfo.likesCount--;
+					post.extendedLikesInfo.newestLikes = post.extendedLikesInfo.newestLikes.filter(obj => obj.userId !== user.id)};
 				if (assess.assess === 'Dislike') post.extendedLikesInfo.dislikesCount--;
 			}
 		};
