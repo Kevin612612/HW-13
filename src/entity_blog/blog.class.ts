@@ -32,7 +32,7 @@ export class Blog {
 		this.__v = 0;
 	}
 
-	public async addAsyncParams(dto: BlogDTO, blogOwnerInfo: BlogOwnerInfoType) {
+	public async addAsyncParams(dto: BlogDTO, blogOwnerInfo) {
 		const blogId = await this.blogRepository.createBlogId();
 		return new Blog(this.blogRepository, blogId, dto.name, dto.description, dto.websiteUrl, blogOwnerInfo);
 	}

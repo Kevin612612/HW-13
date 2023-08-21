@@ -10,7 +10,7 @@ export const generateRandomString = (length: number) => {
   };
   
   //create random user
-  export function createUser() {
+  export function createUserDTO() {
 	return {
 	  login: generateRandomString(5) + 'user',
 	  password: generateRandomString(6),
@@ -18,7 +18,7 @@ export const generateRandomString = (length: number) => {
 	};
   }
   //create random blog
-  export function createBlog() {
+  export function createBlogDTO() {
 	return {
 	  name: generateRandomString(5) + 'user',
 	  description: generateRandomString(10),
@@ -26,7 +26,7 @@ export const generateRandomString = (length: number) => {
 	};
   }
   //create random post
-  export function createPost() {
+  export function createPostDTO() {
 	return {
 	  content: generateRandomString(5) + 'post',
 	  shortDescription: 'about' + generateRandomString(10),
@@ -35,7 +35,7 @@ export const generateRandomString = (length: number) => {
 	};
   }
   //create random comment
-  export function createComment() {
+  export function createCommentDTO() {
 	return {
 	  content: generateRandomString(15) + ' comment',
 	};

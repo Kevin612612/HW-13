@@ -52,8 +52,10 @@ export class BloggerController {
 	@UseGuards(AuthGuardBearer)
 	@Post()
 	async createBlog(@Body() dto: BlogDTO, @Req() req): Promise<BlogViewType | string[]> {
-		const userName = req.user?.accountData.login || null;
-		return await this.blogService.createBlog(dto, userName);
+		const userId = req.user?.id || null;
+		const userLogin = req.user?.accountData.login || null;
+		const blogOwnerInfo = {userId: userId, userLogin: userLogin}
+		return await this.blogService.createBlog(dto, blogOwnerInfo);
 	}
 
 	@UseGuards(AuthGuardBearer)

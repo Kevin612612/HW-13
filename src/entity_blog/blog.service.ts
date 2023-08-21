@@ -49,10 +49,10 @@ export class BlogService {
 		};
 	}
 
-	async createBlog(dto: BlogDTO, userName): Promise<BlogViewType | string[]> {
+	async createBlog(dto: BlogDTO, blogOwnerInfo): Promise<BlogViewType | string[]> {
 		const blogId = await this.blogRepository.createBlogId();
 		let newBlog = new Blog(this.blogRepository); //empty blog
-		newBlog = await newBlog.addAsyncParams(dto, userName);
+		newBlog = await newBlog.addAsyncParams(dto, blogOwnerInfo);
 		// put this new blog into db
 		try {
 			const result = await this.blogRepository.createBlog(newBlog);
