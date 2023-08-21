@@ -22,24 +22,26 @@ export class AuthGuardBearer implements CanActivate {
 		const request: Request = context.switchToHttp().getRequest();
 		const authHeader = request.headers.authorization || null;
 		const accessToken = authHeader?.split(' ')[1] || null;
-		const refreshToken = request.cookies.refreshToken || null;
+		// const refreshToken = request.cookies.refreshToken || null;
 		//console.log('check accessToken', accessToken); //that string is for vercel log reading
 		//console.log('check refreshToken', refreshToken); //that string is for vercel log reading
 
-		if (!accessToken || !refreshToken || !authHeader || !authHeader.startsWith('Bearer ')) {
+		if (!accessToken || !authHeader || !authHeader.startsWith('Bearer ')) {
 			throw new UnauthorizedException();
 		}
-		try {
-			const payloadFromAccessToken = await this.validateAccessTokenAndExtractPayload(accessToken);
-			const payloadFromRefreshToken = await this.validateRefreshTokenAndExtractPayload(refreshToken);
-			const user = await this.userRepository.findUserById(payloadFromAccessToken.sub);
-			if (user.banInfo.isBanned == true) throw new NotFoundException([[`user doesn't exist`]])
-			request.user = user;
-			return true;
-		} catch (error) {
-			console.log('Error from AuthGuardBearer:', error);
-			throw new UnauthorizedException();
+		//try {
+		const payloadFromAccessToken = await this.validateAccessTokenAndExtractPayload(accessToken);
+		//const payloadFromRefreshToken = await this.validateRefreshTokenAndExtractPayload(refreshToken);
+		const user = await this.userRepository.findUserById(payloadFromAccessToken.sub);
+		if (user.banInfo.isBanned === true) {
+			throw new NotFoundException([`user is banned`]);
 		}
+		request.user = user;
+		return true;
+		// } catch (error) {
+		// 	console.log('Error from AuthGuardBearer:', error);
+		// 	throw new UnauthorizedException();
+		// }
 	}
 
 	private async validateAccessTokenAndExtractPayload(accessToken: string): Promise<any> {
