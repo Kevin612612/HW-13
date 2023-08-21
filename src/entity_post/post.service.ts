@@ -8,6 +8,7 @@ import { Post } from './post.class';
 import mongoose from 'mongoose';
 import { UserDataType } from '../types/users';
 import { CommentRepository } from '../entity_comment/comment.repository';
+import { UserRepository } from '../entity_user/user.repository';
 
 //(1) changeLikeStatus
 
@@ -23,6 +24,7 @@ export class PostService {
 		@Inject(PostRepository) protected postRepository: PostRepository,
 		@Inject(BlogRepository) protected blogRepository: BlogRepository,
 		@Inject(CommentRepository) protected commentRepository: CommentRepository,
+		@Inject(UserRepository) protected userRepository: UserRepository,
 	) {}
 
 	//(1) method changes like status
@@ -213,6 +215,14 @@ export class PostService {
 			const assess = post.userAssess.find(obj => obj.userIdLike === user.id)?.assess;
 			post.extendedLikesInfo.myStatus = assess || 'None';
 		}
+		//hide banned user's likes/dislikes
+		for (const assess of post.userAssess) {
+			const user = await this.userRepository.findUserById(assess.userIdLike);
+			if (user.banInfo.isBanned) {
+				if (assess.assess === 'Like') post.extendedLikesInfo.likesCount--;
+				if (assess.assess === 'Dislike') post.extendedLikesInfo.dislikesCount--;
+			}
+		};
 
 		//delete property __v and _id and userAssess from post 
 		const { __v, _id, userAssess, ...postView } = post;

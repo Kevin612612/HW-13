@@ -229,6 +229,13 @@ export class CommentService {
 		const userId = comment.commentatorInfo.userId;
 		const user = await this.userRepository.findUserById(userId);
 		if (user.banInfo.isBanned == true) throw new NotFoundException([[`user of that comment is banned`]]);
+		//hide info about likes from unauthorized user
+		if (!user) {
+			comment.likesInfo.myStatus = 'None';
+		} else {
+			const assess = comment.userAssess.find(obj => obj.userIdLike === user.id)?.assess;
+			comment.likesInfo.myStatus = assess || 'None';
+		}
 		//hide banned user's likes/dislikes
 		for (const assess of comment.userAssess) {
 			const user = await this.userRepository.findUserById(assess.userIdLike);
