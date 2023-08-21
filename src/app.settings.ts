@@ -11,6 +11,8 @@ import { ValidationPipeOptions } from './validation/validationPipeOptions';
  * @param app The instance of `INestApplication` representing the Nest.js application.
  */
 export const appSettings = (app: INestApplication) => {
+  // Set Global Prefix
+  app.setGlobalPrefix('api')
   // Parse incoming cookies from HTTP request headers and make them available in `req.cookies` object.
   app.use(cookieParser());
 
