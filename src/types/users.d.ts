@@ -1,5 +1,13 @@
 import { ObjectId } from 'mongodb';
 
+export enum Role {
+	sisAdmin = 'sisAdmin',
+	blogger = 'blogger',
+	user = 'user',
+}
+
+export type RoleType = keyof typeof Role;
+
 type CodeDataType = {
 	code: string;
 	sentAt: string;

@@ -6,6 +6,7 @@ import { BlogRepository } from './blog.repository';
 import { Blog } from './blog.class';
 import mongoose from 'mongoose';
 import { UserRepository } from '../entity_user/user.repository';
+import { RoleType } from '../types/users';
 
 @Injectable()
 export class BlogService {
@@ -14,7 +15,7 @@ export class BlogService {
 		@Inject(UserRepository) protected userRepository: UserRepository,
 	) {}
 
-	async findAll(query: QueryDTO, userName?: string): Promise<BlogTypeSchema> {
+	async findAll(query: QueryDTO, role: RoleType, userName?: string): Promise<BlogTypeSchema> {
 		const pageParams = {
 			sortBy: query.sortBy || 'createdAt',
 			sortDirection: query.sortDirection || 'desc',
@@ -25,19 +26,19 @@ export class BlogService {
 
 		// define filter
 		const filterConditions = [];
-		if (pageParams.searchNameTerm) filterConditions.push({'blogName': {$regex: pageParams.searchNameTerm, $options: 'i'}});	
-		if (userName) filterConditions.push({'owner': userName});	
+		if (pageParams.searchNameTerm) filterConditions.push({ blogName: { $regex: pageParams.searchNameTerm, $options: 'i' } });
+		if (userName) filterConditions.push({ owner: userName });
 		const filter = filterConditions.length > 0 ? { $and: filterConditions } : {};
 
 		// searching blogs
 		const blogs = await this.blogRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
 		const quantityOfDocs = await this.blogRepository.countAllBlogs(filter);
 
-		//delete property owner from each blog 
-		const blogsView: BlogViewType[] = blogs.map((blog) => {
-			const { owner, ...newItem } = blog;
-			return newItem;
-		});
+		//delete property owner from each blog except for sisAdmin
+		const blogsView = (role !== 'sisAdmin') ? 
+		blogs.map((blog) => {const { owner, ...newItem } = blog;
+							return newItem})
+		: blogs;
 
 		return {
 			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
@@ -78,7 +79,7 @@ export class BlogService {
 
 	async getBlogById(blogId: string): Promise<BlogViewType> {
 		const result = await this.blogRepository.getBlogById(blogId);
-		const {owner, ...blogView} = result;
+		const { owner, ...blogView } = result;
 		return blogView;
 	}
 

@@ -33,7 +33,7 @@ export class BloggerController {
 
 	@UseGuards(AuthGuardBearer)
 	@Put('/:blogId')
-	async updateBlogById(@Param() params: BlogIdDTO, @Body() blog: BlogDTO, @Res() res: Response) {
+	async updateBlogById(@Param() params: BlogIdDTO_1, @Body() blog: BlogDTO, @Res() res: Response) {
 		const result = await this.blogService.updateBlogById(params.blogId, blog);
 		if (!result) {
 			res.sendStatus(HttpStatus.NOT_FOUND);
@@ -60,7 +60,7 @@ export class BloggerController {
 	@Get()
 	async getAllBlogs(@Query() query: QueryDTO, @Req() req): Promise<BlogTypeSchema> {
 		const userName = req.user?.accountData.login || null;
-		return await this.blogService.findAll(query, userName);
+		return await this.blogService.findAll(query, 'blogger', userName);
 	}
 
 	@UseGuards(AuthGuardBearer)
@@ -121,7 +121,7 @@ export class BlogController {
 
 	@Get()
 	async getAllBlogs(@Query() query: QueryDTO): Promise<BlogTypeSchema> {
-		return await this.blogService.findAll(query);
+		return await this.blogService.findAll(query, 'user');
 	}
 
 	@Get('/:blogId/posts')
@@ -130,7 +130,7 @@ export class BlogController {
 	}
 
 	@Get('/:blogId')
-	async getBlogById(@Param() params: BlogIdDTO, @Res() res: Response) {
+	async getBlogById(@Param() params: BlogIdDTO_1, @Res() res: Response) {
 		const blog = await this.blogService.getBlogById(params.blogId);
 		return blog ? res.send(blog) : res.sendStatus(HttpStatus.NOT_FOUND);
 	}
