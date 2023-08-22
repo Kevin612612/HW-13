@@ -3,13 +3,18 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../app.module';
 import { createBlogDTO, createCommentDTO, createPostDTO, createUserDTO } from './functionsForTesting';
+import mongoose from 'mongoose';
 
 jest.setTimeout(100000);
 
 describe('all tests (e2e)', () => {
 	let app: INestApplication;
+	const MONGO_URL = `mongodb+srv://Anton:QBgDZ7vVYskywK7d@cluster0.ksf3cyb.mongodb.net/hosting?retryWrites=true&w=majority`
+
 
 	beforeEach(async () => {
+		await mongoose.connect(MONGO_URL);
+
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [AppModule],
 		}).compile();
@@ -21,6 +26,7 @@ describe('all tests (e2e)', () => {
 	});
 
 	afterAll(async () => {
+		await mongoose.connection.close();
 		await app.close();
 	});
 

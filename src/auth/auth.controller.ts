@@ -17,8 +17,7 @@ import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
 import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
-import { UserExtractGuard } from '../guards/extractUser.guard';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 
 // passwordRecovery
 // newPassword
@@ -43,13 +42,11 @@ export class AuthController {
 		@Inject(UserRepository) private userRepository: UserRepository,
 	) {}
 
-	@SkipThrottle()
 	@Post('password-recovery')
 	async passwordRecovery(@Body() dto: passwordRecoveryDTO) {
 		return await this.authService.sendRecoveryCode(dto.email);
 	}
 
-	@SkipThrottle()
 	@Post('new-password')
 	async newPassword(@Body() dto: NewPasswordDTO) {
 		const user = await this.userRepository.findUserByPasswordCode(dto.recoveryCode);
@@ -83,7 +80,6 @@ export class AuthController {
 			.send(tokens.accessToken);
 	}
 
-	@SkipThrottle()
 	@UseGuards(RefreshTokenGuard)
 	@Post('refresh-token')
 	async newPairOfTokens(@Req() req, @Res() res) {
@@ -120,22 +116,11 @@ export class AuthController {
 		}
 	}
 
-	@SkipThrottle()
-	@UseGuards(AuthGuardBearer)
-	@Get('profile')
-	getProfile(@Req() req) {
-		return req.user;
-	}
-
 	@Throttle(5, 10)
 	@Post('registration-confirmation')
 	async registrationConfirmation(@Body() dto: CodeConfirmationDTO, @Res() res: Response) {
 		const result = await this.usersService.confirmCodeFromEmail(dto.code);
-		if (!result) {
-			res.sendStatus(HttpStatus.NOT_FOUND);
-		} else {
-			res.sendStatus(HttpStatus.NO_CONTENT);
-		}
+		return result ? res.sendStatus(HttpStatus.NO_CONTENT) : res.sendStatus(HttpStatus.NOT_FOUND);
 	}
 
 	@Throttle(5, 10)
@@ -149,14 +134,10 @@ export class AuthController {
 	@Post('registration-email-resending')
 	async resendRegistrationCode(@Body() dto: EmailResendDTO, @Res() res: Response) {
 		const result = await this.emailService.sendEmailConfirmationMessageAgain(dto.email);
-		if (!result) {
-			res.sendStatus(HttpStatus.NOT_FOUND);
-		} else {
-			res.sendStatus(HttpStatus.NO_CONTENT);
-		}
+		return result ? res.sendStatus(HttpStatus.NO_CONTENT) : res.sendStatus(HttpStatus.NOT_FOUND);
+
 	}
 
-	@SkipThrottle()
 	@UseGuards(RefreshTokenGuard)
 	@Post('logout')
 	async logout(@Req() req: Request, @Res() res: Response) {
@@ -164,21 +145,16 @@ export class AuthController {
 		const refreshToken = req.cookies.refreshToken;
 		const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken);
 		//BLL
-		//make refreshToken Expired/Invalid
 		const result = await this.refreshTokenService.makeRefreshTokenExpired(refreshToken);
-		//...and delete from DB
 		const deleteRefreshToken = await this.refreshTokensRepository.deleteOne(payload.userId, payload.deviceId);
 		//RETURN
-		//clear the refreshToken from the cookies
 		res.clearCookie('refreshToken').status(204).send("you're quit");
 	}
 
-	@SkipThrottle()
-	@UseGuards(UserExtractGuard)
+	@UseGuards(AuthGuardBearer)
 	@Get('me')
 	async getInfo(@Req() req, @Res() res) {
-		//INPUT
-		const user = req.user ? req.user : null;
+		const user = req.user? req.user : null;
 		res.status(200).send({
 			email: user.accountData.email,
 			login: user.accountData.login,

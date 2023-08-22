@@ -6,7 +6,7 @@ import { BlackList } from './blacklist.class';
 import { BlackListType } from '../types/blacklist';
 
 /**
- * BlackListRepository is responsible for interracting with DB
+ * BlackListRepository is responsible for interacting with DB
  * (0)   deleteAllData
  * (1)   deleteTokens
  * (2)   createObject

@@ -61,10 +61,4 @@ export type PostDataType = PostViewType & {
 
 
 //POST PAGING TYPE
-export type PostsTypeSchema = {
-  pagesCount: number;
-  page: number;
-  pageSize: number;
-  totalCount: number;
-  items: PostViewType[];
-};
+export type PostsTypeSchema = PageTypeSchema<PostViewType>;

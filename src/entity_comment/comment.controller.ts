@@ -1,11 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CommentIdDTO, LikeStatusDTO } from '../dto/id.dto';
-import { UserExtractGuard } from '../guards/extractUser.guard';
 import { CommentService } from './comment.service';
 import { CommentDTO } from './dto/commentsInputDTO';
 import { SkipThrottle } from '@nestjs/throttler';
-import { UserDataType } from '../types/users';
 
 // changeLikeStatus
 // updateCommentById

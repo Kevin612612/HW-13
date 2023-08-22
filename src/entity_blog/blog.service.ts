@@ -1,12 +1,13 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { BlogDTO } from './dto/blogInputDTO';
 import { QueryDTO } from '../dto/query.dto';
-import { BlogTypeSchema, BlogViewType, BlogViewTypeWithOwner } from '../types/blog';
+import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogRepository } from './blog.repository';
 import { Blog } from './blog.class';
 import mongoose from 'mongoose';
 import { UserRepository } from '../entity_user/user.repository';
 import { RoleType } from '../types/users';
+import { paging } from '../secondary functions/paging';
 
 @Injectable()
 export class BlogService {
@@ -19,9 +20,9 @@ export class BlogService {
 		const pageParams = {
 			sortBy: query.sortBy || 'createdAt',
 			sortDirection: query.sortDirection || 'desc',
-			pageNumber: query.pageNumber || 1,
+			pageNumber: +query.pageNumber || 1,
 			searchNameTerm: query.searchNameTerm || '',
-			pageSize: query.pageSize || 10,
+			pageSize: +query.pageSize || 10,
 		};
 
 		// define filter
@@ -40,17 +41,10 @@ export class BlogService {
 							return newItem})
 		: blogs;
 
-		return {
-			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
-			page: +pageParams.pageNumber,
-			pageSize: +pageParams.pageSize,
-			totalCount: quantityOfDocs,
-			items: blogsView.slice((+pageParams.pageNumber - 1) * +pageParams.pageSize, +pageParams.pageNumber * +pageParams.pageSize),
-		};
+		return paging(pageParams, blogsView, quantityOfDocs);
 	}
 
 	async createBlog(dto: BlogDTO, blogOwnerInfo): Promise<BlogViewType | string[]> {
-		const blogId = await this.blogRepository.createBlogId();
 		let newBlog = new Blog(this.blogRepository); //empty blog
 		newBlog = await newBlog.addAsyncParams(dto, blogOwnerInfo);
 		// put this new blog into db

@@ -7,12 +7,12 @@ enum SortDirectionEnum {
 }
 
 enum SortBanEnum {
-	all = 'all',
-	banned = 'banned',
-	notBanned = 'notBanned',
+	'all',
+	'banned',
+	'notBanned',
 }
 
-export class QueryDTO {
+class BaseQueryDTO {
 	@IsOptional()
 	@IsString()
 	sortBy: string;
@@ -22,31 +22,21 @@ export class QueryDTO {
 	sortDirection: string;
 
 	@IsOptional()
-	@Validate(CustomValidation, { message: 'pageNumber is too short!' })
+	@Validate(CustomValidation, { message: 'pageNumber has to be more than one!' })
 	pageNumber: string;
 
 	@IsOptional()
-	@IsString()
-	searchNameTerm: string;
-
-	@IsOptional()
-	@Validate(CustomValidation, { message: 'pageNumber is too short!' })
+	@Validate(CustomValidation, { message: 'pageSize has to be more than one!' })
 	pageSize: string;
 }
 
-export class QueryUserDTO {
+export class QueryDTO extends BaseQueryDTO {
 	@IsOptional()
 	@IsString()
-	sortBy: string;
+	searchNameTerm: string;
+}
 
-	@IsOptional()
-	@IsEnum(SortDirectionEnum)
-	sortDirection: string;
-
-	@IsOptional()
-	@Validate(CustomValidation, { message: 'pageNumber is too short!' })
-	pageNumber: string;
-
+export class QueryUserDTO extends BaseQueryDTO {
 	@IsOptional()
 	@IsString()
 	searchLoginTerm: string;
@@ -56,9 +46,6 @@ export class QueryUserDTO {
 	searchEmailTerm: string;
 
 	@IsOptional()
-	@Validate(CustomValidation, { message: 'pageNumber is too short!' })
-	pageSize: string;
-
-	//@IsEnum(SortBanEnum)
+	@IsEnum(SortBanEnum)
 	banStatus: any;
 }

@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import { UserDataType } from '../types/users';
 import { CommentRepository } from '../entity_comment/comment.repository';
 import { UserRepository } from '../entity_user/user.repository';
+import { paging } from '../secondary functions/paging';
 
 //(1) changeLikeStatus
 
@@ -86,12 +87,12 @@ export class PostService {
 		const pageParams = {
 			sortBy: query.sortBy || 'createdAt',
 			sortDirection: query.sortDirection || 'desc',
-			pageNumber: query.pageNumber || 1,
+			pageNumber: +query.pageNumber || 1,
 			searchNameTerm: query.searchNameTerm || '',
-			pageSize: query.pageSize || 10,
+			pageSize: +query.pageSize || 10,
 		};
 
-		// define filter
+		// define filter for repository
 		const filterConditions = [];
 		if (pageParams.searchNameTerm) {
 			filterConditions.push({ title: { $regex: pageParams.searchNameTerm, $options: 'i' } });
@@ -133,46 +134,7 @@ export class PostService {
 			return post;
 		});
 
-		//filter allDataPosts and return array that depends on which user send GET-request
-		// const sortedItems = allDataPosts.map((post) => {
-		// 	const userAssess = post.userAssess.find((el) => el.userIdLike === userId);
-
-		// 	return {
-		// 		extendedLikesInfo: {
-		// 			likesCount: post.extendedLikesInfo.likesCount,
-		// 			dislikesCount: post.extendedLikesInfo.dislikesCount,
-		// 			myStatus: userAssess?.assess || 'None',
-		// 			newestLikes: post.extendedLikesInfo.newestLikes
-		// 				.slice(-3)
-		// 				.map((obj) => {
-		// 					return {
-		// 						addedAt: obj.addedAt,
-		// 						login: obj.login,
-		// 						userId: obj.userId,
-		// 					};
-		// 				})
-		// 				.reverse(),
-		// 		},
-		// 		id: post.id,
-		// 		title: post.title,
-		// 		shortDescription: post.shortDescription,
-		// 		content: post.content,
-		// 		blogId: post.blogId,
-		// 		blogName: post.blogName,
-		// 		createdAt: post.createdAt,
-		// 	};
-		// });
-
-		return {
-			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
-			page: +pageParams.pageNumber,
-			pageSize: +pageParams.pageSize,
-			totalCount: quantityOfDocs,
-			items: sortedItems.slice(
-				(+pageParams.pageNumber - 1) * +pageParams.pageSize,
-				+pageParams.pageNumber * +pageParams.pageSize,
-			),
-		};
+		return paging(pageParams, sortedItems, quantityOfDocs);
 	}
 
 	//(5) method creates post with specific blogId

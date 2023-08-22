@@ -27,10 +27,4 @@ export type BlogDataType = BlogViewType & {
 };
 
 //BLOG PAGING TYPE
-export type BlogTypeSchema = {
-	pagesCount: number;
-	page: number;
-	pageSize: number;
-	totalCount: number;
-	items: BlogViewType[];
-};
+export type BlogTypeSchema = PageTypeSchema<BlogViewType>

@@ -12,7 +12,6 @@ import {
 	UseGuards,
 	HttpCode,
 	HttpStatus,
-	Res,
 } from '@nestjs/common';
 
 import { PostDTO } from './dto/postInputDTO';
@@ -24,10 +23,6 @@ import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { AuthGuardBasic } from '../guards/authBasic.guard';
 import { CommentService } from '../entity_comment/comment.service';
 import { CommentDTO } from '../entity_comment/dto/commentsInputDTO';
-import { Request } from 'express';
-import { Response } from 'express';
-import { UserExtractGuard } from '../guards/extractUser.guard';
-import { SkipThrottle } from '@nestjs/throttler';
 
 //(1) changeLikeStatus
 //(2) getAllCommentsByPost
@@ -38,7 +33,6 @@ import { SkipThrottle } from '@nestjs/throttler';
 //(7) updatePostById
 //(8) deletePost
 
-@SkipThrottle()
 @Controller('posts')
 export class PostController {
 	constructor(
@@ -56,7 +50,7 @@ export class PostController {
 	}
 
 	//(2)
-	@UseGuards(UserExtractGuard)
+	@UseGuards(AuthGuardBearer)
 	@Get('/:postId/comments')
 	async getAllCommentsByPost(@Query() dto: QueryDTO, @Param() param: PostIdDTO, @Req() req): Promise<any> {
 		const userId = req.user?.id || null;

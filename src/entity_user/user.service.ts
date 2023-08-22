@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from '../email/email.service';
+import { paging } from '../secondary functions/paging';
 
 //(1) findAll
 //(2) createUser
@@ -34,10 +35,10 @@ export class UsersService {
 		const pageParams = {
 			sortBy: query.sortBy ? `accountData.${query.sortBy}` : 'accountData.createdAt',
 			sortDirection: query.sortDirection || 'desc',
-			pageNumber: query.pageNumber || 1,
+			pageNumber: +query.pageNumber || 1,
 			searchLoginTerm: query.searchLoginTerm || '',
 			searchEmailTerm: query.searchEmailTerm || '',
-			pageSize: query.pageSize || 10,
+			pageSize: +query.pageSize || 10,
 			banStatus: query.banStatus || 'all',
 		};
 
@@ -45,14 +46,14 @@ export class UsersService {
 			pageParams.sortBy = 'id';
 		}
 
-		// define filter
+		// define filter for repository
 		const filterConditions = [];
 		if (pageParams.searchLoginTerm) filterConditions.push({'accountData.login': {$regex: pageParams.searchLoginTerm, $options: 'i'}});	
 		if (pageParams.searchEmailTerm) filterConditions.push({'accountData.email': {$regex: pageParams.searchEmailTerm, $options: 'i'}});	
 		const filter = filterConditions.length > 0 ? { $or: filterConditions } : {};
 
 		const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
-		//transform view to view type
+		//transform data type into view type
 		let usersResultView: UserViewType[] = users.map((obj) => {
 			return {
 				id: obj.id,
@@ -71,7 +72,7 @@ export class UsersService {
 				return (dateA.getTime() - dateB.getTime()) * order;
 			});
 		}
-		//take banned or unbanned or all
+		//take either banned or unbanned or all users
 		if (pageParams.banStatus == 'banned') {
 			usersResultView = usersResultView.filter((el) => el.banInfo.isBanned == true);
 		}
@@ -81,16 +82,7 @@ export class UsersService {
 
 		const quantityOfDocs = usersResultView.length;
 
-		return {
-			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
-			page: +pageParams.pageNumber,
-			pageSize: +pageParams.pageSize,
-			totalCount: quantityOfDocs,
-			items: usersResultView.slice(
-				(+pageParams.pageNumber - 1) * +pageParams.pageSize,
-				+pageParams.pageNumber * +pageParams.pageSize,
-			),
-		};
+		return paging(pageParams, usersResultView, quantityOfDocs);
 	}
 
 	//(2) method creates user

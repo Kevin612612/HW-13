@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../app.module';
 import { appSettings } from '../app.settings';
-import { createUser } from '../secondary functions/secondary functions';
+import { createUser } from '../entity_blog/blog.controller.spec';
 
 jest.setTimeout(10_000);
 
@@ -77,7 +77,7 @@ describe('AppController (e2e)', () => {
     const accessToken2 = loginResponse2.body.accessToken;
     const refreshToken2 = loginResponse2.headers['set-cookie'][0].split(';')[0].split('=')[1];
 
-    //Try to delete second device by user  2 from device list of user  1
+    //try to delete second device by user 2 from device list of user 1
     const deleteDevice = await request(app.getHttpServer())
       .delete(`/security/devices/${2}`)
       .auth(`${accessToken2}`, { type: 'bearer' })

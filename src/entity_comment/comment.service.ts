@@ -7,6 +7,7 @@ import { CommentViewType } from '../types/comment';
 import { QueryDTO } from '../dto/query.dto';
 import { PostRepository } from '../entity_post/post.repository';
 import { UserRepository } from '../entity_user/user.repository';
+import { paging } from '../secondary functions/paging';
 
 //(1) getAllCommentsByPost
 //(2) createComment
@@ -28,9 +29,9 @@ export class CommentService {
 		const pageParams = {
 			sortBy: query.sortBy || 'createdAt',
 			sortDirection: query.sortDirection || 'desc',
-			pageNumber: query.pageNumber || 1,
+			pageNumber: +query.pageNumber || 1,
 			searchNameTerm: query.searchNameTerm || '',
-			pageSize: query.pageSize || 10,
+			pageSize: +query.pageSize || 10,
 		};
 		const allDataComments = await this.commentRepository.getAllCommentsByPost(postId, pageParams.sortBy, pageParams.sortDirection);
 		const quantityOfDocs = await this.commentRepository.countAllCommentsByPost(postId);
@@ -63,16 +64,7 @@ export class CommentService {
 			}
 		}); //if user left comment return his assess as myStatus
 
-		return {
-			pagesCount: Math.ceil(quantityOfDocs / +pageParams.pageSize),
-			page: +pageParams.pageNumber,
-			pageSize: +pageParams.pageSize,
-			totalCount: quantityOfDocs,
-			items: sortedItems.slice(
-				(+pageParams.pageNumber - 1) * +pageParams.pageSize,
-				+pageParams.pageNumber * +pageParams.pageSize,
-			),
-		};
+		return paging(pageParams, sortedItems, quantityOfDocs);
 	}
 
 	//(2) this method creates new comment
@@ -233,7 +225,7 @@ export class CommentService {
 		if (!user) {
 			comment.likesInfo.myStatus = 'None';
 		} else {
-			const assess = comment.userAssess.find(obj => obj.userIdLike === user.id)?.assess;
+			const assess = comment.userAssess.find((obj) => obj.userIdLike === user.id)?.assess;
 			comment.likesInfo.myStatus = assess || 'None';
 		}
 		//hide banned user's likes/dislikes
@@ -243,8 +235,8 @@ export class CommentService {
 				if (assess.assess === 'Like') comment.likesInfo.likesCount--;
 				if (assess.assess === 'Dislike') comment.likesInfo.dislikesCount--;
 			}
-		};
-		const {_id, postId, __v, userAssess, ...commentView} = comment;
+		}
+		const { _id, postId, __v, userAssess, ...commentView } = comment;
 		return commentView;
 	}
 }

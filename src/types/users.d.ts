@@ -68,10 +68,4 @@ export type UserDataType = {
 };
 
 //USER PAGING TYPE
-export type UserTypeSchema = {
-	pagesCount: number;
-	page: number;
-	pageSize: number;
-	totalCount: number;
-	items: UserViewType[];
-};
+export type UserTypeSchema = PageTypeSchema<UserViewType>;
