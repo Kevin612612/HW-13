@@ -66,6 +66,10 @@ describe('all tests (e2e)', () => {
 			const deletedUserResponse = await request(server).delete(`/sa/users/${userId}`).auth('admin', 'qwerty', { type: 'basic' });
 			console.log('deletedUserResponse', deletedUserResponse.status);
 		};
+		const deleteBlogByIdByBlogger = async (blogId, accessTokenUser) => {
+			const deletedBlogResponse = await request(server).delete(`/blogger/blogs/${blogId}`).auth(`${accessTokenUser}`, { type: 'bearer' });
+			console.log('deletedBlogResponse', deletedBlogResponse.status);
+		};
 		const loginUser = async (userDto) => {
 			const loginResponse = await request(server).post(`/auth/login`).send({
 				loginOrEmail: userDto.login,
@@ -94,6 +98,20 @@ describe('all tests (e2e)', () => {
 			const createdPost = postResponse.body;
 			console.log(createdPost);
 			return createdPost;
+		};
+		const getBlogById = async (blogId) => {
+			const blogResponse = await request(server)
+				.get(`/blogs/${blogId}`)
+			const blog = blogResponse.body;
+			console.log(blog);
+			return blog;
+		};
+		const getBlogByIdByBlogger = async (blogId) => {
+			const blogResponse = await request(server)
+				.get(`/blogger/blogs/${blogId}`)
+			const blog = blogResponse.body;
+			console.log(blog);
+			return blog;
 		};
 		const createCommentInDbByUser = async (postId, accessTokenUser) => {
 			const commentDto = createCommentDTO();
@@ -132,10 +150,11 @@ describe('all tests (e2e)', () => {
 
 		//POST -> /sa/users, POST => /auth/login, POST -> /blogger/blogs, GET -> /sa/blogs
 		//await cleanDB();
-		//const userDto = createUserDTO();
-		//await createUserBySisAdmin(userDto);
-		//const token = await loginUser(userDto);
-		//await createBlogInDbByBlogger(token);
-		await getBlogsBySisAdmin();
+		const userDto = createUserDTO();
+		await createUserBySisAdmin(userDto); // create user
+		const token = await loginUser(userDto);  //login
+		const blog = await createBlogInDbByBlogger(token); // create blog
+		await deleteBlogByIdByBlogger(blog.id, token); // delete blog
+		await getBlogById(blog.id); // get blog
 	});
 });

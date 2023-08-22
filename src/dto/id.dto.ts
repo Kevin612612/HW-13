@@ -18,7 +18,7 @@ export class BlogIdDTO {
 }
 
 export class BlogIdDTO_1 {
-  //@Validate(BlogExistsValidation)
+  @Validate(BlogExistsValidation)
   blogId: string;
 }
 

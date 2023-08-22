@@ -33,8 +33,9 @@ export class BloggerController {
 
 	@UseGuards(AuthGuardBearer)
 	@Put('/:blogId')
-	async updateBlogById(@Param() params: BlogIdDTO_1, @Body() blog: BlogDTO, @Res() res: Response) {
-		const result = await this.blogService.updateBlogById(params.blogId, blog);
+	async updateBlogById(@Param() params: BlogIdDTO_1, @Body() blogDto: BlogDTO, @Req() req, @Res() res) {
+		const userId = req.user?.id || null;
+		const result = await this.blogService.updateBlogById(params.blogId, userId, blogDto);
 		if (!result) {
 			res.sendStatus(HttpStatus.NOT_FOUND);
 		} else {
@@ -45,8 +46,9 @@ export class BloggerController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@UseGuards(AuthGuardBearer)
 	@Delete('/:blogId')
-	async deleteBlog(@Param() params: BlogIdDTO_1) {
-		return await this.blogService.deleteBlog(params.blogId);
+	async deleteBlog(@Param() params: BlogIdDTO_1, @Req() req) {
+		const userId = req.user?.id || null;
+		return await this.blogService.deleteBlog(params.blogId, userId);
 	}
 
 	@UseGuards(AuthGuardBearer)
@@ -67,7 +69,7 @@ export class BloggerController {
 
 	@UseGuards(AuthGuardBearer)
 	@Post('/:blogId/posts')
-	async createPostByBlogId(@Param() params: BlogIdDTO_1, @Body() dto: PostDTO, @Res() res: Response) {
+	async createPostByBlogId(@Param() params, @Body() dto: PostDTO, @Res() res: Response) {
 		dto.blogId = params.blogId;
 		const result = await this.postService.createPost(dto);
 		res.send(result);
@@ -83,13 +85,9 @@ export class BloggerController {
 	}
 
 	@Get('/:blogId')
-	async getBlogById(@Param() params: BlogIdDTO, @Res() res: Response) {
+	async getBlogById(@Param() params: BlogIdDTO_1, @Res() res: Response) {
 		const blog = await this.blogService.getBlogById(params.blogId);
-		if (!blog) {
-			res.sendStatus(HttpStatus.NOT_FOUND);
-		} else {
-			res.send(blog);
-		}
+		return blog ? res.send(blog) : res.sendStatus(HttpStatus.NOT_FOUND);
 	}
 
 	@UseGuards(AuthGuardBearer)

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { BlogDTO } from './dto/blogInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { BlogTypeSchema, BlogViewType, BlogViewTypeWithOwner } from '../types/blog';
@@ -83,11 +83,15 @@ export class BlogService {
 		return blogView;
 	}
 
-	async updateBlogById(blogId: string, blog: BlogDTO): Promise<number> {
+	async updateBlogById(blogId: string, userId: string, blog: BlogDTO): Promise<number> {
+		const foundedBlog = await this.blogRepository.getBlogById(blogId);
+		if (foundedBlog.blogOwnerInfo.userId !== userId) throw new ForbiddenException(["it's not your blog"]);
 		return await this.blogRepository.updateBlogById(blogId, blog);
 	}
 
-	async deleteBlog(blogId: string): Promise<number> {
+	async deleteBlog(blogId: string, userId: string): Promise<number> {
+		const foundedBlog = await this.blogRepository.getBlogById(blogId);
+		if (foundedBlog.blogOwnerInfo.userId !== userId) throw new ForbiddenException(["it's not your blog"]);
 		return await this.blogRepository.deleteBlogById(blogId);
 	}
 
