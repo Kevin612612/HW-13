@@ -83,7 +83,7 @@ export class PostController {
 	@UseGuards(AuthGuardBasic)
 	@Post()
 	async createPost(@Body() dto: PostDTO) {
-		return await this.postService.createPost(dto);
+		return await this.postService.createPost(dto, null);
 	}
 
 	//(6)

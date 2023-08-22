@@ -36,11 +36,7 @@ export class BloggerController {
 	async updateBlogById(@Param() params: BlogIdDTO_1, @Body() blogDto: BlogDTO, @Req() req, @Res() res) {
 		const userId = req.user?.id || null;
 		const result = await this.blogService.updateBlogById(params.blogId, userId, blogDto);
-		if (!result) {
-			res.sendStatus(HttpStatus.NOT_FOUND);
-		} else {
-			res.sendStatus(HttpStatus.NO_CONTENT);
-		}
+		return result ? res.sendStatus(HttpStatus.NO_CONTENT) : res.sendStatus(HttpStatus.NOT_FOUND);
 	}
 
 	@HttpCode(HttpStatus.NO_CONTENT)
@@ -63,15 +59,16 @@ export class BloggerController {
 	@UseGuards(AuthGuardBearer)
 	@Get()
 	async getAllBlogs(@Query() query: QueryDTO, @Req() req): Promise<BlogTypeSchema> {
-		const userName = req.user?.accountData.login || null;
-		return await this.blogService.findAll(query, 'blogger', userName);
+		const userLogin = req.user?.accountData.login || null;
+		return await this.blogService.findAll(query, 'blogger', userLogin);
 	}
 
 	@UseGuards(AuthGuardBearer)
 	@Post('/:blogId/posts')
-	async createPostByBlogId(@Param() params, @Body() dto: PostDTO, @Res() res: Response) {
+	async createPostByBlogId(@Param() params: BlogIdDTO_1, @Body() dto: PostDTO,  @Req() req, @Res() res) {
+		const userLogin = req.user?.accountData.login || null;
 		dto.blogId = params.blogId;
-		const result = await this.postService.createPost(dto);
+		const result = await this.postService.createPost(dto, userLogin);
 		res.send(result);
 	}
 
@@ -101,16 +98,16 @@ export class BloggerController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Put('/:blogId/posts/:postId')
 	async updatePostById(@Param() blogId: BlogIdDTO_1, @Param() postId: PostIdDTO, @Body() dto: PostDTO, @Req() req) {
-		const userName = req.user?.accountData.login || null;
-		return await this.postService.updatePostById(userName, postId.postId, dto, blogId.blogId);
+		const userLogin = req.user?.accountData.login || null;
+		return await this.postService.updatePostById(userLogin, postId.postId, dto, blogId.blogId);
 	}
 
 	@UseGuards(AuthGuardBearer)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Delete('/:blogId/posts/:postId')
 	async deletePost(@Param() blogId: BlogIdDTO_1, @Param() params: PostIdDTO, @Req() req) {
-		const userName = req.user?.accountData.login || null;
-		return await this.postService.deletePost(userName, blogId.blogId, params.postId);
+		const userLogin = req.user?.accountData.login || null;
+		return await this.postService.deletePost(userLogin, blogId.blogId, params.postId);
 	}
 }
 

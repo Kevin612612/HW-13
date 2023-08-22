@@ -15,7 +15,7 @@ export class BlogService {
 		@Inject(UserRepository) protected userRepository: UserRepository,
 	) {}
 
-	async findAll(query: QueryDTO, role: RoleType, userName?: string): Promise<BlogTypeSchema> {
+	async findAll(query: QueryDTO, role: RoleType, userLogin?: string): Promise<BlogTypeSchema> {
 		const pageParams = {
 			sortBy: query.sortBy || 'createdAt',
 			sortDirection: query.sortDirection || 'desc',
@@ -27,7 +27,7 @@ export class BlogService {
 		// define filter
 		const filterConditions = [];
 		if (pageParams.searchNameTerm) filterConditions.push({ name: { $regex: pageParams.searchNameTerm, $options: 'i' } });
-		if (userName) filterConditions.push({ 'blogOwnerInfo.userLogin': userName });
+		if (userLogin) filterConditions.push({ 'blogOwnerInfo.userLogin': userLogin });
 		const filter = filterConditions.length > 0 ? { $and: filterConditions } : {};
 
 		// searching blogs

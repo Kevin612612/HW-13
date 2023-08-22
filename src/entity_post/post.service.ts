@@ -176,7 +176,9 @@ export class PostService {
 	}
 
 	//(5) method creates post with specific blogId
-	async createPost(dto: PostDTO): Promise<PostViewType | string[]> {
+	async createPost(dto: PostDTO, userLogin: string): Promise<PostViewType | string[]> {
+		const foundBlog = await this.blogRepository.getBlogById(dto.blogId);
+		if (foundBlog.blogOwnerInfo.userLogin !== userLogin) throw new ForbiddenException([`it's not your blog`]);
 		let newPost = new Post(this.postRepository, this.blogRepository); //empty post
 		newPost = await newPost.addAsyncParams(dto); // fill post with async params
 		// put this new post into db
@@ -246,10 +248,10 @@ export class PostService {
 	}
 
 	//(7) method updates post by postId
-	async updatePostById(userName: string, postId: string, dto: PostDTO, blogId?: string): Promise<boolean | number | string[]> {
+	async updatePostById(userLogin: string, postId: string, dto: PostDTO, blogId?: string): Promise<boolean | number | string[]> {
 		const resultBlogId = dto.blogId || blogId; //blogId comes from either dto or from params
 		const foundBlog = await this.blogRepository.getBlogById(resultBlogId);
-		if (foundBlog.blogOwnerInfo.userLogin !== userName) throw new ForbiddenException([`it's not your blog`]);
+		if (foundBlog.blogOwnerInfo.userLogin !== userLogin) throw new ForbiddenException([`it's not your blog`]);
 		try {
 			const result = this.postRepository.updatePostById(postId, dto, foundBlog);
 			return true;
@@ -266,9 +268,9 @@ export class PostService {
 	}
 
 	//(8) method deletes post by postId
-	async deletePost(userName: string, blogId: string, postId: string): Promise<number> {
+	async deletePost(userLogin: string, blogId: string, postId: string): Promise<number> {
 		const foundBlog = await this.blogRepository.getBlogById(blogId);
-		if (foundBlog.blogOwnerInfo.userLogin !== userName) throw new ForbiddenException([`it's not your blog`]);
+		if (foundBlog.blogOwnerInfo.userLogin !== userLogin) throw new ForbiddenException([`it's not your blog`]);
 		return await this.postRepository.deletePostById(postId);
 	}
 }
