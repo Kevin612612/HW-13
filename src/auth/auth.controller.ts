@@ -162,19 +162,12 @@ export class AuthController {
 	async logout(@Req() req: Request, @Res() res: Response) {
 		//INPUT
 		const refreshToken = req.cookies.refreshToken;
-		console.log(refreshToken);
 		const payload = await this.refreshTokenService.getPayloadFromRefreshToken(refreshToken);
-		console.log(payload);
-
 		//BLL
 		//make refreshToken Expired/Invalid
 		const result = await this.refreshTokenService.makeRefreshTokenExpired(refreshToken);
-		console.log(result);
-
 		//...and delete from DB
 		const deleteRefreshToken = await this.refreshTokensRepository.deleteOne(payload.userId, payload.deviceId);
-		console.log(deleteRefreshToken);
-
 		//RETURN
 		//clear the refreshToken from the cookies
 		res.clearCookie('refreshToken').status(204).send("you're quit");

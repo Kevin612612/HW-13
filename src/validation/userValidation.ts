@@ -30,11 +30,9 @@ export class UserExistsByLoginOrEmailValidation implements ValidatorConstraintIn
 
 	@LogFunctionName()
 	async validate(value: string) {
+		console.log('UserExistsByLoginOrEmailValidation starts performing'); // ! that string is for vercel log reading
 		const user = await this.userRepository.findUserByLoginOrEmail(value);
-		console.log('UserExistsByLoginOrEmailValidation', user);
-		if (!user) {
-			throw new UnauthorizedException();
-		}
+		if (!user) throw new UnauthorizedException();
 		return true;
 	}
 
@@ -133,11 +131,9 @@ export class BannedUserValidation implements ValidatorConstraintInterface {
 
 	@LogFunctionName()
 	async validate(value: string) {
+		console.log('BannedUserValidation starts performing'); // ! that string is for vercel log reading
 		const user = await this.userRepository.findUserByLoginOrEmail(value);
-		console.log('BannedUserValidation', user);
-
 		if (user.banInfo.isBanned === true) throw new UnauthorizedException();
-
 		return true;
 	}
 

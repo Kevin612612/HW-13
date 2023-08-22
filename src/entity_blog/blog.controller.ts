@@ -100,7 +100,7 @@ export class BloggerController {
 	@UseGuards(AuthGuardBearer)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Put('/:blogId/posts/:postId')
-	async updatePostById(@Param() blogId: BlogIdDTO, @Param() postId: PostIdDTO, @Body() dto: PostDTO, @Req() req) {
+	async updatePostById(@Param() blogId: BlogIdDTO_1, @Param() postId: PostIdDTO, @Body() dto: PostDTO, @Req() req) {
 		const userName = req.user?.accountData.login || null;
 		return await this.postService.updatePostById(userName, postId.postId, dto, blogId.blogId);
 	}
@@ -108,7 +108,7 @@ export class BloggerController {
 	@UseGuards(AuthGuardBearer)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Delete('/:blogId/posts/:postId')
-	async deletePost(@Param() blogId: BlogIdDTO, @Param() params: PostIdDTO, @Req() req) {
+	async deletePost(@Param() blogId: BlogIdDTO_1, @Param() params: PostIdDTO, @Req() req) {
 		const userName = req.user?.accountData.login || null;
 		return await this.postService.deletePost(userName, blogId.blogId, params.postId);
 	}
