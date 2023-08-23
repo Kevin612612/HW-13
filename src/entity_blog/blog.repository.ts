@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument } from './blog.schema';
-import { BlogDataType, BlogViewType, BlogViewTypeWithOwner } from '../types/blog';
+import { BlogDataType, BlogViewTypeForSA } from '../types/blog';
 import { BlogDTO } from './dto/blogInputDTO';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class BlogRepository {
 		return blogId.toString();
 	}
 
-	async findAll(filter, sortBy: string, sortDirection: string): Promise<BlogViewTypeWithOwner[]> {
+	async findAll(filter, sortBy: string, sortDirection: string): Promise<BlogViewTypeForSA[]> {
 		const order = sortDirection == 'asc' ? 1 : -1;
 		return await this.blogModel
 			.find(filter)
@@ -40,7 +40,7 @@ export class BlogRepository {
 		return await createdBlog.save();
 	}
 
-	async getBlogById(blogId: string): Promise<BlogViewTypeWithOwner | undefined> {
+	async getBlogById(blogId: string): Promise<BlogViewTypeForSA | undefined> {
 		return await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).lean();
 	}
 
@@ -79,5 +79,27 @@ export class BlogRepository {
 			},
 		);
 		return result.modifiedCount;
+	}
+
+	async banBlog(blogId: string): Promise<boolean> {
+		const result = await this.blogModel.findOneAndUpdate(
+			{ id: blogId },
+			{
+				'banInfo.isBanned': true,
+				'banInfo.banDate': new Date().toISOString(),
+			},
+		);
+		return true;
+	}
+
+	async unbanBlog(blogId: string): Promise<boolean> {
+		const result = await this.blogModel.findOneAndUpdate(
+			{ id: blogId },
+			{
+				'banInfo.isBanned': false,
+				'banInfo.banDate': null,
+			},
+		);
+		return true;
 	}
 }

@@ -1,14 +1,15 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { UserRepository } from '../entity_user/user.repository';
-import { LogFunctionName } from '../decorators/logger.decorator';
+import { LogClassName } from '../decorators/logger.decorator';
+import { getClassName } from '../secondary functions/getFunctionName';
 
 @ValidatorConstraint({ name: 'UserExists', async: true })
 @Injectable()
 export class UserExistsValidation implements ValidatorConstraintInterface {
 	constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async validate(value: string) {
 		const user = await this.userRepository.findUserById(value);
 
@@ -28,9 +29,8 @@ export class UserExistsValidation implements ValidatorConstraintInterface {
 export class UserExistsByLoginOrEmailValidation implements ValidatorConstraintInterface {
 	constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async validate(value: string) {
-		console.log('UserExistsByLoginOrEmailValidation starts performing'); // ! that string is for vercel log reading
 		const user = await this.userRepository.findUserByLoginOrEmail(value);
 		if (!user) throw new UnauthorizedException();
 		return true;
@@ -46,7 +46,7 @@ export class UserExistsByLoginOrEmailValidation implements ValidatorConstraintIn
 export class UserExistsByLoginValidation implements ValidatorConstraintInterface {
 	constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async validate(value: string) {
 		const user = await this.userRepository.findUserByLogin(value);
 		if (user) {
@@ -65,7 +65,7 @@ export class UserExistsByLoginValidation implements ValidatorConstraintInterface
 export class UserExistsByEmailValidation implements ValidatorConstraintInterface {
 	constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async validate(value: string) {
 		const user = await this.userRepository.findUserByEmail(value);
 		if (user) {
@@ -84,7 +84,7 @@ export class UserExistsByEmailValidation implements ValidatorConstraintInterface
 export class CodeAlreadyConfirmedValidation implements ValidatorConstraintInterface {
 	constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async validate(value: string) {
 		const user = await this.userRepository.findUserByCode(value);
 		if (!user) {
@@ -106,7 +106,7 @@ export class CodeAlreadyConfirmedValidation implements ValidatorConstraintInterf
 export class EmailAlreadyConfirmedValidation implements ValidatorConstraintInterface {
 	constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async validate(value: string) {
 		const user = await this.userRepository.findUserByEmail(value);
 
@@ -129,11 +129,10 @@ export class EmailAlreadyConfirmedValidation implements ValidatorConstraintInter
 export class BannedUserValidation implements ValidatorConstraintInterface {
 	constructor(@Inject(UserRepository) private userRepository: UserRepository) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async validate(value: string) {
-		console.log('BannedUserValidation starts performing'); // ! that string is for vercel log reading
 		const user = await this.userRepository.findUserByLoginOrEmail(value);
-		if (user.banInfo.isBanned === true) throw new UnauthorizedException();
+		if (user?.banInfo.isBanned === true) throw new UnauthorizedException();
 		return true;
 	}
 

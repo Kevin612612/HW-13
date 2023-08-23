@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Post, PostDocument } from './post.schema';
 import { PostDTO } from './dto/postInputDTO';
 import { PostDataType, PostViewType, PostViewTypeWithAssesses } from '../types/post';
-import { BlogViewTypeWithOwner } from '../types/blog';
+import { BlogViewTypeForSA } from '../types/blog';
 
 //(1)   method returns all posts
 //(2)   count of all posts
@@ -74,7 +74,7 @@ export class PostRepository {
 	}
 
 	//(5) method updates post by ID
-	async updatePostById(postId: string, dto: PostDTO, blog: BlogViewTypeWithOwner): Promise<number> {
+	async updatePostById(postId: string, dto: PostDTO, blog: BlogViewTypeForSA): Promise<number> {
 		const result = await this.postModel.updateOne(
 			{ id: postId },
 			{

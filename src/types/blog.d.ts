@@ -1,5 +1,12 @@
 import { ObjectId } from 'mongodb';
 
+export type BlogOwnerInfoType = { userId: string; userLogin: string };
+
+export type BlogBanInfoType = {
+	isBanned: boolean;
+	banDate: string;
+};
+
 //################################################################################################################
 
 //BLOG VIEW TYPE
@@ -12,19 +19,19 @@ export type BlogViewType = {
 	isMembership: boolean;
 };
 
-export type BlogOwnerInfoType = { userId: string; userLogin: string };
-
 //BLOG VIEW TYPE WITH OWNER
-export type BlogViewTypeWithOwner = BlogViewType & {
+export type BlogViewTypeForSA= BlogViewType & {
 	blogOwnerInfo: BlogOwnerInfoType;
+	banInfo: BlogBanInfoType;
 };
 
 //BLOG DATA TYPE
 export type BlogDataType = BlogViewType & {
 	_id: ObjectId;
 	blogOwnerInfo: BlogOwnerInfoType;
+	banInfo: BlogBanInfoType;
 	__v: number;
 };
 
 //BLOG PAGING TYPE
-export type BlogTypeSchema = PageTypeSchema<BlogViewType>
+export type BlogTypeSchema = PageTypeSchema<BlogViewType | BlogViewTypeForSA>

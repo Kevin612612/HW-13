@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext, Inject, UnauthorizedExceptio
 import { Request } from 'express';
 import { AccessTokenService } from '../entity_tokens/accesstoken.service';
 import { UserRepository } from '../entity_user/user.repository';
-import { LogFunctionName } from '../decorators/logger.decorator';
+import { LogClassName } from '../decorators/logger.decorator';
 
 @Injectable()
 export class AuthGuardBearer implements CanActivate {
@@ -11,7 +11,7 @@ export class AuthGuardBearer implements CanActivate {
 		@Inject(UserRepository) private userRepository: UserRepository,
 	) {}
 
-	@LogFunctionName()
+	@LogClassName()
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const request: Request = context.switchToHttp().getRequest();
 		const authHeader = request.headers.authorization || null;

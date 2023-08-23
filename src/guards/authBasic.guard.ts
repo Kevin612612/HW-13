@@ -1,7 +1,7 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject, Logger } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { LogFunctionName } from '../decorators/logger.decorator';
+import { LogClassName } from '../decorators/logger.decorator';
 
 @Injectable()
 export class AuthGuardBasic implements CanActivate {
@@ -14,7 +14,7 @@ export class AuthGuardBasic implements CanActivate {
 	 * @param context The execution context of the incoming request.
 	 * @returns True if the request has valid credentials, otherwise throws an UnauthorizedException.
 	 */
-	@LogFunctionName()
+	@LogClassName()
 	canActivate(context: ExecutionContext) {
 		const request: Request = context.switchToHttp().getRequest();
 		if (request.headers.authorization !== 'Basic YWRtaW46cXdlcnR5') {

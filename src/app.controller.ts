@@ -1,22 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Inject, Res, StreamableFile } from '@nestjs/common';
 import { AppService } from './app.service';
 import { BlogRepository } from './entity_blog/blog.repository';
 import { PostRepository } from './entity_post/post.repository';
 import { UserRepository } from './entity_user/user.repository';
 import { RefreshTokensRepository } from './entity_tokens/refreshtoken.repository';
 import { CommentRepository } from './entity_comment/comment.repository';
-import { SkipThrottle } from '@nestjs/throttler';
-import { BlogService } from './entity_blog/blog.service';
-import { UsersService } from './entity_user/user.service';
-import { QueryDTO, QueryUserDTO } from './dto/query.dto';
-import { BlogTypeSchema } from './types/blog';
-import { BlogIdDTO, UserIdDTO } from './dto/id.dto';
-import { AuthGuardBasic } from './guards/authBasic.guard';
-import { LogFunctionName } from './decorators/logger.decorator';
-import { BanDTO, UserDTO } from './entity_user/dto/userInputDTO';
-import { UserTypeSchema, UserViewType } from './types/users';
+import { join } from 'path';
+import { createReadStream } from 'fs';
 
-@SkipThrottle()
 @Controller()
 export class AppController {
   constructor(
@@ -31,6 +22,13 @@ export class AppController {
   @Get()
   hello() {
     return this.appService.getHello();
+  }
+
+  //that is end-point for browser working
+  @Get('favicon.ico')
+  serveFavicon(@Res() res: Response) {
+    const file = createReadStream(join(__dirname, 'public', 'favicon.ico'));
+    return new StreamableFile(file);
   }
 
   @Delete('testing/all-data')

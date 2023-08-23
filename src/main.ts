@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { appSettings } from './app.settings';
 import { Logger } from '@nestjs/common';
-import { getFunctionName } from './secondary functions/getFunctionName';
+import { getClassName } from './secondary functions/getFunctionName';
 import { preliminaryActions } from './pre-operations';
 import { ConfigService } from '@nestjs/config';
 
@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
  */
 
 async function bootstrap() {
-	const logger = new Logger(getFunctionName());
+	const logger = new Logger(getClassName());
 
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
 

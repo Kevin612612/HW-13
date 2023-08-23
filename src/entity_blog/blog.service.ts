@@ -1,5 +1,5 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import { BlogDTO } from './dto/blogInputDTO';
+import { BlogBanDTO, BlogDTO } from './dto/blogInputDTO';
 import { QueryDTO } from '../dto/query.dto';
 import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogRepository } from './blog.repository';
@@ -37,7 +37,7 @@ export class BlogService {
 
 		//delete property blogOwnerInfo from each blog except for sisAdmin
 		const blogsView = (role !== 'sisAdmin') ? 
-		blogs.map((blog) => {const { blogOwnerInfo, ...newItem } = blog;
+		blogs.map((blog) => {const { blogOwnerInfo, banInfo, ...newItem } = blog;
 							return newItem})
 		: blogs;
 
@@ -92,5 +92,13 @@ export class BlogService {
 	async bindBlogWithUser(blogId: string, userId: string) {
 		const user = await this.userRepository.findUserById(userId);
 		return await this.blogRepository.addOwner(blogId, user.accountData.login, user.id);
+	}
+
+	async banBlog(blogId: string, banDTO: BlogBanDTO) {
+		if (banDTO.isBanned === true) {
+			return await this.blogRepository.banBlog(blogId);
+		} else {
+			return await this.blogRepository.unbanBlog(blogId);
+		}
 	}
 }

@@ -2,14 +2,12 @@ import { Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Req, UseG
 import { DeviceIdDTO } from '../dto/id.dto';
 import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
-import { SkipThrottle } from '@nestjs/throttler';
 
 // changeLikeStatus
 // updateCommentById
 // deleteComment
 // findCommentById
 
-@SkipThrottle()
 @Controller('security')
 export class DevicesController {
 	constructor(@Inject(RefreshTokenService) protected refreshTokenService: RefreshTokenService) {}

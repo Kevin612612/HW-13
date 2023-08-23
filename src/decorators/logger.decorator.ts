@@ -1,7 +1,7 @@
-import { Logger } from "@nestjs/common";
-import { getClassName } from "../secondary functions/getFunctionName";
+import { Logger } from '@nestjs/common';
+import { getClassName } from '../secondary functions/getFunctionName';
 
-export function LogFunctionName() {
+export function LogClassName() {
 	return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
 		const originalMethod = descriptor.value;
 
@@ -9,7 +9,7 @@ export function LogFunctionName() {
 			const functionName = propertyKey;
 			const result = await originalMethod.apply(this, args);
 			const logger = new Logger(getClassName());
-			logger.log(`done`);
+			logger.log(`${getClassName()} starts performing`); // ! that string is for vercel log reading
 			return result;
 		};
 

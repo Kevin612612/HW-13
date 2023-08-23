@@ -1,10 +1,9 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './blog.schema';
 import { BlogController, BloggerController } from './blog.controller';
 import { BlogService } from './blog.service';
 import { BlogRepository } from './blog.repository';
-import { LoggerMiddleware } from '../middleware/logger.middleware';
 import { CommentsModule } from '../entity_comment/comment.module';
 import { PostModule } from '../entity_post/post.module';
 import { TokenModule } from '../entity_tokens/tokens.module';
@@ -26,10 +25,10 @@ import { BlackListModule } from '../entity_black_list/blacklist.module';
 	exports: [BlogService, BlogRepository],
 })
 export class BlogModule {
-	configure(consumer: MiddlewareConsumer) {
-		consumer
-			.apply(LoggerMiddleware)
-			.exclude({ path: 'blogs', method: RequestMethod.POST })
-			.forRoutes({ path: 'blogs', method: RequestMethod.GET });
-	}
+	// configure(consumer: MiddlewareConsumer) {
+	// 	consumer
+	// 		.apply(LoggerMiddleware)
+	// 		.exclude({ path: 'blogs', method: RequestMethod.POST })
+	// 		.forRoutes({ path: 'blogs', method: RequestMethod.GET });
+	// }
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class BlogDTO {
   @IsString()
@@ -13,4 +13,9 @@ export class BlogDTO {
   @Length(0, 100)
   @Matches('^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$')
   websiteUrl: string;
+}
+
+export class BlogBanDTO {
+  @IsBoolean()
+  isBanned: boolean;
 }

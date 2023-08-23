@@ -5,30 +5,28 @@
 // import { QueryUserDTO } from '../dto/query.dto';
 // import { UserIdDTO } from '../dto/id.dto';
 // import { AuthGuardBasic } from '../guards/authBasic.guard';
-// import { SkipThrottle } from '@nestjs/throttler';
-// import { LogFunctionName } from '../decorators/logger.decorator';
+// import { LogClassName } from '../decorators/logger.decorator';
 
-// @SkipThrottle()
 // @UseGuards(AuthGuardBasic)
 // @Controller('users')
 // export class UsersController {
 // 	constructor(@Inject(UsersService) protected userService: UsersService) {}
 
 // 	@Get()
-// 	@LogFunctionName()
+// 	@LogClassName()
 // 	async getAll(@Query() query: QueryUserDTO): Promise<UserTypeSchema> {
 // 		return await this.userService.findAll(query);
 // 	}
 
 // 	@Post()
-// 	@LogFunctionName()
+// 	@LogClassName()
 // 	async createUser(@Body() dto: UserDTO): Promise<UserViewType | string[]> {
 // 		return await this.userService.createUser(dto);
 // 	}
 
 // 	@HttpCode(HttpStatus.NO_CONTENT)
 // 	@Delete('/:userId')
-// 	@LogFunctionName()
+// 	@LogClassName()
 // 	async deleteUserById(@Param() params: UserIdDTO): Promise<any> {
 // 		return await this.userService.deleteUserById(params.userId);
 // 	}

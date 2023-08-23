@@ -3,14 +3,12 @@ import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CommentIdDTO, LikeStatusDTO } from '../dto/id.dto';
 import { CommentService } from './comment.service';
 import { CommentDTO } from './dto/commentsInputDTO';
-import { SkipThrottle } from '@nestjs/throttler';
 
 // changeLikeStatus
 // updateCommentById
 // deleteComment
 // findCommentById
 
-@SkipThrottle()
 @Controller('comments')
 export class CommentController {
   constructor(@Inject(CommentService) protected commentService: CommentService) {}

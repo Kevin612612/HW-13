@@ -7,6 +7,7 @@ export class MyInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request: Request = context.switchToHttp().getRequest();
     const logger = new Logger(getClassName());
+    console.log('                                                               new request:');
     logger.log(`${request.method}-request to ${request.url}`)
     return next.handle();
   }

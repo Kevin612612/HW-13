@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
 import Joi from 'joi';
@@ -21,7 +21,6 @@ import { MyInterceptor } from './interceptors/logger.interceptor';
 import configuration from './custom.configuration';
 import { SysAdminController } from './sa.controller';
 
-
 const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, TokenModule, UserModule];
 
 //root module
@@ -30,7 +29,7 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 		ConfigModule.forRoot({
 			isGlobal: true,
 			//envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
-			envFilePath: `src/environments/development.env`,
+			//envFilePath: `src/environments/development.env`,
 			//load: [configuration],
 			validationSchema: Joi.object({
 				PORT: Joi.number().default(3000).required(),
@@ -70,8 +69,9 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 })
 export class AppModule {
 	// configure(consumer: MiddlewareConsumer) {
-	//   consumer
-	//     .apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
-	//     .forRoutes('/auth/registration-confirmation', '/auth/registration-email-resending', '/auth/login', '/auth/registration');
+	// 	consumer
+	// 		.apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
+	// 		.forRoutes('/auth/registration-confirmation', '/auth/registration-email-resending', '/auth/login', '/auth/registration')
+		
 	// }
 }

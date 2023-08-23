@@ -22,11 +22,9 @@ import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogService } from './blog.service';
 import { Response } from 'express';
 import { BlogDTO } from './dto/blogInputDTO';
-import { SkipThrottle } from '@nestjs/throttler';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { PostsTypeSchema } from '../types/post';
 
-@SkipThrottle()
 @Controller('blogger/blogs')
 export class BloggerController {
 	constructor(@Inject(BlogService) protected blogService: BlogService, @Inject(PostService) protected postService: PostService) {}
@@ -111,7 +109,6 @@ export class BloggerController {
 	}
 }
 
-@SkipThrottle()
 @Controller('blogs')
 export class BlogController {
 	constructor(@Inject(BlogService) protected blogService: BlogService, @Inject(PostService) protected postService: PostService) {}

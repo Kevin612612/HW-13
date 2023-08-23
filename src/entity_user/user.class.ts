@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 
 export class User {
 	public _id: ObjectId;
+	public id: string;
 	public accountData: UserAccountDataType;
 	public emailConfirmation: ConformationType;
 	public emailCodes: CodeDataType[];
@@ -19,21 +20,17 @@ export class User {
 		accessTokens: TokenType[];
 		refreshTokens: TokenType[];
 	};
-	public banInfo: {
-		isBanned: boolean;
-		banDate: string;
-		banReason: string;
-	};
+	public banInfo: BanInfoType;
 	public __v: number;
 
 	constructor(
 		@Inject(UserRepository) private userRepository: UserRepository,
 		@Inject(JwtService) private jwtService: JwtService,
-		public id: string = 'no id',
-		public login: string = 'no login',
-		public email: string = 'no email',
-		public passwordSalt: string = 'no salt',
-		public passwordHash: string = 'no hash',
+		id: string = 'no id', //default value before calling addAsyncParams method async
+		login: string = 'no login',
+		email: string = 'no email',
+		passwordSalt: string = 'no salt', //default value before calling addAsyncParams method async
+		passwordHash: string = 'no hash', //default value before calling addAsyncParams method async
 	) {
 		this._id = new ObjectId();
 		this.id = id;
@@ -71,10 +68,10 @@ export class User {
 			refreshTokens: [],
 		};
 		this.banInfo = {
-      isBanned: false,
-      banDate: null,
-      banReason: null,
-    };
+			isBanned: false,
+			banDate: null,
+			banReason: null,
+		};
 		this.__v = 0;
 	}
 
