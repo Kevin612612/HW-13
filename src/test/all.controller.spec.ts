@@ -9,8 +9,7 @@ jest.setTimeout(100000);
 
 describe('all tests (e2e)', () => {
 	let app: INestApplication;
-	const MONGO_URL = `mongodb+srv://Anton:QBgDZ7vVYskywK7d@cluster0.ksf3cyb.mongodb.net/hosting?retryWrites=true&w=majority`
-
+	const MONGO_URL = `mongodb+srv://Anton:QBgDZ7vVYskywK7d@cluster0.ksf3cyb.mongodb.net/hosting?retryWrites=true&w=majority`;
 
 	beforeEach(async () => {
 		await mongoose.connect(MONGO_URL);
@@ -37,8 +36,16 @@ describe('all tests (e2e)', () => {
 		};
 		const getBlogsBySisAdmin = async () => {
 			const blogsResponse = await request(server)
-				.get(`/sa/blogs?pageSize=5&pageNumber=1&searchNameTerm=blog&sortDirection=asc&sortBy=id`)
+				.get(`/sa/blogs?pageSize=5&pageNumber=1&searchNameTerm=&sortDirection=asc&sortBy=id`)
 				.auth('admin', 'qwerty', { type: 'basic' });
+			const createdBlogs = blogsResponse.body;
+			console.log(createdBlogs);
+			return createdBlogs;
+		};
+		const getAllBlogs = async () => {
+			const blogsResponse = await request(server).get(
+				`/blogs?pageSize=5&pageNumber=1&searchNameTerm=&sortDirection=asc&sortBy=id`,
+			);
 			const createdBlogs = blogsResponse.body;
 			console.log(createdBlogs);
 			return createdBlogs;
@@ -56,10 +63,52 @@ describe('all tests (e2e)', () => {
 			});
 			console.log('banUser', banUser.status);
 		};
+		const unbanUser = async (userId) => {
+			const banUser = await request(server).put(`/sa/users/${userId}/ban`).auth('admin', 'qwerty', { type: 'basic' }).send({
+				isBanned: false,
+			});
+			console.log('banUser', banUser.status);
+		};
+		const banBlog = async (blogId) => {
+			const banBlog = await request(server).put(`/sa/blogs/${blogId}/ban`).auth('admin', 'qwerty', { type: 'basic' }).send({
+				isBanned: true,
+				banReason: 'the reason to ban user is just for testing',
+			});
+			console.log('banBlog', banBlog.status);
+		};
+		const unbanBlog = async (blogId) => {
+			const banUser = await request(server).put(`/sa/blogs/${blogId}/ban`).auth('admin', 'qwerty', { type: 'basic' }).send({
+				isBanned: false,
+			});
+			console.log('banUser', banUser.status);
+		};
+		const banUserInBlog = async (userId, blogId, token) => {
+			const banUser = await request(server).put(`/blogger/users/${userId}/ban`).auth(`${token}`, { type: 'bearer' }).send({
+				isBanned: true,
+				banReason: 'the reason to ban user is just for testing',
+				blogId: blogId,
+			});
+			console.log('banUserInBlog', banUser.status);
+		};
+		const unbanUserInBlog = async (userId, blogId, token) => {
+			const banUser = await request(server).put(`/blogger/users/${userId}/ban`).auth(`${token}`, { type: 'bearer' }).send({
+				isBanned: false,
+				blogId: blogId,
+			});
+			console.log('banUserInBlog', banUser.status);
+		};
 		const getUsersBySisAdmin = async () => {
 			const usersResponse = await request(server).get(`/sa/users`).auth('admin', 'qwerty', { type: 'basic' });
 			const users = usersResponse.body;
 			console.log(users);
+			return users;
+		};
+		const getUsersBannedInBlog = async (token, blogId) => {
+			const usersResponse = await request(server)
+				.get(`/blogger/users/blog/${blogId}?pageSize=9&pageNumber=1&sortBy=login&sortDirection=asc`)
+				.auth(`${token}`, { type: 'bearer' });
+			const users = usersResponse.body;
+			console.log(users.items);
 			return users;
 		};
 		const createUserBySisAdmin = async (userDto) => {
@@ -73,7 +122,9 @@ describe('all tests (e2e)', () => {
 			console.log('deletedUserResponse', deletedUserResponse.status);
 		};
 		const deleteBlogByIdByBlogger = async (blogId, accessTokenUser) => {
-			const deletedBlogResponse = await request(server).delete(`/blogger/blogs/${blogId}`).auth(`${accessTokenUser}`, { type: 'bearer' });
+			const deletedBlogResponse = await request(server)
+				.delete(`/blogger/blogs/${blogId}`)
+				.auth(`${accessTokenUser}`, { type: 'bearer' });
 			console.log('deletedBlogResponse', deletedBlogResponse.status);
 		};
 		const loginUser = async (userDto) => {
@@ -106,15 +157,19 @@ describe('all tests (e2e)', () => {
 			return createdPost;
 		};
 		const getBlogById = async (blogId) => {
-			const blogResponse = await request(server)
-				.get(`/blogs/${blogId}`)
+			const blogResponse = await request(server).get(`/blogs/${blogId}`);
 			const blog = blogResponse.body;
 			console.log(blog);
 			return blog;
 		};
+		const getPostById = async (postId) => {
+			const postResponse = await request(server).get(`/posts/${postId}`);
+			const post = postResponse.body;
+			console.log(post);
+			return post;
+		};
 		const getBlogByIdByBlogger = async (blogId) => {
-			const blogResponse = await request(server)
-				.get(`/blogger/blogs/${blogId}`)
+			const blogResponse = await request(server).get(`/blogger/blogs/${blogId}`);
 			const blog = blogResponse.body;
 			console.log(blog);
 			return blog;
@@ -153,14 +208,40 @@ describe('all tests (e2e)', () => {
 			console.log(comment);
 			return comment;
 		};
+		const getAllCommentsForCurrentUserBlogs = async (token) => {
+			const getAllCommentResponse = await request(server).get(`/blogger/blogs/comments`).auth(`${token}`, { type: 'bearer' });
+			const allComments = getAllCommentResponse.body;
+			console.log(allComments);
+			return allComments;
+		};
 
-		//POST -> /sa/users, POST => /auth/login, POST -> /blogger/blogs, GET -> /sa/blogs
-		//await cleanDB();
+		// scenario
+		await cleanDB();
+		// create user and login
 		const userDto = createUserDTO();
-		await createUserBySisAdmin(userDto); // create user
-		const token = await loginUser(userDto);  //login
-		const blog = await createBlogInDbByBlogger(token); // create blog
-		await deleteBlogByIdByBlogger(blog.id, token); // delete blog
-		await getBlogById(blog.id); // get blog
+		const user1 = await createUserBySisAdmin(userDto);
+		const token1 = await loginUser(userDto);
+		// POST => /blogger/blogs
+		const blog1 = await createBlogInDbByBlogger(token1);
+		// POST -> /sa/users,
+		const userDto2 = createUserDTO();
+		const userDto3 = createUserDTO();
+		const userDto4 = createUserDTO();
+		const userDto5 = createUserDTO();
+		const userDto6 = createUserDTO();
+		const user2 = await createUserBySisAdmin(userDto2);
+		const user3 = await createUserBySisAdmin(userDto3);
+		const user4 = await createUserBySisAdmin(userDto4);
+		const user5 = await createUserBySisAdmin(userDto5);
+		const user6 = await createUserBySisAdmin(userDto6);
+		// PUT -> /blogger/users/:id/ban;
+		await banUserInBlog(user2.id, blog1.id, token1);
+		await banUserInBlog(user3.id, blog1.id, token1);
+		await banUserInBlog(user4.id, blog1.id, token1);
+		await banUserInBlog(user5.id, blog1.id, token1);
+		await banUserInBlog(user6.id, blog1.id, token1);
+		// GET -> "blogger/users/blog/:id":
+		// should return status 200; content: banned users array with pagination; used additional methods:
+		const users = await getUsersBannedInBlog(token1, blog1.id);
 	});
 });

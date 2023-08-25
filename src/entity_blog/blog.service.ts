@@ -1,6 +1,7 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import { BlogBanDTO, BlogDTO } from './dto/blogInputDTO';
-import { QueryDTO } from '../dto/query.dto';
+import { BaseQueryDTO, QueryDTO } from './../dto/query.dto';
+import { CommentRepository } from './../entity_comment/comment.repository';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BlogBanDTO, BlogDTO, BlogUserBanDTO } from './dto/blogInputDTO';
 import { BlogTypeSchema, BlogViewType } from '../types/blog';
 import { BlogRepository } from './blog.repository';
 import { Blog } from './blog.class';
@@ -8,11 +9,16 @@ import mongoose from 'mongoose';
 import { UserRepository } from '../entity_user/user.repository';
 import { RoleType } from '../types/users';
 import { paging } from '../secondary functions/paging';
+import { PostRepository } from '../entity_post/post.repository';
+import { PostViewType } from '../types/post';
+import { CommentsTypeSchema } from '../types/comment';
 
 @Injectable()
 export class BlogService {
 	constructor(
 		@Inject(BlogRepository) protected blogRepository: BlogRepository,
+		@Inject(PostRepository) protected postRepository: PostRepository,
+		@Inject(CommentRepository) protected commentRepository: CommentRepository,
 		@Inject(UserRepository) protected userRepository: UserRepository,
 	) {}
 
@@ -35,11 +41,25 @@ export class BlogService {
 		const blogs = await this.blogRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
 		const quantityOfDocs = await this.blogRepository.countAllBlogs(filter);
 
-		//delete property blogOwnerInfo from each blog except for sisAdmin
-		const blogsView = (role !== 'sisAdmin') ? 
-		blogs.map((blog) => {const { blogOwnerInfo, banInfo, ...newItem } = blog;
-							return newItem})
-		: blogs;
+		//delete property "Secret Data" from each blog except for sisAdmin
+		let blogsView;
+		switch (role) {
+			case `sisAdmin`:
+				blogsView = blogs.map((blog) => {
+					const { usersBanInfo, ...newItem } = blog;
+					return newItem;
+				});
+				break;
+
+			case `user` || `blogger`:
+				blogsView = blogs
+					.filter((blog) => !blog.banInfo.isBanned)
+					.map((blog) => {
+						const { blogOwnerInfo, banInfo, usersBanInfo, ...newItem } = blog;
+						return newItem;
+					});
+				break;
+		}
 
 		return paging(pageParams, blogsView, quantityOfDocs);
 	}
@@ -71,9 +91,11 @@ export class BlogService {
 		}
 	}
 
-	async getBlogById(blogId: string): Promise<BlogViewType> {
-		const result = await this.blogRepository.getBlogById(blogId);
-		const { blogOwnerInfo, ...blogView } = result;
+	async getBlogById(blogId: string): Promise<BlogViewType> | undefined {
+		const blog = await this.blogRepository.getBlogById(blogId);
+		//if (blog.banInfo.isBanned) throw new NotFoundException([`Blog doesn't exist`]);
+		if (blog.banInfo.isBanned) return undefined;
+		const { blogOwnerInfo, banInfo, usersBanInfo, ...blogView } = blog;
 		return blogView;
 	}
 
@@ -100,5 +122,87 @@ export class BlogService {
 		} else {
 			return await this.blogRepository.unbanBlog(blogId);
 		}
+	}
+
+	async findAllComments(query: BaseQueryDTO, userId: string): Promise<CommentsTypeSchema> {
+		const pageParams = {
+			sortBy: query.sortBy || 'createdAt',
+			sortDirection: query.sortDirection || 'desc',
+			pageNumber: +query.pageNumber || 1,
+			pageSize: +query.pageSize || 10,
+		};
+		// find all blogs
+		const allBlogs = await this.blogRepository.findAll({ 'blogOwnerInfo.userId': userId }, 'createdAt', 'desc');
+		// find all posts for each blog
+		let allPosts: PostViewType[] = [];
+		for (let i = 0; i < allBlogs.length; i++) {
+			allPosts = allPosts.concat(
+				await this.postRepository.findAllPostsByBlogId({ blogId: allBlogs[i].id }, 'createdAt', 'desc'),
+			);
+		}
+		// find all comments for each post
+		let allComments = [];
+		for (let i = 0; i < allPosts.length; i++) {
+			const result = await this.commentRepository.getAllCommentsByPost(allPosts[i].id, 'createdAt', 'asc');
+			//delete 'secret' properties
+			const comments: any[] = result.map((comment) => {
+				const { userAssess, postId, ...newItem } = comment;
+				return newItem;
+			});
+			//add postInfo
+			const resultCommentsView = comments.map((el) => {
+				el.postInfo = {
+					id: allPosts[i].id,
+					title: allPosts[i].title,
+					blogId: allPosts[i].blogId,
+					blogName: allPosts[i].blogName,
+				};
+			});
+			allComments = allComments.concat(comments);
+		}
+		//sort them
+		allComments.sort((a, b) => {
+			const result = a[pageParams.sortBy].localeCompare(b[pageParams.sortBy]);
+			return pageParams.sortDirection === 'asc' ? result : -result;
+		});
+
+		return paging(pageParams, allComments, allComments.length);
+	}
+
+	async banUser(userId: string, banDTO: BlogUserBanDTO, OwnerUserId: string) {
+		const foundedBlog = await this.blogRepository.getBlogById(banDTO.blogId);
+		if (foundedBlog.blogOwnerInfo.userId !== OwnerUserId) throw new ForbiddenException(["it's not your blog"]);
+		const userLogin = (await this.userRepository.findUserById(userId)).accountData.login;
+		if (banDTO.isBanned === true) {
+			return await this.blogRepository.banUser(userId, userLogin, banDTO);
+		} else {
+			return await this.blogRepository.unbanUser(userId, banDTO.blogId);
+		}
+	}
+
+	async findAllBannedUsers(blogId: string, userId: string, query: QueryDTO): Promise<BlogTypeSchema> {
+		const foundedBlog = await this.blogRepository.getBlogById(blogId);
+		if (foundedBlog.blogOwnerInfo.userId !== userId) throw new ForbiddenException(["it's not your blog"]);
+		const pageParams = {
+			sortBy: query.sortBy || 'login',
+			sortDirection: query.sortDirection || 'desc',
+			pageNumber: +query.pageNumber || 1,
+			searchNameTerm: query.searchNameTerm || '',
+			pageSize: +query.pageSize || 10,
+		};
+
+		// searching blog and get property usersBanInfo
+		const users = (await this.blogRepository.getBannedUsersOfBlogById(blogId)).usersBanInfo;
+		console.log('pageParams.sortBy', pageParams.sortBy);
+
+		//filter users by searchNameTerm
+		const regex = new RegExp(pageParams.searchNameTerm, 'i');
+		const filteredUsers = users.filter((obj) => regex.test(obj.login));
+
+		//sort them
+		const order = pageParams.sortDirection == 'asc' ? 1 : -1;
+		filteredUsers.sort((a, b) => a[pageParams.sortBy] > b[pageParams.sortBy] ? order : -order);
+
+		return paging(pageParams, filteredUsers, filteredUsers.length);
 	}
 }

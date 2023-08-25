@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from './post.schema';
 import { PostDTO } from './dto/postInputDTO';
-import { PostDataType, PostViewType, PostViewTypeWithAssesses } from '../types/post';
-import { BlogViewTypeForSA } from '../types/blog';
+import { PostDataType, PostViewType, PostDataViewType } from '../types/post';
+import { BlogDataViewType } from '../types/blog';
 
 //(1)   method returns all posts
 //(2)   count of all posts
@@ -21,6 +21,7 @@ import { BlogViewTypeForSA } from '../types/blog';
 //(10)  set myStatus None
 //(11)  add None
 //(12)  delete all posts
+//(13)  method returns all posts by blogId
 
 @Injectable()
 export class PostRepository {
@@ -39,21 +40,18 @@ export class PostRepository {
 	}
 
 	//(1) method returns all posts
-	async findAll(filter: any, sortBy: string, sortDirection: string): Promise<PostViewTypeWithAssesses[]> {
+	async findAll(filter: any, sortBy: string, sortDirection: string): Promise<PostDataViewType[]> {
 		const order = sortDirection == 'asc' ? 1 : -1;
-		const result = await this.postModel
+		return await this.postModel
 			.find(filter)
 			.sort({ [sortBy]: order })
 			.select({ _id: 0, __v: 0 })
 			.lean()
-			.exec();
-		return result;
 	}
 
 	//(2) count of all posts
 	async countAllPosts(filter: any): Promise<number> {
-		const result = await this.postModel.countDocuments(filter);
-		return result;
+		return await this.postModel.countDocuments(filter);
 	}
 
 	//(3) method creates new post
@@ -64,17 +62,16 @@ export class PostRepository {
 
 	//(4) method returns post by ID as View Model
 	async findPostById(postId: string): Promise<PostViewType | undefined | null> {
-		const result = await this.postModel.findOne({ id: postId }).select({ _id: 0, userAssess: 0, __v: 0 }).exec();
-		return result;
+		return await this.postModel.findOne({ id: postId }).select({ _id: 0, userAssess: 0, __v: 0 }).lean();
 	}
 
 	//(4.1) method returns post by ID as Data Model
-	async findPostByIdDbType(postId: string): Promise<PostDataType | undefined> {
-		return await this.postModel.findOne({ id: postId }).lean();
+	async findPostByIdDbType(postId: string): Promise<PostDataViewType | undefined> {
+		return await this.postModel.findOne({ id: postId }).select({ _id: 0, __v: 0 }).lean();
 	}
 
 	//(5) method updates post by ID
-	async updatePostById(postId: string, dto: PostDTO, blog: BlogViewTypeForSA): Promise<number> {
+	async updatePostById(postId: string, dto: PostDTO, blog: BlogDataViewType): Promise<number> {
 		const result = await this.postModel.updateOne(
 			{ id: postId },
 			{
@@ -203,5 +200,16 @@ export class PostRepository {
 	async deleteAll(): Promise<number> {
 		const result = await this.postModel.deleteMany({});
 		return result.deletedCount;
+	}
+
+	//(13) method returns all posts by blogId
+	async findAllPostsByBlogId(filter: any, sortBy: string, sortDirection: string): Promise<PostViewType[]> {
+		const order = sortDirection == 'asc' ? 1 : -1;
+		const result = await this.postModel
+			.find(filter)
+			.sort({ [sortBy]: order })
+			.select({ _id: 0, __v: 0, userAssess: 0 })
+			.lean();
+		return result;
 	}
 }

@@ -1,4 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString, Length, Matches, MinLength, Validate } from 'class-validator';
+import { BlogExistsValidation } from '../../validation/blogValidation';
 
 export class BlogDTO {
   @IsString()
@@ -18,4 +19,15 @@ export class BlogDTO {
 export class BlogBanDTO {
   @IsBoolean()
   isBanned: boolean;
+}
+
+export class BlogUserBanDTO {
+  @IsBoolean()
+  isBanned: boolean;
+
+  @MinLength(20)
+  banReason: string;
+
+  @Validate(BlogExistsValidation)
+  blogId: string;
 }

@@ -24,6 +24,32 @@ export class BlogBanInfo {
 }
 export const BlogBanInfoSchema = SchemaFactory.createForClass(BlogBanInfo);
 
+@Schema({ _id : false })
+export class UserBanInfo {
+  @Prop({default: false})
+  isBanned: boolean;
+
+  @Prop()
+  banDate: Date;
+
+  @Prop()
+  banReason: string;
+}
+export const UserBanInfoSchema = SchemaFactory.createForClass(UserBanInfo);
+
+@Schema({ _id : false })
+export class UsersBanInfo {
+  @Prop()
+  id: string;
+
+  @Prop()
+  login: string;
+
+  @Prop({type: UserBanInfoSchema})
+  banInfo: any;
+}
+export const UsersBanInfoSchema = SchemaFactory.createForClass(UsersBanInfo);
+
 
 @Schema()
 export class Blog {
@@ -65,6 +91,9 @@ export class Blog {
 
 	@Prop({ type: BlogBanInfoSchema })
 	banInfo: any;
+
+	@Prop({ type: [UsersBanInfoSchema] })
+	usersBanInfo: any;
 
 	@Prop({ versionKey: true })
 	__v: number;

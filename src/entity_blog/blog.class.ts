@@ -1,4 +1,4 @@
-import { BlogBanInfoType, BlogOwnerInfoType } from './../types/blog.d';
+import { BlogBanInfoType, BlogOwnerInfoType, UsersBanInfoType } from './../types/blog.d';
 import { ObjectId } from 'mongodb';
 import { Inject } from '@nestjs/common';
 import { BlogDTO } from './dto/blogInputDTO';
@@ -14,6 +14,7 @@ export class Blog {
 	public isMembership: boolean;
 	public blogOwnerInfo: BlogOwnerInfoType;
 	public banInfo: BlogBanInfoType;
+	public usersBanInfo: UsersBanInfoType[];
 	public __v: number;
 
 	constructor(
@@ -36,7 +37,8 @@ export class Blog {
 		this.createdAt = new Date().toISOString();
 		this.isMembership = false;
 		this.blogOwnerInfo = blogOwnerInfo;
-		this.banInfo = { isBanned: banInfo.isBanned, banDate: new Date().toISOString() };
+		this.banInfo = banInfo;
+		this.usersBanInfo = [];
 		this.__v = 0;
 	}
 

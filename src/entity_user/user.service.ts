@@ -42,14 +42,14 @@ export class UsersService {
 			banStatus: query.banStatus || 'all',
 		};
 
-		if (query.sortBy === 'id') {
-			pageParams.sortBy = 'id';
-		}
+		if (query.sortBy === 'id') pageParams.sortBy = 'id'; //for other cases add 'accountData. ...'
 
 		// define filter for repository
 		const filterConditions = [];
-		if (pageParams.searchLoginTerm) filterConditions.push({'accountData.login': {$regex: pageParams.searchLoginTerm, $options: 'i'}});	
-		if (pageParams.searchEmailTerm) filterConditions.push({'accountData.email': {$regex: pageParams.searchEmailTerm, $options: 'i'}});	
+		if (pageParams.searchLoginTerm)
+			filterConditions.push({ 'accountData.login': { $regex: pageParams.searchLoginTerm, $options: 'i' } });
+		if (pageParams.searchEmailTerm)
+			filterConditions.push({ 'accountData.email': { $regex: pageParams.searchEmailTerm, $options: 'i' } });
 		const filter = filterConditions.length > 0 ? { $or: filterConditions } : {};
 
 		const users = await this.userRepository.findAll(filter, pageParams.sortBy, pageParams.sortDirection);
@@ -80,9 +80,7 @@ export class UsersService {
 			usersResultView = usersResultView.filter((el) => el.banInfo.isBanned == false);
 		}
 
-		const quantityOfDocs = usersResultView.length;
-
-		return paging(pageParams, usersResultView, quantityOfDocs);
+		return paging(pageParams, usersResultView, usersResultView.length);
 	}
 
 	//(2) method creates user

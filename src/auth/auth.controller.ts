@@ -59,7 +59,7 @@ export class AuthController {
 		}
 	}
 
-	@Throttle(5, 10)
+	@Throttle(10, 10)
 	@HttpCode(HttpStatus.OK)
 	@Post('login')
 	async login(@Body() dto: LoginDTO, @Req() req: Request, @Res() res: Response) {

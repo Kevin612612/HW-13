@@ -47,8 +47,8 @@ export type PostViewType = {
   extendedLikesInfo: ExtendedLikesInfoType;
 };
 
-// POST VIEW TYPE WITH USERS'S ASSESSES
-export type PostViewTypeWithAssesses = PostViewType & {
+//POST DATA VIEW TYPE
+export type PostDataViewType = PostViewType & {
   userAssess: UserAssessType[];
 };
 

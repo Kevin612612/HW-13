@@ -12,7 +12,7 @@ enum SortBanEnum {
 	'notBanned',
 }
 
-class BaseQueryDTO {
+export class BaseQueryDTO {
 	@IsOptional()
 	@IsString()
 	sortBy: string;

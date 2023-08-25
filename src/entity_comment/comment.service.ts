@@ -8,6 +8,7 @@ import { QueryDTO } from '../dto/query.dto';
 import { PostRepository } from '../entity_post/post.repository';
 import { UserRepository } from '../entity_user/user.repository';
 import { paging } from '../secondary functions/paging';
+import { BlogRepository } from '../entity_blog/blog.repository';
 
 //(1) getAllCommentsByPost
 //(2) createComment
@@ -21,6 +22,7 @@ export class CommentService {
 	constructor(
 		@Inject(CommentRepository) protected commentRepository: CommentRepository,
 		@Inject(PostRepository) protected postRepository: PostRepository,
+		@Inject(BlogRepository) protected blogRepository: BlogRepository,
 		@Inject(UserRepository) protected userRepository: UserRepository,
 	) {}
 
@@ -69,18 +71,19 @@ export class CommentService {
 
 	//(2) this method creates new comment
 	async newPostedCommentByPostId(
-		postId: string,
+		postID: string,
 		content: string,
 		userId: string,
 		userLogin: string,
-	): Promise<any | number | string[]> {
-		const foundPost = await this.postRepository.findPostById(postId);
-		if (!foundPost) {
-			throw new NotFoundException([`post doesn't exist`]);
-		}
+	): Promise<CommentViewType | string[]> {
+		//check if the user is not banned for blog that contains the post
+		const blogId = (await this.postRepository.findPostById(postID)).blogId;
+		const foundedBlog = await this.blogRepository.getBlogById(blogId);
+		if (!!foundedBlog.usersBanInfo.find((obj) => obj.id === userId)) throw new ForbiddenException(["you are banned by owner of this blog"]);
+
 		//create new comment
 		let newComment = new Comment(this.commentRepository); //empty comment
-		newComment = await newComment.addAsyncParams(content, userId, userLogin, postId); // fill user with async params
+		newComment = await newComment.addAsyncParams(content, userId, userLogin, postID); // fill user with async params
 		// put this new comment into db
 		try {
 			const result = await this.commentRepository.newPostedComment(newComment);
@@ -94,21 +97,8 @@ export class CommentService {
 			}
 			return validationErrors;
 		}
-
-		return {
-			id: newComment.id,
-			content: newComment.content,
-			commentatorInfo: {
-				userId: newComment.commentatorInfo.userId,
-				userLogin: newComment.commentatorInfo.userLogin,
-			},
-			createdAt: newComment.createdAt,
-			likesInfo: {
-				dislikesCount: newComment.likesInfo.dislikesCount,
-				likesCount: newComment.likesInfo.likesCount,
-				myStatus: newComment.likesInfo.myStatus,
-			},
-		};
+		const { _id, __v, userAssess, postId, ...viewComment } = newComment;
+		return viewComment;
 	}
 
 	//(3) method change like status

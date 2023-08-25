@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument } from './blog.schema';
-import { BlogDataType, BlogViewTypeForSA } from '../types/blog';
-import { BlogDTO } from './dto/blogInputDTO';
+import { BlogDataType, BlogDataViewType, UsersBanInfoType } from '../types/blog';
+import { BlogDTO, BlogUserBanDTO } from './dto/blogInputDTO';
 
 @Injectable()
 export class BlogRepository {
-	
 	constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
 	async createBlogId() {
@@ -22,7 +21,7 @@ export class BlogRepository {
 		return blogId.toString();
 	}
 
-	async findAll(filter, sortBy: string, sortDirection: string): Promise<BlogViewTypeForSA[]> {
+	async findAll(filter, sortBy: string, sortDirection: string): Promise<BlogDataViewType[]> {
 		const order = sortDirection == 'asc' ? 1 : -1;
 		return await this.blogModel
 			.find(filter)
@@ -40,8 +39,12 @@ export class BlogRepository {
 		return await createdBlog.save();
 	}
 
-	async getBlogById(blogId: string): Promise<BlogViewTypeForSA | undefined> {
+	async getBlogById(blogId: string): Promise<BlogDataViewType | undefined> {
 		return await this.blogModel.findOne({ id: blogId }).select({ _id: 0, __v: 0 }).lean();
+	}
+
+	async getBannedUsersOfBlogById(blogId: string): Promise<any> {
+		return await this.blogModel.findOne({ id: blogId }).lean();
 	}
 
 	async updateBlogById(blogId: string, blog: BlogDTO): Promise<number> {
@@ -73,8 +76,8 @@ export class BlogRepository {
 			{ id: blogId },
 			{
 				$set: {
-					'blogOwnerInfo.userId' : userId,
-					'blogOwnerInfo.userLogin' : userLogin,
+					'blogOwnerInfo.userId': userId,
+					'blogOwnerInfo.userLogin': userLogin,
 				},
 			},
 		);
@@ -102,4 +105,36 @@ export class BlogRepository {
 		);
 		return true;
 	}
+
+	async banUser(userId: string, userLogin: string, banDTO: BlogUserBanDTO): Promise<boolean> {
+		console.log(banDTO);
+		const result = await this.blogModel.findOneAndUpdate(
+			{ id: banDTO.blogId },
+			{
+				$push: {
+					usersBanInfo: {
+						id: userId,
+						login: userLogin,
+						banInfo: {
+							isBanned: true,
+							banDate: new Date(),
+							banReason: banDTO.banReason,
+						},
+					},
+				},
+			},
+		);
+		return true;
+	}
+
+	async unbanUser(userId: string, blogId: string): Promise<boolean> {
+		const result = await this.blogModel.findOneAndUpdate(
+			{ id: blogId },
+			{
+				$pull: { usersBanInfo: { id: userId } },
+			},
+		);
+		return true;
+	}
+
 }

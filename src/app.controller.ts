@@ -27,12 +27,12 @@ export class AppController {
   //that is end-point for browser working
   @Get('favicon.ico')
   serveFavicon(@Res() res: Response) {
-    const file = createReadStream(join(__dirname, 'public', 'favicon.ico'));
+    const file = createReadStream(join(__dirname, '../src', 'public', 'favicon.ico'));
     return new StreamableFile(file);
   }
-
-  @Delete('testing/all-data')
+  
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('testing/all-data')
   async allData() {
     await this.userRepository.deleteAll();
     await this.blogRepository.deleteAll();

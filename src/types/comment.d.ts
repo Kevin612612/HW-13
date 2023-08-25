@@ -33,6 +33,13 @@ export type CommentViewType = {
   likesInfo: LikesInfoType;
 };
 
+//COMMENT DATA VIEW TYPE
+export type CommentDataViewType = CommentViewType & {
+  postId: string;
+  userAssess: UserAssessType[];
+};
+
+//COMMENT DATA TYPE
 export type CommentDataType = CommentViewType & {
   _id: ObjectId;
   postId: string;
@@ -41,4 +48,4 @@ export type CommentDataType = CommentViewType & {
 };
 
 //COMMENT PAGING TYPE
-export type CommentsTypeSchema = PageTypeSchema<CommentViewType>;
+export type CommentsTypeSchema = PageTypeSchema<CommentViewType | CommentDataViewType>;

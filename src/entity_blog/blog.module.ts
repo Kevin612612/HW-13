@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './blog.schema';
-import { BlogController, BloggerController } from './blog.controller';
+import { BlogController } from './blog.controller';
+import { BloggerController } from './blogger.controller';
 import { BlogService } from './blog.service';
 import { BlogRepository } from './blog.repository';
 import { CommentsModule } from '../entity_comment/comment.module';

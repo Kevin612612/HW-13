@@ -1,9 +1,9 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { BlogRepository } from '../entity_blog/blog.repository';
 import { PostRepository } from './post.repository';
 import { PostDTO } from './dto/postInputDTO';
 import { QueryDTO } from '../dto/query.dto';
-import { PostsTypeSchema, PostViewType, PostViewTypeWithAssesses } from '../types/post';
+import { PostDataViewType, PostViewType } from '../types/post';
 import { Post } from './post.class';
 import mongoose from 'mongoose';
 import { UserDataType } from '../types/users';
@@ -107,7 +107,7 @@ export class PostService {
 		const quantityOfDocs = await this.postRepository.countAllPosts(filter);
 
 		//transform myStatus property that depends on which user send GET-request
-		const posts1: PostViewTypeWithAssesses[] = allDataPosts.map((post) => {
+		const posts1: PostDataViewType[] = allDataPosts.map((post) => {
 			const userAssess = post.userAssess.find((el) => el.userIdLike === userId); // find the assess of current user if it exists
 			post.extendedLikesInfo.myStatus = userAssess?.assess || 'None'; // if not assess = None
 			return post;
@@ -169,9 +169,12 @@ export class PostService {
 	}
 
 	//(6) method returns post by ID
-	async findPostById(postId: string, user: any): Promise<PostViewType | number> {
+	async findPostById(postId: string, user: any): Promise<PostViewType | undefined> {
 		//find post
 		const post = await this.postRepository.findPostByIdDbType(postId);
+		//check if this post belongs to banned blog
+		const blog = await this.blogRepository.getBlogById(post.blogId);
+		if (blog.banInfo.isBanned) return undefined;
 		//hide info about likes from unauthorized user
 		if (!user) {
 			post.extendedLikesInfo.myStatus = 'None';
@@ -190,8 +193,8 @@ export class PostService {
 			}
 		};
 
-		//delete property __v and _id and userAssess from post 
-		const { __v, _id, userAssess, ...postView } = post;
+		//delete property userAssess from post caz it's not needed anymore
+		const { userAssess, ...postView } = post;
 
 		//transform newestLikes' view
 		postView.extendedLikesInfo.newestLikes = postView.extendedLikesInfo.newestLikes

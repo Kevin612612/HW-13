@@ -5,39 +5,37 @@ import { Inject } from '@nestjs/common';
 
 export class Comment {
   public _id: ObjectId;
-  public createdAt: string;
+  public id: string;
+  public content: string;
   public commentatorInfo: CommentatorInfoType;
+  public createdAt: string;
   public likesInfo: LikesInfoType;
+  public postId: string;
   public userAssess: UserAssessType[];
+  public __v: number;
 
   constructor(
     @Inject(CommentRepository) private commentRepository: CommentRepository,
-    public id: string = '',
-    public content: string = '',
-    public userId: string = '',
-    public userLogin: string = '',
-    public postId: string = '',
-    public dislikesCount: number = 0,
-    public likesCount: number = 0,
-    public myStatus: string = 'None',
-    public userIdLike: string = '',
-    public assess: string = 'None',
-    public __v: number = 0,
+    id: string = '',
+    content: string = '',
+    userId: string = '',
+    userLogin: string = '',
+    postId: string = '',
   ) {
     this._id = new ObjectId();
-    id;
-    content;
+    this.id = id;
+    this.content = content;
     this.commentatorInfo = {
       userId: userId,
       userLogin: userLogin,
     };
     this.createdAt = new Date().toISOString();
     this.likesInfo = {
-      dislikesCount: dislikesCount,
-      likesCount: likesCount,
-      myStatus: myStatus,
+      dislikesCount: 0,
+      likesCount: 0,
+      myStatus: 'None',
     };
-    postId;
+    this.postId = postId;
     this.userAssess = [];
     this.__v = 0;
   }

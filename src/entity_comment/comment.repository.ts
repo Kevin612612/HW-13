@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CommentDocument } from './comment.schema';
-import { CommentDataType } from '../types/comment';
+import { CommentDataType, CommentDataViewType } from '../types/comment';
 import { Comment } from './comment.schema';
 
 //(1)   allComments
@@ -34,13 +34,13 @@ export class CommentRepository {
   }
 
   //(1) method returns comments by postId
-  async getAllCommentsByPost(postId: string, sortBy: any, sortDirection: any): Promise<any[]> {
-    const order = sortDirection === 'asc' ? 1 : -1; // порядок сортировки
+  async getAllCommentsByPost(postId: string, sortBy: any, sortDirection: any): Promise<CommentDataViewType[]> {
+    const order = sortDirection === 'asc' ? 1 : -1; // order of sorting
     return this.commentModel
       .find({ postId: postId })
-      .lean()
       .sort({ [sortBy]: order })
-      .select({ _id: 0, __v: 0 }); //postId: 0, userAssess: 0
+      .select({ _id: 0, __v: 0 })
+      .lean();
   }
 
   //(1.1) count of all comments

@@ -12,6 +12,7 @@ import {
 	UseGuards,
 	HttpCode,
 	HttpStatus,
+	Res,
 } from '@nestjs/common';
 
 import { PostDTO } from './dto/postInputDTO';
@@ -23,16 +24,19 @@ import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { AuthGuardBasic } from '../guards/authBasic.guard';
 import { CommentService } from '../entity_comment/comment.service';
 import { CommentDTO } from '../entity_comment/dto/commentsInputDTO';
+import { LogClassName } from '../decorators/logger.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
 
 //(1) changeLikeStatus
 //(2) getAllCommentsByPost
 //(3) createCommentByPost
 //(4) getAllPosts
 //(5) createPost
-//(6) findPostById
+//(6) getPostById
 //(7) updatePostById
 //(8) deletePost
 
+@SkipThrottle()
 @Controller('posts')
 export class PostController {
 	constructor(
@@ -44,6 +48,7 @@ export class PostController {
 	@UseGuards(AuthGuardBearer)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Put('/:postId/like-status')
+	@LogClassName()
 	async changeLikeStatus(@Param() dto: PostIdDTO, @Body() body: LikeStatusDTO, @Req() req) {
 		const user = req.user ? req.user : null;
 		return await this.postService.changeLikeStatus(dto.postId, body.likeStatus, user);
@@ -52,6 +57,7 @@ export class PostController {
 	//(2)
 	@UseGuards(AuthGuardBearer)
 	@Get('/:postId/comments')
+	@LogClassName()
 	async getAllCommentsByPost(@Query() dto: QueryDTO, @Param() param: PostIdDTO, @Req() req): Promise<any> {
 		const userId = req.user?.id || null;
 		return await this.commentService.getAllCommentsByPost(dto, param.postId, userId);
@@ -61,6 +67,7 @@ export class PostController {
 	@UseGuards(AuthGuardBearer)
 	@HttpCode(HttpStatus.CREATED)
 	@Post('/:postId/comments')
+	@LogClassName()
 	async createCommentByPost(@Param() param: PostIdDTO, @Body() body: CommentDTO, @Req() req): Promise<any> {
 		const userId = req.user?.id || null;
 		const userName = req.user?.accountData.login || null;
@@ -69,6 +76,7 @@ export class PostController {
 
 	//(4)
 	@Get()
+	@LogClassName()
 	async getAllPosts(@Query() dto: QueryDTO): Promise<PostsTypeSchema> {
 		return await this.postService.findAll(dto, null);
 	}
@@ -76,20 +84,24 @@ export class PostController {
 	//(5)
 	@UseGuards(AuthGuardBasic)
 	@Post()
+	@LogClassName()
 	async createPost(@Body() dto: PostDTO) {
 		return await this.postService.createPost(dto, null);
 	}
 
 	//(6)
 	@Get('/:postId')
-	async findPostById(@Param() params: PostIdDTO) {
-		return await this.postService.findPostById(params.postId, null);
+	@LogClassName()
+	async getPostById(@Param() params: PostIdDTO, @Res() res) {
+		const post = await this.postService.findPostById(params.postId, null);
+		return post ? res.send(post) : res.sendStatus(HttpStatus.NOT_FOUND);
 	}
 
 	//(7)
 	@UseGuards(AuthGuardBasic)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Put('/:postId')
+	@LogClassName()
 	async updatePostById(@Param() params: PostIdDTO, @Body() dto: PostDTO) {
 		return await this.postService.updatePostById(null, params.postId, dto);
 	}
@@ -98,6 +110,7 @@ export class PostController {
 	@UseGuards(AuthGuardBasic)
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Delete('/:postId')
+	@LogClassName()
 	async deletePost(@Param() params: PostIdDTO) {
 		return await this.postService.deletePost(null, null, params.postId);
 	}

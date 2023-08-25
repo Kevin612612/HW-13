@@ -7,6 +7,16 @@ export type BlogBanInfoType = {
 	banDate: string;
 };
 
+export type UsersBanInfoType = {
+	id: string;
+	login: string;
+	banInfo: {
+	  isBanned: boolean;
+	  banDate: Date;
+	  banReason: string;
+	}
+  }
+
 //################################################################################################################
 
 //BLOG VIEW TYPE
@@ -19,19 +29,18 @@ export type BlogViewType = {
 	isMembership: boolean;
 };
 
-//BLOG VIEW TYPE WITH OWNER
-export type BlogViewTypeForSA= BlogViewType & {
+//BLOG DATA VIEW TYPE
+export type BlogDataViewType = BlogViewType & {
 	blogOwnerInfo: BlogOwnerInfoType;
 	banInfo: BlogBanInfoType;
+	usersBanInfo: UsersBanInfoType[];
 };
 
 //BLOG DATA TYPE
-export type BlogDataType = BlogViewType & {
+export type BlogDataType = BlogDataViewType & {
 	_id: ObjectId;
-	blogOwnerInfo: BlogOwnerInfoType;
-	banInfo: BlogBanInfoType;
 	__v: number;
 };
 
 //BLOG PAGING TYPE
-export type BlogTypeSchema = PageTypeSchema<BlogViewType | BlogViewTypeForSA>
+export type BlogTypeSchema = PageTypeSchema<BlogViewType | BlogDataViewType>

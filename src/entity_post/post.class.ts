@@ -7,28 +7,34 @@ import { BlogRepository } from '../entity_blog/blog.repository';
 
 export class Post {
 	public _id: ObjectId;
+	public id: string;
+	public title: string;
+	public shortDescription: string;
+	public content: string;
+	public blogId: string;
+	public blogName: string;
 	public createdAt: string;
 	public extendedLikesInfo: ExtendedLikesInfoType;
 	public userAssess: UserAssessType[];
+	public __v: number;
 
 	constructor(
 		@Inject(PostRepository) private postRepository: PostRepository,
 		@Inject(BlogRepository) private blogRepository: BlogRepository,
-		public id: string = '',
-		public title: string = '',
-		public shortDescription: string = '',
-		public content: string = '',
-		public blogId: string = '',
-		public blogName: string = '',
-		public __v: number = 0,
+		id: string = '',
+		title: string = '',
+		shortDescription: string = '',
+		content: string = '',
+		blogId: string = '',
+		blogName: string = '',
 	) {
 		this._id = new ObjectId();
-		id;
-		title;
-		shortDescription;
-		content;
-		blogId;
-		blogName;
+		this.id = id;
+		this.title = title;
+		this.shortDescription = shortDescription;
+		this.content = content;
+		this.blogId = blogId;
+		this.blogName = blogName;
 		this.createdAt = new Date().toISOString();
 		this.extendedLikesInfo = {
 			dislikesCount: 0,

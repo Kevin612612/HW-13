@@ -29,7 +29,7 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 		ConfigModule.forRoot({
 			isGlobal: true,
 			//envFilePath: `src/environments/${process.env.NODE_ENV}.env`,
-			//envFilePath: `src/environments/development.env`,
+			envFilePath: `src/environments/development.env`,
 			//load: [configuration],
 			validationSchema: Joi.object({
 				PORT: Joi.number().default(3000).required(),
@@ -60,10 +60,6 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 		{
 			provide: APP_GUARD,
 			useClass: ThrottlerGuard,
-		},
-		{
-			provide: APP_INTERCEPTOR,
-			useClass: MyInterceptor,
 		},
 	],
 })

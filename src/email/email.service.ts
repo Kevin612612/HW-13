@@ -66,7 +66,7 @@ export class EmailService {
 		) {
 			//build new code
 			const newCode = uuidv4();
-			const updatecode = await this.userRepository.updateCode(user, newCode);
+			const updateCode = await this.userRepository.updateCode(user, newCode);
 			const message = `<h1>Thank for your registration</h1>
                 <p>To finish registration please follow the link below one more time:
                 <a href='https://hw-13.vercel.app/auth/registration-confirmation?code=${newCode}'>complete registration</a>
