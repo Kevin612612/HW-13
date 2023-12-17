@@ -17,8 +17,8 @@ export const ValidationPipeOptions = {
 		// take messages from array of errors and put them into errorsForResponse
 		errors.forEach((er) => {
 			const constraintsKeys = Object.keys(er.constraints);
-			constraintsKeys.forEach((conKey) => {
-				errorsForResponse.push({ message: er.constraints[conKey], field: er.property });
+			constraintsKeys.forEach((ckey) => {
+				errorsForResponse.push({ message: er.constraints[ckey], field: er.property });
 			});
 		});
 

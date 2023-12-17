@@ -2,22 +2,22 @@ import { Body, Controller, Post, HttpCode, HttpStatus, Inject, UseGuards, Get, R
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { passwordRecoveryDTO } from './dto/passwordRecovery.dto';
+import { UserDTO } from '../entity_user/dto/userInputDTO';
+import { UsersService } from '../entity_user/user.service';
 import { Response, Request } from 'express';
 import { EmailService } from '../email/email.service';
+
+import { RefreshTokensRepository } from '../entity_tokens/refreshtoken.repository';
+import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
+import { UserRepository } from '../entity_user/user.repository';
+import { BlackListService } from '../entity_black_list/blacklist.service';
+import { AccessTokenService } from '../entity_tokens/accesstoken.service';
 import { NewPasswordDTO } from './dto/newPassword.dto';
 import { AuthGuardBearer } from '../guards/authBearer.guard';
 import { CodeConfirmationDTO } from './dto/registrationConfirmation.dto';
 import { EmailResendDTO } from './dto/registrationEmailConfirmed.dto';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 import { Throttle } from '@nestjs/throttler';
-import { BlackListService } from '../ENTITIES/black_list/blacklist.service';
-import { AccessTokenService } from '../ENTITIES/tokens/accesstoken.service';
-import { RefreshTokensRepository } from '../ENTITIES/tokens/refreshtoken.repository';
-import { RefreshTokenService } from '../ENTITIES/tokens/refreshtoken.service';
-import { UserDTO } from '../ENTITIES/user/dto/userInputDTO';
-import { UserRepository } from '../ENTITIES/user/user.repository';
-import { UsersService } from '../ENTITIES/user/user.service';
-import { UserDataType } from '../types/users';
 
 // passwordRecovery
 // newPassword
@@ -84,7 +84,7 @@ export class AuthController {
 	@Post('refresh-token')
 	async newPairOfTokens(@Req() req, @Res() res) {
 		//INPUT
-		const user: UserDataType = req.user ? req.user : null;
+		const user = req.user ? req.user : null;
 		const userId = req.user?.id || null;
 		const refreshToken = req.cookies.refreshToken;
 		const IP = req.socket.remoteAddress || 'noIp';
@@ -135,6 +135,7 @@ export class AuthController {
 	async resendRegistrationCode(@Body() dto: EmailResendDTO, @Res() res: Response) {
 		const result = await this.emailService.sendEmailConfirmationMessageAgain(dto.email);
 		return result ? res.sendStatus(HttpStatus.NO_CONTENT) : res.sendStatus(HttpStatus.NOT_FOUND);
+
 	}
 
 	@UseGuards(RefreshTokenGuard)
@@ -153,7 +154,7 @@ export class AuthController {
 	@UseGuards(AuthGuardBearer)
 	@Get('me')
 	async getInfo(@Req() req, @Res() res) {
-		const user = req.user ? req.user : null;
+		const user = req.user? req.user : null;
 		res.status(200).send({
 			email: user.accountData.email,
 			login: user.accountData.login,

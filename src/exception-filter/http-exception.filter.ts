@@ -6,21 +6,47 @@ import { getClassName } from '../secondary functions/getFunctionName';
 export class HttpExceptionFilter implements ExceptionFilter {
 	catch(exception: HttpException, host: ArgumentsHost) {
 		const status = exception.getStatus();
-		const request = host.switchToHttp().getRequest<Request>();
-		const response = host.switchToHttp().getResponse<Response>();
-		const responseBody = exception.getResponse();
-		const logger = new Logger(getClassName());
-		logger.log(responseBody);
+		const ctx = host.switchToHttp();
+		const request = ctx.getRequest<Request>();
+		const response = ctx.getResponse<Response>();
 
 		switch (status) {
 			case HttpStatus.NOT_FOUND:
-			case HttpStatus.FORBIDDEN:
-			case HttpStatus.BAD_REQUEST:
-				this.handleCommonError(response, status, responseBody);
+				const errorResponseNotFound = { errorsMessages: [] };
+				const logger = new Logger(getClassName());
+				logger.log(exception.getResponse());
+				const responseBodyNotFound: any = exception.getResponse();
+				if (Array.isArray(responseBodyNotFound.message)) {
+					responseBodyNotFound.message.forEach((mes) => {
+						errorResponseNotFound.errorsMessages.push(mes);
+					});
+					response.status(status).json(errorResponseNotFound); //resource is not found
+				} else {
+					response.status(status).json(responseBodyNotFound.message); //url is not found
+				}
 				break;
 
 			case HttpStatus.UNAUTHORIZED:
 				response.status(status).json({ message: 'Unauthorized' });
+				break;
+
+			case HttpStatus.FORBIDDEN:
+				const errorResponseForbidden = { errorsMessages: [] };
+				const responseBodyForbidden: any = exception.getResponse();
+				responseBodyForbidden.message.forEach((mes) => {
+					errorResponseForbidden.errorsMessages.push(mes);
+				});
+				response.status(status).json(errorResponseForbidden);
+				break;
+
+			//PIPE VALIDATION: INPUT DATA ARE NOT SATISFIED TO VALIDATION IN DTO SCHEMA
+			case HttpStatus.BAD_REQUEST:
+				const errorResponse = { errorsMessages: [] };
+				const responseBody: any = exception.getResponse();
+				responseBody.message.forEach((mes) => {
+					errorResponse.errorsMessages.push(mes);
+				});
+				response.status(status).json(errorResponse);
 				break;
 
 			default:
@@ -32,18 +58,5 @@ export class HttpExceptionFilter implements ExceptionFilter {
 				response.status(status).json(result);
 				break;
 		}
-	}
-
-	private handleCommonError(response: Response, status: number, responseBody) {
-		const errorResponse = { errorsMessages: [] };
-		if (typeof responseBody !== 'string') {
-			responseBody.message.forEach((mes: string) => {
-				errorResponse.errorsMessages.push(mes);
-			});
-		} else {
-			response.status(status).json(responseBody);
-			return;
-		}
-		response.status(status).json(errorResponse);
 	}
 }

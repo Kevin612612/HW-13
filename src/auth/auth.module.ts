@@ -1,10 +1,14 @@
-import { BlackListModule } from '../ENTITIES/black_list/blacklist.module';
+import { BlackListModule } from '../entity_black_list/blacklist.module';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
+import { UserModule } from '../entity_user/user.module';
 import { AuthController } from './auth.controller';
+import { UserSchema } from '../entity_user/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EmailModule } from '../email/email.module';
+import { RefreshTokenSchema } from '../entity_tokens/refreshtoken.schema';
+import { TokenModule } from '../entity_tokens/tokens.module';
 import {
 	UserExistsByLoginOrEmailValidation,
 	UserExistsByLoginValidation,
@@ -13,10 +17,6 @@ import {
 	BannedUserValidation,
 } from '../validation/userValidation';
 import { ConfigService } from '@nestjs/config';
-import { RefreshTokenSchema } from '../ENTITIES/tokens/refreshtoken.schema';
-import { TokenModule } from '../ENTITIES/tokens/tokens.module';
-import { UserModule } from '../ENTITIES/user/user.module';
-import { UserSchema } from '../ENTITIES/user/user.schema';
 
 @Module({
 	imports: [
@@ -48,3 +48,4 @@ import { UserSchema } from '../ENTITIES/user/user.schema';
 	exports: [AuthService],
 })
 export class AuthModule {}
+

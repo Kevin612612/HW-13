@@ -1,5 +1,5 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { BlackListService } from './ENTITIES/black_list/blacklist.service';
+import { BlackListService } from './entity_black_list/blacklist.service';
 
 export async function preliminaryActions(app: NestExpressApplication) {
 	/** some operations for creating empty black list before starting app */

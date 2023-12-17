@@ -1,9 +1,8 @@
 import { Injectable, CanActivate, ExecutionContext, Inject, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
+import { AccessTokenService } from '../entity_tokens/accesstoken.service';
+import { UserRepository } from '../entity_user/user.repository';
 import { LogClassName } from '../decorators/logger.decorator';
-import { AccessTokenService } from '../ENTITIES/tokens/accesstoken.service';
-import { UserRepository } from '../ENTITIES/user/user.repository';
-import { AccessTokensPayloadType } from '../ENTITIES/tokens/refreshtoken.class';
 
 @Injectable()
 export class AuthGuardBearer implements CanActivate {
@@ -32,7 +31,7 @@ export class AuthGuardBearer implements CanActivate {
 		}
 	}
 
-	private async validateAccessTokenAndExtractPayload(accessToken: string): Promise<AccessTokensPayloadType> {
+	private async validateAccessTokenAndExtractPayload(accessToken: string): Promise<any> {
 		const payload = await this.accessTokenService.getPayloadFromAccessToken(accessToken);
 		/** Validation*/
 		const tokenIsValid = await this.accessTokenService.isPayloadValid(payload);

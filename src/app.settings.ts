@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './exception-filter/http-exception.filter';
 import { ValidationPipeOptions } from './validation/validationPipeOptions';
 import { MyInterceptor } from './interceptors/logger.interceptor';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 /**
  * Configures the Nest.js application with common settings and global middleware.

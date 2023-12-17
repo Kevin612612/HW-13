@@ -11,11 +11,11 @@ export type UsersBanInfoType = {
 	id: string;
 	login: string;
 	banInfo: {
-		isBanned: boolean;
-		banDate: Date;
-		banReason: string;
-	};
-};
+	  isBanned: boolean;
+	  banDate: Date;
+	  banReason: string;
+	}
+  }
 
 //################################################################################################################
 
@@ -36,12 +36,6 @@ export type BlogDataViewType = BlogViewType & {
 	usersBanInfo: UsersBanInfoType[];
 };
 
-//BLOG DATA VIEW TYPE FOR SYSADMIN
-export type BlogDataViewTypeSA = BlogViewType & {
-	blogOwnerInfo: BlogOwnerInfoType;
-	banInfo: BlogBanInfoType;
-};
-
 //BLOG DATA TYPE
 export type BlogDataType = BlogDataViewType & {
 	_id: ObjectId;
@@ -49,4 +43,4 @@ export type BlogDataType = BlogDataViewType & {
 };
 
 //BLOG PAGING TYPE
-export type BlogTypeSchema = PageTypeSchema<BlogViewType | BlogDataViewType>;
+export type BlogTypeSchema = PageTypeSchema<BlogViewType | BlogDataViewType>

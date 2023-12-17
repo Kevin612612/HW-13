@@ -1,8 +1,0 @@
-Эта команда отобразит дерево коммитов с линиями, представляющими ветки, и краткими сообщениями коммитов.
-git log --graph --oneline --all > git_commit_tree.txt
-
-git repeat 
-
-git reset
-
-git stash
