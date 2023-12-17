@@ -1,12 +1,12 @@
 import { IsEnum, IsOptional, IsString, Validate } from 'class-validator';
 import { CustomValidation } from '../validation/customValidation';
 
-enum SortDirectionEnum {
+export enum SortDirectionEnum {
 	'asc',
 	'desc',
 }
 
-enum SortBanEnum {
+export enum SortBanEnum {
 	'all',
 	'banned',
 	'notBanned',
@@ -19,7 +19,7 @@ export class BaseQueryDTO {
 
 	@IsOptional()
 	@IsEnum(SortDirectionEnum)
-	sortDirection: string;
+	sortDirection: SortDirectionEnum;
 
 	@IsOptional()
 	@Validate(CustomValidation, { message: 'pageNumber has to be more than one!' })
@@ -47,5 +47,5 @@ export class QueryUserDTO extends BaseQueryDTO {
 
 	@IsOptional()
 	@IsEnum(SortBanEnum)
-	banStatus: any;
+	banStatus: string;
 }

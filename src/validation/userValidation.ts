@@ -1,8 +1,8 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-import { UserRepository } from '../entity_user/user.repository';
 import { LogClassName } from '../decorators/logger.decorator';
 import { getClassName } from '../secondary functions/getFunctionName';
+import { UserRepository } from '../ENTITIES/user/user.repository';
 
 @ValidatorConstraint({ name: 'UserExists', async: true })
 @Injectable()

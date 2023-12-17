@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Req, UseGuards } from '@nestjs/common';
 import { DeviceIdDTO } from '../dto/id.dto';
-import { RefreshTokenService } from '../entity_tokens/refreshtoken.service';
+import { RefreshTokenService } from '../ENTITIES/tokens/refreshtoken.service';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 
 // changeLikeStatus

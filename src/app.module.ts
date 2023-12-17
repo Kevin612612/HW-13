@@ -8,22 +8,25 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './entity_user/user.module';
-import { BlogModule } from './entity_blog/blog.module';
-import { PostModule } from './entity_post/post.module';
+import { BlogModule } from './ENTITIES/blog/blog.module';
 import { EmailModule } from './email/email.module';
-import { CommentsModule as CommentModule } from './entity_comment/comment.module';
-import { TokenModule } from './entity_tokens/tokens.module';
-import { BlackListModule } from './entity_black_list/blacklist.module';
+import { CommentsModule as CommentModule } from './ENTITIES/comment/comment.module';
+import { BlackListModule } from './ENTITIES/black_list/blacklist.module';
 import { DevicesModule } from './devices/devices.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { MyInterceptor } from './interceptors/logger.interceptor';
+import { SysAdminModule } from './sys-admin/sys-admin.module';
+import { BloggerModule } from './blogger/blogger.module';
+import { DatabaseModule } from './database/database.module';
+import { DraftModule } from './draft/draft.module';
 import configuration from './custom.configuration';
-import { SysAdminController } from './sa.controller';
+import { PostModule } from './ENTITIES/post/post.module';
+import { TokenModule } from './ENTITIES/tokens/tokens.module';
+import { UserModule } from './ENTITIES/user/user.module';
 
-const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, TokenModule, UserModule];
+const entityModules = [UserModule, BlogModule, PostModule, CommentModule, TokenModule, BlackListModule];
+const rolesModules = [SysAdminModule, BloggerModule];
 
-//root module
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -52,9 +55,12 @@ const entityModules = [BlackListModule, BlogModule, CommentModule, PostModule, T
 			ttl: 10,
 			limit: 5,
 		}),
+		...rolesModules,
 		...entityModules,
+		DatabaseModule,
+		DraftModule,
 	],
-	controllers: [AppController, SysAdminController],
+	controllers: [AppController],
 	providers: [
 		AppService,
 		{
@@ -68,6 +74,5 @@ export class AppModule {
 	// 	consumer
 	// 		.apply(PutRequestIntoCacheMiddleware, CheckRequestNumberMiddleware)
 	// 		.forRoutes('/auth/registration-confirmation', '/auth/registration-email-resending', '/auth/login', '/auth/registration')
-		
 	// }
 }

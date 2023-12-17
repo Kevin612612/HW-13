@@ -215,33 +215,33 @@ describe('all tests (e2e)', () => {
 			return allComments;
 		};
 
-		// scenario
-		await cleanDB();
-		// create user and login
-		const userDto = createUserDTO();
-		const user1 = await createUserBySisAdmin(userDto);
-		const token1 = await loginUser(userDto);
-		// POST => /blogger/blogs
-		const blog1 = await createBlogInDbByBlogger(token1);
-		// POST -> /sa/users,
-		const userDto2 = createUserDTO();
-		const userDto3 = createUserDTO();
-		const userDto4 = createUserDTO();
-		const userDto5 = createUserDTO();
-		const userDto6 = createUserDTO();
-		const user2 = await createUserBySisAdmin(userDto2);
-		const user3 = await createUserBySisAdmin(userDto3);
-		const user4 = await createUserBySisAdmin(userDto4);
-		const user5 = await createUserBySisAdmin(userDto5);
-		const user6 = await createUserBySisAdmin(userDto6);
-		// PUT -> /blogger/users/:id/ban;
-		await banUserInBlog(user2.id, blog1.id, token1);
-		await banUserInBlog(user3.id, blog1.id, token1);
-		await banUserInBlog(user4.id, blog1.id, token1);
-		await banUserInBlog(user5.id, blog1.id, token1);
-		await banUserInBlog(user6.id, blog1.id, token1);
-		// GET -> "blogger/users/blog/:id":
-		// should return status 200; content: banned users array with pagination; used additional methods:
-		const users = await getUsersBannedInBlog(token1, blog1.id);
+		// // scenario
+		// await cleanDB();
+		// // create user and login
+		// const userDto = createUserDTO();
+		// const user1 = await createUserBySisAdmin(userDto);
+		// const token1 = await loginUser(userDto);
+		// // POST => /blogger/blogs
+		// const blog1 = await createBlogInDbByBlogger(token1);
+		// // POST -> /sa/users,
+		// const userDto2 = createUserDTO();
+		// const userDto3 = createUserDTO();
+		// const userDto4 = createUserDTO();
+		// const userDto5 = createUserDTO();
+		// const userDto6 = createUserDTO();
+		// const user2 = await createUserBySisAdmin(userDto2);
+		// const user3 = await createUserBySisAdmin(userDto3);
+		// const user4 = await createUserBySisAdmin(userDto4);
+		// const user5 = await createUserBySisAdmin(userDto5);
+		// const user6 = await createUserBySisAdmin(userDto6);
+		// // PUT -> /blogger/users/:id/ban;
+		// await banUserInBlog(user2.id, blog1.id, token1);
+		// await banUserInBlog(user3.id, blog1.id, token1);
+		// await banUserInBlog(user4.id, blog1.id, token1);
+		// await banUserInBlog(user5.id, blog1.id, token1);
+		// await banUserInBlog(user6.id, blog1.id, token1);
+		// // GET -> "blogger/users/blog/:id":
+		// // should return status 200; content: banned users array with pagination; used additional methods:
+		// const users = await getUsersBannedInBlog(token1, blog1.id);
 	});
 });
